@@ -4,7 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Srivatsa Kasagar — AI Consultant & Solutions Architect</title>
+  <meta name="description" content="Srivatsa Kasagar — AI Consultant & Solutions Architect with 25+ years in financial services. Building production-grade AI tools for the Canadian market: compliance plugins, agentic platforms, and wealth management systems." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Srivatsa Kasagar — AI Consultant & Solutions Architect" />
+  <meta property="og:description" content="25+ years building AI-driven automation for financial services. Enterprise-grade tools for the Canadian market — compliance plugins, agentic RPA, wealth advisors." />
+  <meta property="og:url" content="https://caseonix.ca" />
+  <meta property="og:site_name" content="Caseonix" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Srivatsa Kasagar — AI Consultant & Solutions Architect" />
+  <meta name="twitter:description" content="25+ years building AI-driven automation for financial services. Production-grade tools for the Canadian market." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%235B8BFF'/><text y='.9em' font-size='60' font-family='sans-serif' font-weight='bold' fill='white' x='50%' text-anchor='middle' dominant-baseline='hanging' dy='18'>C</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <!-- FIX #15: added display=swap to prevent FOIT -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -256,19 +267,6 @@
     .cert-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .cert-text { font-size: 0.79rem; color: var(--text-2); font-weight: 500; }
 
-    /* ═══════════════════════════════════
-       FIX #8: COMPANIES STRIP
-    ═══════════════════════════════════ */
-    .companies { padding: 36px 0; border-bottom: 1px solid var(--border); }
-    .companies-inner { display: flex; align-items: center; gap: 0; padding: 0 60px; overflow: hidden; }
-    .companies-label { font-size: 0.7rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; flex-shrink: 0; margin-right: 36px; }
-    .companies-track { display: flex; gap: 0; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .company-item {
-      font-size: 0.82rem; font-weight: 600; color: var(--text-3);
-      padding: 6px 16px; border: 1px solid var(--border); border-radius: 7px;
-      transition: color 0.2s, border-color 0.2s; white-space: nowrap;
-    }
-    .company-item:hover { color: var(--text-2); border-color: var(--border-hover); }
 
     /* ═══════════════════════════════════
        ABOUT
@@ -570,7 +568,7 @@
       .divider { margin: 0 24px; }
       footer { grid-template-columns: 1fr; gap: 16px; padding: 24px; text-align: center; }
       .footer-nav, .footer-right { justify-content: center; }
-      .certs-inner, .built-with-inner, .companies-inner { padding: 0 24px; }
+      .certs-inner, .built-with-inner { padding: 0 24px; }
       .modal-panel { width: 100vw; }
     }
   </style>
@@ -1108,7 +1106,7 @@
       });
     }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
 
-    document.querySelectorAll('.project-card,.pillar,.expertise-card,.think-card,.logo-pill,.cert-item,.company-item').forEach((el,i) => {
+    document.querySelectorAll('.project-card,.pillar,.expertise-card,.think-card,.logo-pill,.cert-item').forEach((el,i) => {
       el.style.opacity = '0';
       el.style.transform = 'translateY(18px)';
       el.style.transition = `opacity 0.42s ease ${(i%6)*55}ms, transform 0.42s ease ${(i%6)*55}ms, border-color 0.25s, box-shadow 0.25s`;
