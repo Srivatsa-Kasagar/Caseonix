@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Srivatsa Kasagar — AI Consultant & Solutions Architect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <!-- FIX #15: added display=swap to prevent FOIT -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── DARK THEME ── */
+    :root {
+      --bg: #04040A;
+      --surface: #0C0C18;
+      --surface-2: #12121F;
+      --surface-3: #18182A;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(91,139,255,0.32);
+      --blue: #5B8BFF;
+      --teal: #00D4C8;
+      --gold: #F0B429;
+      --purple: #A78BFA;
+      --green: #34D399;
+      --rose: #FB7185;
+      --text: #EEEEF8;
+      --text-2: #8888AA;
+      --text-3: #55557A;
+      --nav-bg: rgba(4,4,10,0.82);
+      --modal-bg: rgba(0,0,0,0.7);
+      --modal-panel: #0E0E1C;
+      --orb-opacity: 1;
+      --grid-opacity: 1;
+      --noise-opacity: 0.4;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    /* ── LIGHT THEME ── */
+    [data-theme="light"] {
+      --bg: #F4F4FB;
+      --surface: #FFFFFF;
+      --surface-2: #EEEEF8;
+      --surface-3: #E8E8F4;
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(91,139,255,0.35);
+      --text: #0D0D20;
+      --text-2: #555588; /* FIX #1: was #5555880 — invalid hex */
+      --text-3: #9999BB;
+      --nav-bg: rgba(244,244,251,0.88);
+      --modal-bg: rgba(0,0,0,0.45);
+      --modal-panel: #FFFFFF;
+      --orb-opacity: 0.45;
+      --grid-opacity: 0.35;
+      --noise-opacity: 0.12;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* FIX #16: visible focus rings for keyboard nav */
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 3px; }
+
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      opacity: var(--noise-opacity);
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(91,139,255,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(91,139,255,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: var(--grid-opacity);
+    }
+
+    /* ═══════════════════════════════════
+       NAV
+    ═══════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .nav-logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; }
+    .nav-logo span { color: var(--blue); }
+    .nav-links { display: flex; gap: 30px; list-style: none; }
+    /* FIX #10: active nav state via JS */
+    .nav-links a {
+      color: var(--text-2); text-decoration: none; font-size: 0.875rem; font-weight: 500;
+      transition: color 0.2s; position: relative; padding-bottom: 2px;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 1px; background: var(--blue);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--text); }
+    .nav-links a.active::after { transform: scaleX(1); }
+
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--surface); cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 0.95rem;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s; color: var(--text-2);
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); transform: rotate(20deg); color: var(--text); }
+    .nav-cta {
+      padding: 9px 20px; background: var(--blue); color: #fff; border-radius: 8px;
+      text-decoration: none; font-size: 0.85rem; font-weight: 600;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ═══════════════════════════════════
+       HERO
+    ═══════════════════════════════════ */
+    .hero {
+      position: relative; min-height: 100vh; z-index: 1;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 60px; padding: 120px 60px 80px; overflow: hidden;
+    }
+    .hero-left { display: flex; flex-direction: column; align-items: flex-start; }
+    .hero-right { display: flex; justify-content: center; align-items: center; }
+
+    .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; opacity: var(--orb-opacity); }
+    .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(91,139,255,0.15) 0%, transparent 70%); top: -80px; left: 8%; animation: orbFloat 8s ease-in-out infinite; }
+    .orb-2 { width: 360px; height: 360px; background: radial-gradient(circle, rgba(0,212,200,0.1) 0%, transparent 70%); bottom: 60px; left: 28%; animation: orbFloat 11s ease-in-out infinite reverse; }
+    .orb-3 { width: 280px; height: 280px; background: radial-gradient(circle, rgba(167,139,250,0.09) 0%, transparent 70%); top: 45%; right: 4%; animation: orbFloat 14s ease-in-out infinite; }
+    @keyframes orbFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-28px) scale(1.04)} }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px;
+      border-radius: 100px; background: rgba(91,139,255,0.1); border: 1px solid rgba(91,139,255,0.22);
+      font-size: 0.78rem; font-weight: 500; color: var(--blue);
+      letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 26px;
+    }
+    .hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--teal); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.75)} }
+
+    .hero-name {
+      font-family: 'Sora', sans-serif; font-size: clamp(2.8rem, 5.5vw, 5rem); font-weight: 800;
+      line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 16px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 55%, var(--purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-title { font-size: 1.25rem; font-weight: 400; color: var(--text-2); margin-bottom: 24px; letter-spacing: -0.01em; }
+    .hero-title strong { color: var(--text); font-weight: 600; }
+    .hero-desc { max-width: 580px; font-size: 1rem; color: var(--text-2); line-height: 1.78; margin-bottom: 40px; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn-primary {
+      padding: 13px 26px; background: linear-gradient(135deg, var(--blue), #7B6EFF); color: #fff;
+      border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.92rem;
+      transition: transform 0.2s, box-shadow 0.2s; display: inline-block;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,139,255,0.35); }
+    .btn-ghost {
+      padding: 13px 26px; background: transparent; color: var(--text);
+      border: 1px solid var(--border); border-radius: 10px; text-decoration: none;
+      font-weight: 500; font-size: 0.92rem; transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--border-hover); background: rgba(91,139,255,0.06); }
+
+    .hero-stats { display: flex; gap: 32px; margin-top: 44px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .stat-num { font-family: 'Sora', sans-serif; font-size: 1.9rem; font-weight: 700; line-height: 1; letter-spacing: -0.04em; }
+    .stat-num span { color: var(--blue); }
+    .stat-label { font-size: 0.73rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 5px; }
+
+    /* Hero panel */
+    .hero-panel {
+      background: rgba(12,12,24,0.88); border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 20px; padding: 24px; width: 100%; max-width: 400px;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+      animation: panelFloat 6s ease-in-out infinite;
+    }
+    [data-theme="light"] .hero-panel {
+      background: rgba(255,255,255,0.94); border-color: rgba(91,139,255,0.15);
+      box-shadow: 0 40px 80px rgba(0,0,20,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+    @keyframes panelFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .panel-title { font-size: 0.73rem; font-weight: 600; color: var(--text-2); letter-spacing: 0.07em; text-transform: uppercase; }
+    .panel-live { display: flex; align-items: center; gap: 6px; font-size: 0.69rem; color: var(--green); font-weight: 600; }
+    .panel-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+
+    .panel-project { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    [data-theme="light"] .panel-project { border-bottom-color: rgba(0,0,0,0.05); }
+    .panel-project:last-of-type { border-bottom: none; }
+    .pp-icon { width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+    .pp-info { flex: 1; min-width: 0; }
+    .pp-name { font-size: 0.78rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+    .pp-bar-track { height: 2px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+    [data-theme="light"] .pp-bar-track { background: rgba(0,0,0,0.08); }
+    .pp-bar-fill { height: 100%; border-radius: 2px; animation: barGrow 1.6s ease-out forwards; }
+    @keyframes barGrow { from { width: 0% } }
+    .pp-badge { font-size: 0.63rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+    .badge-green { background: rgba(52,211,153,0.13); color: #34D399; }
+    .badge-blue  { background: rgba(91,139,255,0.13); color: var(--blue); }
+    .badge-amber { background: rgba(251,191,36,0.13); color: #FBBF24; }
+    .badge-rose  { background: rgba(251,113,133,0.13); color: var(--rose); }
+
+    .panel-footer { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; gap: 6px; flex-wrap: wrap; }
+    .panel-chip { padding: 3px 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; color: var(--text-3); }
+    [data-theme="light"] .panel-chip { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); }
+
+    /* ═══════════════════════════════════
+       SHARED SECTION
+    ═══════════════════════════════════ */
+    section { position: relative; z-index: 1; }
+    .section-inner { max-width: 1160px; margin: 0 auto; padding: 0 60px; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 0.73rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 14px;
+    }
+    .section-label::before { content: ''; width: 22px; height: 1px; background: var(--blue); }
+    .section-title { font-family: 'Sora', sans-serif; font-size: clamp(1.9rem, 3.2vw, 2.7rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 14px; }
+    .section-sub { font-size: 1.02rem; color: var(--text-2); max-width: 540px; line-height: 1.72; }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent 0%, var(--border) 25%, var(--border) 75%, transparent 100%); margin: 0 60px; }
+
+    /* ═══════════════════════════════════
+       CERTS STRIP
+    ═══════════════════════════════════ */
+    .certs { padding: 48px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .certs-inner { display: flex; align-items: center; gap: 40px; padding: 0 60px; flex-wrap: wrap; }
+    .certs-label { font-size: 0.7rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+    .cert-item { display: flex; align-items: center; gap: 9px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; transition: border-color 0.2s; }
+    .cert-item:hover { border-color: var(--border-hover); }
+    .cert-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .cert-text { font-size: 0.79rem; color: var(--text-2); font-weight: 500; }
+
+    /* ═══════════════════════════════════
+       FIX #8: COMPANIES STRIP
+    ═══════════════════════════════════ */
+    .companies { padding: 36px 0; border-bottom: 1px solid var(--border); }
+    .companies-inner { display: flex; align-items: center; gap: 0; padding: 0 60px; overflow: hidden; }
+    .companies-label { font-size: 0.7rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; flex-shrink: 0; margin-right: 36px; }
+    .companies-track { display: flex; gap: 0; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .company-item {
+      font-size: 0.82rem; font-weight: 600; color: var(--text-3);
+      padding: 6px 16px; border: 1px solid var(--border); border-radius: 7px;
+      transition: color 0.2s, border-color 0.2s; white-space: nowrap;
+    }
+    .company-item:hover { color: var(--text-2); border-color: var(--border-hover); }
+
+    /* ═══════════════════════════════════
+       ABOUT
+    ═══════════════════════════════════ */
+    .about { padding: 110px 0; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; margin-top: 56px; }
+    .about-text p { color: var(--text-2); line-height: 1.82; margin-bottom: 16px; font-size: 0.98rem; }
+    .about-text p strong { color: var(--text); font-weight: 600; }
+    .pillars { display: flex; flex-direction: column; gap: 14px; }
+    .pillar {
+      padding: 18px 22px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); display: flex; align-items: flex-start; gap: 14px;
+      transition: border-color 0.2s, background 0.2s; cursor: default;
+    }
+    .pillar:hover { border-color: var(--border-hover); background: rgba(91,139,255,0.03); }
+    .pillar-icon { width: 38px; height: 38px; flex-shrink: 0; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; }
+    .pillar-icon.blue   { background: rgba(91,139,255,0.14); }
+    .pillar-icon.teal   { background: rgba(0,212,200,0.11); }
+    .pillar-icon.gold   { background: rgba(240,180,41,0.11); }
+    .pillar-icon.purple { background: rgba(167,139,250,0.11); }
+    .pillar-title { font-weight: 600; font-size: 0.92rem; margin-bottom: 3px; }
+    .pillar-desc { font-size: 0.82rem; color: var(--text-2); line-height: 1.55; }
+
+    /* ═══════════════════════════════════
+       HOW I THINK
+    ═══════════════════════════════════ */
+    .thinking { padding: 110px 0; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .thinking-header { margin-bottom: 60px; }
+    /* FIX #11: gap was 2px (looked like artefact) — now 0 for seamless join */
+    .thinking-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+
+    .think-card {
+      padding: 48px 40px; position: relative; overflow: hidden;
+      border-right: 1px solid var(--border);
+      transition: border-color 0.25s, background 0.25s; background: var(--surface);
+    }
+    .think-card:last-child { border-right: none; }
+    .think-card:hover { background: rgba(91,139,255,0.025); }
+
+    /* FIX #2: think-num was color: var(--border) — essentially invisible */
+    .think-num {
+      font-family: 'Sora', sans-serif; font-size: 5rem; font-weight: 800;
+      letter-spacing: -0.05em; line-height: 1; margin-bottom: 28px; display: block;
+      color: rgba(255,255,255,0.1); /* visible ghost */
+      transition: color 0.3s;
+    }
+    [data-theme="light"] .think-num { color: rgba(0,0,0,0.08); }
+
+    .think-card:nth-child(1) { --accent: var(--blue); }
+    .think-card:nth-child(2) { --accent: var(--teal); }
+    .think-card:nth-child(3) { --accent: var(--purple); }
+    .think-card:hover .think-num { color: var(--accent); opacity: 0.22; }
+
+    .think-title { font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 16px; }
+    .think-title em { font-style: normal; color: var(--accent); }
+    .think-body { font-size: 0.92rem; color: var(--text-2); line-height: 1.76; }
+    .think-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.35s ease; }
+    .think-card:hover .think-bar { transform: scaleX(1); }
+
+    /* ═══════════════════════════════════
+       PROJECTS
+    ═══════════════════════════════════ */
+    .projects { padding: 110px 0; }
+    .projects-header { margin-bottom: 56px; }
+    .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .project-card.featured { grid-column: span 2; }
+    /* FIX #5: RPA now spans full width — removes blank col-3 gap */
+    .project-card.full { grid-column: span 3; }
+
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column;
+      position: relative; overflow: hidden; cursor: pointer;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .project-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(380px circle at var(--mx,50%) var(--my,50%), rgba(91,139,255,0.07), transparent 60%);
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .project-card:hover::before { opacity: 1; }
+    .project-card:hover { border-color: var(--border-hover); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+
+    .project-card::after { content: ''; position: absolute; top: 0; left: 28px; right: 28px; height: 1px; }
+    .accent-blue::after   { background: linear-gradient(90deg, transparent, var(--blue), transparent); }
+    .accent-teal::after   { background: linear-gradient(90deg, transparent, var(--teal), transparent); }
+    .accent-gold::after   { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .accent-purple::after { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+    .accent-green::after  { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+    .accent-rose::after   { background: linear-gradient(90deg, transparent, var(--rose), transparent); }
+
+    /* FIX #3: arrow moved to top-right corner — no longer overlaps card-links */
+    .project-card-top {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+      margin-bottom: 18px;
+    }
+    .project-card-top-left { display: flex; align-items: center; gap: 12px; }
+
+    .project-icon { width: 48px; height: 48px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .icon-blue   { background: rgba(91,139,255,0.14); }
+    .icon-teal   { background: rgba(0,212,200,0.11); }
+    .icon-gold   { background: rgba(240,180,41,0.11); }
+    .icon-purple { background: rgba(167,139,250,0.11); }
+    .icon-green  { background: rgba(52,211,153,0.11); }
+    .icon-rose   { background: rgba(251,113,133,0.12); }
+
+    .project-card-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+
+    .project-badge { padding: 4px 9px; border-radius: 6px; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .badge-live     { background: rgba(52,211,153,0.12); color: #34D399; }
+    .badge-plugin   { background: rgba(91,139,255,0.12); color: var(--blue); }
+    .badge-framework{ background: rgba(167,139,250,0.12); color: var(--purple); }
+    .badge-app      { background: rgba(240,180,41,0.12); color: var(--gold); }
+    .badge-wip      { background: rgba(251,113,133,0.12); color: var(--rose); }
+
+    /* Arrow is now top-right, part of project-card-badges column */
+    .project-arrow {
+      width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-3); font-size: 0.8rem;
+      transition: border-color 0.2s, color 0.2s, background 0.2s; flex-shrink: 0;
+    }
+    .project-card:hover .project-arrow { border-color: var(--border-hover); color: var(--blue); background: rgba(91,139,255,0.09); }
+
+    .project-content { flex: 1; display: flex; flex-direction: column; }
+    .project-name { font-family: 'Sora', sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .project-tagline { font-size: 0.89rem; color: var(--text-2); line-height: 1.62; }
+    .project-card.featured .project-name { font-size: 1.4rem; }
+    .project-card.featured .project-tagline { font-size: 0.95rem; }
+    .project-card.full .project-name { font-size: 1.4rem; }
+
+    /* FIX #4: removed margin-top:auto from both — project-tags gets it, card-links flows naturally below */
+    .project-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; padding-top: 16px; }
+    .tag { padding: 3px 9px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-3); }
+
+    .card-links { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 12px; }
+    .card-link-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px;
+      border-radius: 6px; border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--text-2); font-size: 0.76rem; font-weight: 500; text-decoration: none;
+      transition: border-color 0.18s, color 0.18s, background 0.18s; z-index: 5; position: relative;
+    }
+    .card-link-btn:hover { border-color: var(--border-hover); color: var(--text); background: rgba(91,139,255,0.07); }
+    .card-link-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    /* ═══════════════════════════════════
+       FIX #6: EXPERTISE — icons + color accents
+    ═══════════════════════════════════ */
+    .expertise { padding: 110px 0; }
+    .expertise-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 56px; }
+    .expertise-card {
+      padding: 24px 22px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); transition: border-color 0.2s, transform 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .expertise-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .expertise-card.e-blue   { border-left-color: var(--blue); }
+    .expertise-card.e-teal   { border-left-color: var(--teal); }
+    .expertise-card.e-gold   { border-left-color: var(--gold); }
+    .expertise-card.e-purple { border-left-color: var(--purple); }
+    .expertise-card.e-green  { border-left-color: var(--green); }
+    .expertise-card.e-rose   { border-left-color: var(--rose); }
+    .expertise-card.e-grey   { border-left-color: var(--text-3); }
+
+    .expertise-icon { font-size: 1.25rem; margin-bottom: 12px; display: block; }
+    .expertise-area { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+    .expertise-label { font-weight: 600; font-size: 0.92rem; margin-bottom: 14px; }
+    .skill-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-pill { padding: 3px 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 4px; font-size: 0.74rem; color: var(--text-2); }
+    [data-theme="light"] .skill-pill { background: rgba(0,0,0,0.03); }
+
+    /* ═══════════════════════════════════
+       BUILT WITH — FIX #17: renamed to "My Stack"
+    ═══════════════════════════════════ */
+    .built-with { padding: 52px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .built-with-inner { padding: 0 60px; }
+    .built-with-label { font-size: 0.7rem; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 24px; }
+    .built-with-logos { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .logo-pill {
+      display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+      border: 1px solid var(--border); border-radius: 10px; background: var(--surface);
+      transition: border-color 0.2s, transform 0.2s; cursor: default;
+    }
+    .logo-pill:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .logo-icon { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+    .logo-text-main { font-size: 0.83rem; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .logo-text-sub { font-size: 0.67rem; color: var(--text-3); }
+
+    /* ═══════════════════════════════════
+       CONTACT
+    ═══════════════════════════════════ */
+    .contact { padding: 110px 0 90px; }
+    .contact-inner {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 24px;
+      padding: 72px; display: grid; grid-template-columns: 1fr 1fr; gap: 72px;
+      align-items: center; position: relative; overflow: hidden;
+    }
+    .contact-inner::before {
+      content: ''; position: absolute; top: -180px; right: -80px; width: 460px; height: 460px;
+      background: radial-gradient(circle, rgba(91,139,255,0.08) 0%, transparent 70%); pointer-events: none;
+    }
+    .contact-title { font-family: 'Sora', sans-serif; font-size: 2.3rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 18px; }
+    .contact-desc { color: var(--text-2); line-height: 1.78; font-size: 0.98rem; margin-bottom: 32px; }
+    .contact-links { display: flex; flex-direction: column; gap: 11px; }
+    .contact-link {
+      display: flex; align-items: center; gap: 13px; padding: 13px 16px;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+      text-decoration: none; color: var(--text); font-weight: 500; font-size: 0.88rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .contact-link:hover { border-color: var(--border-hover); background: rgba(91,139,255,0.04); }
+    .contact-link-icon { width: 34px; height: 34px; border-radius: 8px; background: rgba(91,139,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+    .contact-link-meta { font-size: 0.73rem; color: var(--text-3); }
+
+    /* ═══════════════════════════════════
+       FIX #7: FOOTER — quick links + GitHub, no redundant tagline
+    ═══════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border); padding: 32px 60px;
+      display: grid; grid-template-columns: auto 1fr auto;
+      align-items: center; gap: 40px; position: relative; z-index: 1;
+    }
+    .footer-logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .footer-logo span { color: var(--blue); }
+    .footer-nav { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .footer-nav a { font-size: 0.78rem; color: var(--text-3); text-decoration: none; transition: color 0.2s; }
+    .footer-nav a:hover { color: var(--text-2); }
+    .footer-right { display: flex; align-items: center; gap: 16px; }
+    .footer-right p { font-size: 0.75rem; color: var(--text-3); }
+    .footer-github {
+      display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px;
+      border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+      color: var(--text-2); text-decoration: none; font-size: 0.78rem; font-weight: 500;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .footer-github:hover { border-color: var(--border-hover); color: var(--text); }
+
+    /* ═══════════════════════════════════
+       MODAL
+    ═══════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: var(--modal-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 301;
+      width: min(560px, 100vw); background: var(--modal-panel); border-left: 1px solid var(--border);
+      transform: translateX(100%); transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto; display: flex; flex-direction: column;
+    }
+    .modal-panel.open { transform: translateX(0); }
+    .modal-header {
+      padding: 26px 30px 18px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      position: sticky; top: 0; background: var(--modal-panel); backdrop-filter: blur(10px); z-index: 10;
+    }
+    .modal-header-left { display: flex; align-items: center; gap: 14px; }
+    .modal-close {
+      width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--text-2); font-size: 1rem; flex-shrink: 0;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .modal-close:hover { border-color: var(--border-hover); color: var(--text); background: rgba(91,139,255,0.07); }
+    .modal-body { padding: 30px; flex: 1; display: flex; flex-direction: column; gap: 26px; }
+    .modal-section-title { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 11px; }
+    .modal-desc { font-size: 0.94rem; color: var(--text-2); line-height: 1.78; }
+    .modal-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .modal-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.89rem; color: var(--text-2); line-height: 1.55; }
+    .modal-features li::before { content: '→'; color: var(--blue); font-size: 0.78rem; margin-top: 2px; flex-shrink: 0; }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .modal-tag { padding: 5px 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--text-2); }
+    .modal-impact { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .impact-item { padding: 15px 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; }
+    .impact-num { font-family: 'Sora', sans-serif; font-size: 1.55rem; font-weight: 700; letter-spacing: -0.04em; color: var(--blue); }
+    .impact-label { font-size: 0.73rem; color: var(--text-3); margin-top: 4px; }
+    .modal-project-name { font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; }
+
+    /* ═══════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════ */
+    @media (max-width: 960px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 40px; }
+      .hero-right { display: none; }
+      .hero-stats { flex-wrap: wrap; gap: 22px; }
+      .section-inner { padding: 0 24px; }
+      .about-grid { grid-template-columns: 1fr; gap: 36px; }
+      .thinking-grid { grid-template-columns: 1fr; border-radius: var(--radius); }
+      .think-card { border-right: none; border-bottom: 1px solid var(--border); }
+      .think-card:last-child { border-bottom: none; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card.featured, .project-card.full { grid-column: 1; }
+      .expertise-grid { grid-template-columns: 1fr 1fr; }
+      .contact-inner { grid-template-columns: 1fr; padding: 36px 28px; gap: 36px; }
+      .divider { margin: 0 24px; }
+      footer { grid-template-columns: 1fr; gap: 16px; padding: 24px; text-align: center; }
+      .footer-nav, .footer-right { justify-content: center; }
+      .certs-inner, .built-with-inner, .companies-inner { padding: 0 24px; }
+      .modal-panel { width: 100vw; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Case<span>onix</span></div>
+    <ul class="nav-links">
+      <li><a href="#about" data-section="about">About</a></li>
+      <li><a href="#thinking" data-section="thinking">Thinking</a></li>
+      <li><a href="#projects" data-section="projects">Projects</a></li>
+      <li><a href="#expertise" data-section="expertise">Expertise</a></li>
+      <li><a href="#contact" data-section="contact">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☀️</button>
+      <a href="#contact" class="nav-cta">Work Together</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="hero-left">
+      <div class="hero-eyebrow">AI Consultant &amp; Solutions Architect</div>
+      <h1 class="hero-name">Building <span class="gradient-text">Intelligent Systems</span><br/>for Complex Problems</h1>
+      <p class="hero-title"><strong>Srivatsa Kasagar</strong> &mdash; Enterprise AI &amp; Automation Specialist</p>
+      <p class="hero-desc">25+ years transforming financial services and enterprise operations through AI-driven automation, agentic architectures, and compliance-grade software. From Toronto to San Juan — shipping tools that actually get used.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">View Projects &nbsp;↓</a>
+        <a href="#contact" class="btn-ghost">Get in Touch</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">25<span>+</span></div><div class="stat-label">Years Experience</div></div>
+        <div class="stat"><div class="stat-num">35<span>%</span></div><div class="stat-label">Back-office Savings</div></div>
+        <div class="stat"><div class="stat-num">40<span>%</span></div><div class="stat-label">Onboarding Faster</div></div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-panel">
+        <div class="panel-header">
+          <span class="panel-title">Active Projects</span>
+          <span class="panel-live"><span class="panel-live-dot"></span>Shipping</span>
+        </div>
+        <div class="panel-project">
+          <div class="pp-icon icon-blue">💼</div>
+          <div class="pp-info"><div class="pp-name">Consul — Wealth Advisor</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:88%;background:linear-gradient(90deg,#5B8BFF,#7B6EFF)"></div></div></div>
+          <span class="pp-badge badge-green">Live</span>
+        </div>
+        <div class="panel-project">
+          <div class="pp-icon icon-gold">🍁</div>
+          <div class="pp-info"><div class="pp-name">Canadian Tax &amp; CRA Plugin</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:95%;background:linear-gradient(90deg,#F0B429,#F59E0B)"></div></div></div>
+          <span class="pp-badge badge-green">v0.5</span>
+        </div>
+        <div class="panel-project">
+          <div class="pp-icon icon-purple">⚖️</div>
+          <div class="pp-info"><div class="pp-name">Regulatory Compliance Plugin</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:90%;background:linear-gradient(90deg,#A78BFA,#7C3AED)"></div></div></div>
+          <span class="pp-badge badge-green">v0.4</span>
+        </div>
+        <div class="panel-project">
+          <div class="pp-icon icon-teal">🧾</div>
+          <div class="pp-info"><div class="pp-name">LoonieLog — Receipt Tracker</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:82%;background:linear-gradient(90deg,#00D4C8,#0891B2)"></div></div></div>
+          <span class="pp-badge badge-blue">Free</span>
+        </div>
+        <div class="panel-project">
+          <div class="pp-icon icon-rose">🏛️</div>
+          <div class="pp-info"><div class="pp-name">PensionClarity — DB Pension AI</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:55%;background:linear-gradient(90deg,#FB7185,#E11D48)"></div></div></div>
+          <span class="pp-badge badge-rose">In Dev</span>
+        </div>
+        <div class="panel-project">
+          <div class="pp-icon icon-green">⚡</div>
+          <div class="pp-info"><div class="pp-name">Agentic RPA Platform</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:70%;background:linear-gradient(90deg,#34D399,#059669)"></div></div></div>
+          <span class="pp-badge badge-amber">Docs</span>
+        </div>
+        <div class="panel-footer">
+          <span class="panel-chip">Claude API</span>
+          <span class="panel-chip">AWS Bedrock</span>
+          <span class="panel-chip">Python</span>
+          <span class="panel-chip">Pega CLSA</span>
+          <span class="panel-chip">MCP</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTS -->
+  <div class="certs">
+    <div class="certs-inner">
+      <span class="certs-label">Certifications</span>
+      <div class="cert-item"><div class="cert-dot" style="background:#5B8BFF"></div><span class="cert-text">Pega CLSA 24.2</span></div>
+      <div class="cert-item"><div class="cert-dot" style="background:#5B8BFF"></div><span class="cert-text">Pega CSSA 72V1</span></div>
+      <div class="cert-item"><div class="cert-dot" style="background:#00D4C8"></div><span class="cert-text">AI Fundamentals</span></div>
+      <div class="cert-item"><div class="cert-dot" style="background:#F0B429"></div><span class="cert-text">MBA — Rotman / U of T</span></div>
+      <div class="cert-item"><div class="cert-dot" style="background:#A78BFA"></div><span class="cert-text">AWS Bedrock &amp; Generative AI</span></div>
+    </div>
+  </div>
+
+
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="section-inner">
+      <div class="section-label">About</div>
+      <h2 class="section-title">Engineering leader who<br/>ships production AI</h2>
+      <div class="about-grid">
+        <!-- FIX #9: rewritten to not repeat hero — focuses on Caseonix origin and Canadian market angle -->
+        <div class="about-text">
+          <p>Caseonix is where I build tools I wish existed. After two decades inside largest financial institutions — <strong>Oriental Bank, CIBC, Canadian Tire, MunichRe and Barclays PLC</strong> — I kept running into the same gap: teams drowning in compliance overhead, manual processes that shouldn't exist, and AI demos that never made it to production.</p>
+          <p>So I started building. Not proof-of-concepts — <strong>production-ready tools</strong> with real regulatory grounding, proper audit trails, and no unnecessary complexity. The Canadian market is underserved by AI tooling that actually understands its tax codes, privacy laws, and banking constraints.</p>
+          <p>When I’m not leading architecture / DevOps at <strong>Oriental Bank,</strong> I’m in the shop at <strong>Caseonix</strong>. I build these tools to stay at the cutting edge of AI and automation, transforming 25+ years of institutional knowledge into lean, practical solutions—from compliance plugins and agentic platforms to AI-powered financial advisors.</p>
+        </div>
+        <div class="pillars">
+          <div class="pillar"><div class="pillar-icon blue">🤖</div><div><div class="pillar-title">Agentic AI Systems</div><div class="pillar-desc">Intent-based automation using Claude, AWS Bedrock, and MCP — systems that reason, self-heal, and learn.</div></div></div>
+          <div class="pillar"><div class="pillar-icon teal">🏦</div><div><div class="pillar-title">Financial Services Architecture</div><div class="pillar-desc">Banking-grade systems: lending platforms, credit bureau integrations, smart dispute resolution, KYC flows.</div></div></div>
+          <div class="pillar"><div class="pillar-icon gold">📋</div><div><div class="pillar-title">Regulatory Compliance Tooling</div><div class="pillar-desc">CRA, PIPEDA, CASL, FINTRAC — compliance guidance embedded directly in developer workflows.</div></div></div>
+          <div class="pillar"><div class="pillar-icon purple">🏗️</div><div><div class="pillar-title">Platform Engineering</div><div class="pillar-desc">Pega Constellation, AWS cloud-native, Robocorp RPA — from architecture blueprints to production delivery.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW I THINK -->
+  <section class="thinking" id="thinking">
+    <div class="section-inner">
+      <div class="thinking-header">
+        <div class="section-label">Philosophy</div>
+        <h2 class="section-title">How I think about<br/>complex problems</h2>
+      </div>
+      <div class="thinking-grid">
+        <div class="think-card">
+          <span class="think-num">01</span>
+          <div class="think-title"><em>Systems</em> before tools</div>
+          <p class="think-body">The architecture outlasts the technology. Before writing a line of code or choosing a platform, I map the system — data flows, failure modes, compliance boundaries. The right structure makes every tool choice reversible. The wrong one makes them all permanent.</p>
+          <div class="think-bar"></div>
+        </div>
+        <div class="think-card">
+          <span class="think-num">02</span>
+          <div class="think-title">Compliance is a<br/><em>design spec</em></div>
+          <p class="think-body">Regulatory requirements aren't constraints to work around — they're specifications to build to. Teams that treat compliance as an afterthought rebuild twice. I've worked under FINTRAC, OSFI, CRA, and PIPEDA long enough to know that building compliance-first saves months of rework and builds trust with the business.</p>
+          <div class="think-bar"></div>
+        </div>
+        <div class="think-card">
+          <span class="think-num">03</span>
+          <div class="think-title">AI should <em>reduce toil</em>,<br/>not add it</div>
+          <p class="think-body">The best AI integration disappears into the workflow. If your team has to relearn how they think to use the tool, the tool has failed. I measure success by how quietly the system operates — not how impressively it demos. Reducing back-office load by 35% means nothing caught on fire.</p>
+          <div class="think-bar"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PROJECTS -->
+  <section class="projects" id="projects">
+    <div class="section-inner">
+      <div class="projects-header">
+        <div class="section-label">Projects</div>
+        <h2 class="section-title">AI tools built for<br/>the Canadian market</h2>
+        <p class="section-sub">Open-source tools, commercial plugins, and reference architectures — all production-ready. Click any card for details.</p>
+      </div>
+      <div class="projects-grid">
+
+        <!-- Row 1: Consul (featured, 2-col) + LoonieLog (1-col) -->
+        <div class="project-card featured accent-blue" data-project="consul">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-blue">💼</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-app">Web App</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">Consul</div>
+            <div class="project-tagline">Your AI Chief of Staff for private wealth management. Not a dashboard — a fiduciary-grade advisor that reads your portfolio, understands your life, and briefs you like a CFO. 18 one-click analyses. Stress testing. Tax-loss harvesting.</div>
+            <div class="project-tags">
+              <span class="tag">Python 3.11</span><span class="tag">Streamlit</span><span class="tag">Claude Sonnet 4.6</span><span class="tag">yfinance</span><span class="tag">pdfplumber</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card accent-teal" data-project="looinielog">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-teal">🧾</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-live">Free</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">LoonieLog</div>
+            <div class="project-tagline">AI receipt tracking for Canadian freelancers. Auto-scans Gmail &amp; Drive. CRA T2125 categorization. USD→CAD via Bank of Canada.</div>
+            <div class="project-tags">
+              <span class="tag">Google Apps Script</span><span class="tag">Gemini 2.5</span><span class="tag">Claude Sonnet</span>
+            </div>
+            <div class="card-links">
+              <a class="card-link-btn" href="https://loonielog.ca" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                loonielog.ca
+              </a>
+              <a class="card-link-btn" href="https://github.com/Srivatsa-Kasagar/LoonieLog" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Tax CRA + Regulatory + PensionClarity (1-1-1) -->
+        <div class="project-card accent-gold" data-project="tax-cra">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-gold">🍁</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-plugin">Plugin v0.5</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">Canadian Tax &amp; CRA</div>
+            <div class="project-tagline">Plain-language CRA compliance in your IDE. 8 slash commands: GST filing, payroll calc, SR&amp;ED screening, T2 checklist, and more.</div>
+            <div class="project-tags">
+              <span class="tag">Claude Code Plugin</span><span class="tag">2026 CRA Rates</span><span class="tag">13 Jurisdictions</span>
+            </div>
+            <div class="card-links">
+              <a class="card-link-btn" href="https://github.com/Srivatsa-Kasagar/canadian-tax-cra" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card accent-purple" data-project="regulatory">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-purple">⚖️</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-plugin">Plugin v0.4</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">Canadian Regulatory</div>
+            <div class="project-tagline">11 regulatory domains in one plugin. PIPEDA, CASL, FINTRAC, OSFI, FCAC — instant compliance guidance, document review, notice drafting.</div>
+            <div class="project-tags">
+              <span class="tag">Claude Code Plugin</span><span class="tag">11 Domains</span><span class="tag">Fed + ON BC AB QC</span>
+            </div>
+            <div class="card-links">
+              <a class="card-link-btn" href="https://github.com/Srivatsa-Kasagar/canadian-regulatory-compliance" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card accent-rose" data-project="pensionclarify">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-rose">🏛️</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-wip">In Dev</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">PensionClarity</div>
+            <div class="project-tagline">Upload your defined benefit pension statement. AI extracts plan terms, runs six retirement scenarios, answers plain-English questions — grounded in your document.</div>
+            <div class="project-tags">
+              <span class="tag">FastAPI</span><span class="tag">Next.js 14</span><span class="tag">Claude Haiku/Sonnet</span><span class="tag">RAG + FAISS</span><span class="tag">Stripe</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: FIX #5 — RPA full width (span 3), no empty column -->
+        <div class="project-card full accent-green" data-project="rpa">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-green">⚡</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-framework">Framework</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">Agentic RPA Platform</div>
+            <div class="project-tagline">Self-learning, intent-based browser automation. Claude reads live screen state, decides actions, executes via MCP, and self-heals on failure. DynamoDB-backed site memory improves accuracy over time. No scripts. No selectors. Just intent.</div>
+            <div class="project-tags">
+              <span class="tag">Python</span><span class="tag">AWS Lambda + EC2</span><span class="tag">MCP Protocol</span><span class="tag">DynamoDB</span><span class="tag">Robocorp</span><span class="tag">Claude API</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- EXPERTISE — FIX #6: icons + left colour accent per card -->
+  <section class="expertise" id="expertise">
+    <div class="section-inner">
+      <div class="section-label">Expertise</div>
+      <h2 class="section-title">Deep stack,<br/>broad domain</h2>
+      <div class="expertise-grid">
+        <div class="expertise-card e-blue"><span class="expertise-icon">🤖</span><div class="expertise-area">AI &amp; Automation</div><div class="expertise-label">Generative AI</div><div class="skill-pills"><span class="skill-pill">Claude / Anthropic</span><span class="skill-pill">AWS Bedrock</span><span class="skill-pill">Knowledge AI</span><span class="skill-pill">MCP Protocol</span><span class="skill-pill">Agentic Systems</span><span class="skill-pill">IDP</span></div></div>
+        <div class="expertise-card e-blue"><span class="expertise-icon">⚙️</span><div class="expertise-area">Enterprise Platforms</div><div class="expertise-label">Low-Code &amp; BPM</div><div class="skill-pills"><span class="skill-pill">Pega Constellation</span><span class="skill-pill">Pega CLSA 24.2</span><span class="skill-pill">Robocorp RPA</span><span class="skill-pill">Sema4</span><span class="skill-pill">Control Room</span></div></div>
+        <div class="expertise-card e-gold"><span class="expertise-icon">☁️</span><div class="expertise-area">Cloud &amp; Infra</div><div class="expertise-label">AWS Cloud Native</div><div class="skill-pills"><span class="skill-pill">Lambda</span><span class="skill-pill">EC2</span><span class="skill-pill">DynamoDB</span><span class="skill-pill">Bedrock</span><span class="skill-pill">S3</span><span class="skill-pill">IAM / Security</span></div></div>
+        <div class="expertise-card e-teal"><span class="expertise-icon">💻</span><div class="expertise-area">Development</div><div class="expertise-label">Languages &amp; Tools</div><div class="skill-pills"><span class="skill-pill">Python</span><span class="skill-pill">Google Apps Script</span><span class="skill-pill">Streamlit</span><span class="skill-pill">FastAPI</span><span class="skill-pill">Next.js</span><span class="skill-pill">REST APIs</span></div></div>
+        <div class="expertise-card e-gold"><span class="expertise-icon">🏦</span><div class="expertise-area">Domain</div><div class="expertise-label">Financial Services</div><div class="skill-pills"><span class="skill-pill">Banking</span><span class="skill-pill">Lending</span><span class="skill-pill">Credit Bureau</span><span class="skill-pill">Dispute Resolution</span><span class="skill-pill">KYC / AML</span></div></div>
+        <div class="expertise-card e-purple"><span class="expertise-icon">⚖️</span><div class="expertise-area">Compliance</div><div class="expertise-label">Canadian Regulatory</div><div class="skill-pills"><span class="skill-pill">CRA / T2 / GST</span><span class="skill-pill">PIPEDA</span><span class="skill-pill">CASL</span><span class="skill-pill">FINTRAC</span><span class="skill-pill">OSFI</span><span class="skill-pill">FCAC</span></div></div>
+        <div class="expertise-card e-green"><span class="expertise-icon">👥</span><div class="expertise-area">Leadership</div><div class="expertise-label">Org &amp; Delivery</div><div class="skill-pills"><span class="skill-pill">Teams of 30+</span><span class="skill-pill">Agile / Scrum</span><span class="skill-pill">Stakeholder Mgmt</span><span class="skill-pill">Program Director</span></div></div>
+        <div class="expertise-card e-grey"><span class="expertise-icon">🎓</span><div class="expertise-area">Education</div><div class="expertise-label">Background</div><div class="skill-pills"><span class="skill-pill">MBA — Rotman / UofT</span><span class="skill-pill">B.Eng. Mechanical</span><span class="skill-pill">VTU</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MY STACK — FIX #17: renamed from "Built with" -->
+  <div class="built-with">
+    <div class="built-with-inner">
+      <div class="built-with-label">My Stack</div>
+      <div class="built-with-logos">
+        <div class="logo-pill">
+          <div class="logo-icon" style="background:rgba(205,145,85,0.15)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#CD9155" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="logo-text-main">Claude</div><div class="logo-text-sub">Anthropic API</div></div>
+        </div>
+        <div class="logo-pill">
+          <div class="logo-icon" style="background:rgba(255,153,0,0.13)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" fill="rgba(255,153,0,0.25)"/><path d="M7 12h10M12 7v10" stroke="#FF9900" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div><div class="logo-text-main">AWS</div><div class="logo-text-sub">Bedrock &amp; Lambda</div></div>
+        </div>
+        <div class="logo-pill">
+          <div class="logo-icon" style="background:rgba(0,122,204,0.13)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#007ACC" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="#007ACC" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div><div class="logo-text-main">Pega</div><div class="logo-text-sub">Constellation 24.2</div></div>
+        </div>
+        <div class="logo-pill">
+          <div class="logo-icon" style="background:rgba(52,211,153,0.13)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" stroke="#34D399" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div><div class="logo-text-main">Robocorp</div><div class="logo-text-sub">RPA &amp; Control Room</div></div>
+        </div>
+        <div class="logo-pill">
+          <div class="logo-icon" style="background:rgba(255,75,75,0.13)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" stroke="#FF4B4B" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div><div class="logo-text-main">Streamlit</div><div class="logo-text-sub">Python Web Apps</div></div>
+        </div>
+        <div class="logo-pill">
+          <div class="logo-icon" style="background:rgba(66,133,244,0.13)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></div>
+          <div><div class="logo-text-main">Google</div><div class="logo-text-sub">Workspace &amp; Gemini</div></div>
+        </div>
+        <div class="logo-pill">
+          <div class="logo-icon" style="background:rgba(91,139,255,0.13)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z" stroke="#5B8BFF" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 22V12M4 7l8 5 8-5" stroke="#5B8BFF" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div><div class="logo-text-main">MCP</div><div class="logo-text-sub">Model Context Protocol</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT — FIX #14: GitHub profile added -->
+  <section class="contact" id="contact">
+    <div class="section-inner">
+      <div class="contact-inner">
+        <div>
+          <div class="section-label">Contact</div>
+          <h2 class="contact-title">Hard problems<br/>deserve a clear head.</h2>
+          <p class="contact-desc">If you're navigating a complex automation challenge, a regulatory puzzle, or a system that refuses to scale — let's think through it together. No pitch decks. Just a direct conversation about your problem.</p>
+          <a href="mailto:Srivatsa.kasagar@gmail.com" class="btn-primary">Start a Conversation &nbsp;→</a>
+        </div>
+        <div class="contact-links">
+          <a href="mailto:Srivatsa.kasagar@gmail.com" class="contact-link"><div class="contact-link-icon">✉️</div><div><div>Srivatsa.kasagar@gmail.com</div><div class="contact-link-meta">Email — fastest response</div></div></a>
+          <a href="https://linkedin.com/in/skasagar" class="contact-link" target="_blank" rel="noopener"><div class="contact-link-icon">💼</div><div><div>linkedin.com/in/skasagar</div><div class="contact-link-meta">LinkedIn</div></div></a>
+          <a href="https://github.com/Srivatsa-Kasagar" class="contact-link" target="_blank" rel="noopener"><div class="contact-link-icon">🐙</div><div><div>github.com/Srivatsa-Kasagar</div><div class="contact-link-meta">GitHub — view all projects</div></div></a>
+          <div class="contact-link" style="cursor:default"><div class="contact-link-icon">📍</div><div><div>Waterloo, Ontario, Canada</div><div class="contact-link-meta">Open to remote &amp; hybrid</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIX #7: FOOTER — quick links, GitHub, no redundant tagline -->
+  <footer>
+    <div class="footer-logo">Case<span>onix</span></div>
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="#about">About</a>
+      <a href="#thinking">Thinking</a>
+      <a href="#projects">Projects</a>
+      <a href="#expertise">Expertise</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="footer-right">
+      <a href="https://github.com/Srivatsa-Kasagar" target="_blank" rel="noopener" class="footer-github">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+      <p>© 2026 Caseonix</p>
+    </div>
+  </footer>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay"></div>
+  <div class="modal-panel" id="modalPanel">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="project-icon" id="modalIcon" style="width:42px;height:42px;border-radius:11px;font-size:1.2rem"></div>
+        <div>
+          <div class="modal-project-name" id="modalName"></div>
+          <div id="modalBadge" style="margin-top:4px"></div>
+        </div>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+
+  <script>
+    const PROJECTS = {
+      consul: {
+        icon:'💼', iconClass:'icon-blue', name:'Consul', badge:'<span class="project-badge badge-app">Web App</span>',
+        desc:'An AI Chief of Staff for private wealth management. Consul is not a dashboard — it\'s a fiduciary-grade advisor that reads your portfolio, understands your life, and briefs you like a CFO. Python calculates everything; Claude writes the narrative.',
+        features:['Manual position entry + CSV bulk import with Yahoo Finance live validation','18 Quick Counsel one-click analyses: Stress Test, Tax Harvest, Risk Snapshot, Fee Vampires, Geo Risk, Life Alignment, and more','Stress testing with Bull, Bear, and custom regime scenarios with full P&L impact','Tax-loss harvesting with US wash-sale and Canadian superficial loss rules','Document intelligence: upload wills, trusts, and mortgages to auto-extract life events','Meeting Copilot: structured advisor briefing with talking points','Full audit trail with token counts and reasoning transparency'],
+        tags:['Python 3.11','Streamlit 1.55','Claude Sonnet 4.6','yfinance','pdfplumber','reportlab'],
+        impact:[{num:'18',label:'One-click analyses'},{num:'2',label:'AI models (dual-role)'},{num:'100%',label:'Data stays local'},{num:'0',label:'External database'}],
+      },
+      looinielog: {
+        icon:'🧾', iconClass:'icon-teal', name:'LoonieLog', badge:'<span class="project-badge badge-live">Free</span>',
+        links:[{label:'loonielog.ca',url:'https://loonielog.ca',icon:'web'},{label:'GitHub',url:'https://github.com/Srivatsa-Kasagar/LoonieLog',icon:'github'}],
+        desc:'Stop losing receipts. Stop missing deductions. Stop paying your accountant to sort through your Gmail. LoonieLog is an automated receipt hunting and CRA T2125 expense logger that lives inside Google Sheets — no signup, no server, no cost.',
+        features:['Automated Gmail receipt scanning with daily 2am trigger or manual run','Google Drive PDF and image scanning with AI-powered data extraction','CRA T2125 auto-categorization: codes 8521–8860, 9200–9936, home office','Automatic deduction rules: 50% meals, ITC eligibility, PST non-recoverability by province','USD → CAD conversion via Bank of Canada Valet API — CRA audit-proof','Ambiguous expense flagging with a dedicated Needs Review tab','19-column expense tracking plus a Summary tab with YTD filing totals'],
+        tags:['Google Apps Script (V8)','Gemini 2.5 Flash','Claude Sonnet 4.6','Bank of Canada Valet API','Google Sheets'],
+        impact:[{num:'19',label:'Tracked columns'},{num:'0',label:'External servers'},{num:'Free',label:'No signup required'},{num:'13',label:'Province rules'}],
+      },
+      'tax-cra': {
+        icon:'🍁', iconClass:'icon-gold', name:'Canadian Tax & CRA', badge:'<span class="project-badge badge-plugin">Plugin v0.5</span>',
+        links:[{label:'GitHub',url:'https://github.com/Srivatsa-Kasagar/canadian-tax-cra',icon:'github'}],
+        desc:'Plain-language CRA compliance built directly into your Claude Code IDE. No tax background required. 8 slash commands covering every major obligation for Canadian small business owners, with 2026 rates for all 13 provinces and territories.',
+        features:['/gst-filing — Calculate net GST/HST owing and produce a filing summary','/payroll-calc — Calculate payroll deductions, net pay, and CRA remittance','/cra-deadlines — Generate a personalized 12-month CRA deadline calendar','/sred-screen — Screen a project for SR&ED tax credit eligibility','/grant-finder — Find applicable federal and provincial grants','/t2-checklist — Generate a T2 preparation checklist for your corporation','/salary-vs-dividend — Compare salary vs dividends from your CCPC','/expense-optimizer — Identify every CRA-allowable business expense deduction'],
+        tags:['Claude Code Plugin','2026 CRA Rates','All 13 Jurisdictions','HTML Calculator','CPP/EI Tables'],
+        impact:[{num:'8',label:'Slash commands'},{num:'13',label:'Jurisdictions'},{num:'4',label:'Auto-loading skills'},{num:'2026',label:'CRA rate tables'}],
+      },
+      regulatory: {
+        icon:'⚖️', iconClass:'icon-purple', name:'Canadian Regulatory Compliance', badge:'<span class="project-badge badge-plugin">Plugin v0.4</span>',
+        links:[{label:'GitHub',url:'https://github.com/Srivatsa-Kasagar/canadian-regulatory-compliance',icon:'github'}],
+        desc:'Instant access to practical guidance across eleven Canadian regulatory areas — directly in your developer workflow. Covers privacy, employment, financial securities, CASL, environmental, immigration, health & safety, and more.',
+        features:['/compliance-review — Review a document for regulatory gaps with risk flagging (High/Medium/Low)','/compliance-checklist — Generate a Canadian regulatory checklist for your business type','/casl-review — Review email/SMS campaigns for CASL compliance','/draft-notice — Draft from 8 notice templates: PIPEDA breach, FINTRAC STR, OH&S, ESA termination','/compliance-qa — Answer any Canadian regulatory compliance question','11 auto-loading skills: PIPEDA, Employment, CASL, FINTRAC, OSFI, FCAC, Environmental, Immigration, and more','Jurisdictions: Federal, Ontario, BC, Alberta, Quebec'],
+        tags:['Claude Code Plugin','11 Regulatory Domains','Fed + ON BC AB QC','8 Notice Templates','Risk Flagging'],
+        impact:[{num:'11',label:'Regulatory domains'},{num:'8',label:'Notice templates'},{num:'5',label:'Core commands'},{num:'4',label:'Provinces + Federal'}],
+      },
+      pensionclarify: {
+        icon:'🏛️', iconClass:'icon-rose', name:'PensionClarity', badge:'<span class="project-badge badge-wip">In Dev</span>',
+        desc:'A Canadian B2C SaaS that demystifies defined benefit pensions. Upload your pension statement PDF — AI extracts your plan terms, runs six deterministic retirement scenarios, and answers plain-English questions grounded solely in your document.',
+        features:['Drag-and-drop pension statement PDF upload (up to 20MB)','Claude Haiku extracts plan terms into typed PlanTerms model; Sonnet escalates on low-confidence fields','Six retirement scenarios: normal, early, rule-of-points, bridge, CPP integration, commuted value','RAG-powered chat: every answer cites the exact chunk from your uploaded document','Two-pass anomaly detector flags discrepancies between stated numbers and formula results','Unified income view: DB pension + DC/RRSP drawdown + CPP + OAS in stacked area chart','Stripe payments: one-time $49 or annual $99; privacy-first Umami analytics'],
+        tags:['Python 3.12','FastAPI','Next.js 14','Claude Haiku + Sonnet','LlamaIndex + FAISS','PostgreSQL','AWS S3 ca-central-1','Stripe','Vercel + Railway'],
+        impact:[{num:'6',label:'Retirement scenarios'},{num:'$49',label:'One-time price'},{num:'RAG',label:'Document-grounded'},{num:'CA',label:'Canadian market'}],
+      },
+      rpa: {
+        icon:'⚡', iconClass:'icon-green', name:'Agentic RPA Platform', badge:'<span class="project-badge badge-framework">Framework</span>',
+        desc:'Self-learning, intent-based browser automation. Claude reads live screen state, decides what actions to take, executes them via MCP, and self-heals when something fails. No scripts. No selectors. Just plain-language intent declarations.',
+        features:['Reasoning Loop: Claude reads live screen state, decides actions, executes via MCP protocol','Self-Healing: automatic failure recovery with re-analysis and corrective actions on each step','Site Memory: DynamoDB-backed learning system that improves accuracy over time per site','Intent-Based Missions: plain-language goal declarations instead of prescriptive step lists','Service Account Pool: atomic credential management for shared portal access','Robocorp Integration: preserved Control Room and Vault compatibility for enterprise teams','Full observability: structured logging, token counts, decision audit trail'],
+        tags:['Python','AWS Lambda','AWS EC2','MCP Protocol','DynamoDB','Claude API','Robocorp'],
+        impact:[{num:'0',label:'CSS selectors needed'},{num:'∞',label:'Self-healing retries'},{num:'AWS',label:'Cloud native'},{num:'Pega',label:'Compatible'}],
+      },
+    };
+
+    /* ── MODAL ── */
+    const overlay   = document.getElementById('modalOverlay');
+    const panel     = document.getElementById('modalPanel');
+    const closeBtn  = document.getElementById('modalClose');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalName = document.getElementById('modalName');
+    const modalBadge= document.getElementById('modalBadge');
+    const modalBody = document.getElementById('modalBody');
+
+    const githubSVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>`;
+    const webSVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+
+    function openModal(key) {
+      const p = PROJECTS[key];
+      if (!p) return;
+      modalIcon.textContent = p.icon;
+      modalIcon.className = 'project-icon ' + p.iconClass;
+      modalIcon.style.cssText = 'width:42px;height:42px;border-radius:11px;font-size:1.2rem';
+      modalName.textContent = p.name;
+      modalBadge.innerHTML = p.badge;
+
+      const impactHTML = p.impact.map(i=>`<div class="impact-item"><div class="impact-num">${i.num}</div><div class="impact-label">${i.label}</div></div>`).join('');
+      const featuresHTML = p.features.map(f=>`<li>${f}</li>`).join('');
+      const tagsHTML = p.tags.map(t=>`<span class="modal-tag">${t}</span>`).join('');
+      const linksHTML = p.links?.length ? `<div><div class="modal-section-title">Links</div><div style="display:flex;gap:10px;flex-wrap:wrap">${p.links.map(l=>`<a href="${l.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);text-decoration:none;font-size:0.88rem;font-weight:500;transition:border-color 0.18s" onmouseover="this.style.borderColor='var(--border-hover)'" onmouseout="this.style.borderColor='var(--border)'">${l.icon==='github'?githubSVG:webSVG} ${l.label}</a>`).join('')}</div></div>` : '';
+
+      modalBody.innerHTML = `<div><div class="modal-section-title">Overview</div><p class="modal-desc">${p.desc}</p></div><div><div class="modal-section-title">Key Features</div><ul class="modal-features">${featuresHTML}</ul></div><div><div class="modal-section-title">At a Glance</div><div class="modal-impact">${impactHTML}</div></div><div><div class="modal-section-title">Tech Stack</div><div class="modal-tags">${tagsHTML}</div></div>${linksHTML}`;
+
+      overlay.classList.add('open');
+      panel.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // FIX #13: reset scroll on every open
+      panel.scrollTop = 0;
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      panel.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.project-card[data-project]').forEach(card => {
+      card.addEventListener('click', () => openModal(card.dataset.project));
+    });
+    overlay.addEventListener('click', closeModal);
+    closeBtn.addEventListener('click', closeModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    /* ── MOUSE GLOW ── */
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+        card.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
+      });
+    });
+
+    /* ── SCROLL FADE-IN ── */
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.project-card,.pillar,.expertise-card,.think-card,.logo-pill,.cert-item,.company-item').forEach((el,i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(18px)';
+      el.style.transition = `opacity 0.42s ease ${(i%6)*55}ms, transform 0.42s ease ${(i%6)*55}ms, border-color 0.25s, box-shadow 0.25s`;
+      io.observe(el);
+    });
+
+    /* ── THEME TOGGLE ── */
+    const toggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    function setTheme(t) {
+      html.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '☀️' : '🌙';
+      toggle.title = t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+      localStorage.setItem('theme', t);
+    }
+    setTheme(localStorage.getItem('theme') || 'dark');
+    toggle.addEventListener('click', () => setTheme(html.getAttribute('data-theme')==='dark' ? 'light' : 'dark'));
+
+    /* ── FIX #10: ACTIVE NAV STATE on scroll ── */
+    const sections = ['about','thinking','projects','expertise','contact'];
+    const navLinks = {};
+    sections.forEach(id => {
+      const el = document.querySelector(`[data-section="${id}"]`);
+      if (el) navLinks[id] = el;
+    });
+
+    const navObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          Object.values(navLinks).forEach(l => l.classList.remove('active'));
+          if (navLinks[id]) navLinks[id].classList.add('active');
+        }
+      });
+    }, { threshold: 0.35 });
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) navObserver.observe(el);
+    });
+  </script>
+</body>
+</html>
