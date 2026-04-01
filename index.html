@@ -357,6 +357,7 @@
     .accent-purple::after { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
     .accent-green::after  { background: linear-gradient(90deg, transparent, var(--green), transparent); }
     .accent-rose::after   { background: linear-gradient(90deg, transparent, var(--rose), transparent); }
+    .accent-cyan::after   { background: linear-gradient(90deg, transparent, #22D3EE, transparent); }
 
     /* FIX #3: arrow moved to top-right corner — no longer overlaps card-links */
     .project-card-top {
@@ -372,6 +373,7 @@
     .icon-purple { background: rgba(167,139,250,0.11); }
     .icon-green  { background: rgba(52,211,153,0.11); }
     .icon-rose   { background: rgba(251,113,133,0.12); }
+    .icon-cyan   { background: rgba(34,211,238,0.12); }
 
     .project-card-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
 
@@ -381,6 +383,7 @@
     .badge-framework{ background: rgba(167,139,250,0.12); color: var(--purple); }
     .badge-app      { background: rgba(240,180,41,0.12); color: var(--gold); }
     .badge-wip      { background: rgba(251,113,133,0.12); color: var(--rose); }
+    .badge-mvp      { background: rgba(34,211,238,0.12); color: #22D3EE; }
 
     /* Arrow is now top-right, part of project-card-badges column */
     .project-arrow {
@@ -617,7 +620,12 @@
       <div class="hero-panel">
         <div class="panel-header">
           <span class="panel-title">Active Projects</span>
-          <span class="panel-live"><span class="panel-live-dot"></span>Shipping</span>
+          <span class="panel-live"><span class="panel-live-dot"></span>Building</span>
+        </div>
+        <div class="panel-project">
+          <div class="pp-icon icon-cyan">🇨🇦</div>
+          <div class="pp-info"><div class="pp-name">LocalMind — Sovereign Doc AI</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:38%;background:linear-gradient(90deg,#22D3EE,#06B6D4)"></div></div></div>
+          <span class="pp-badge badge-amber">MVP</span>
         </div>
         <div class="panel-project">
           <div class="pp-icon icon-blue">💼</div>
@@ -737,6 +745,26 @@
         <p class="section-sub">Open-source tools, commercial plugins, and reference architectures — all production-ready. Click any card for details.</p>
       </div>
       <div class="projects-grid">
+
+        <!-- Row 0: LocalMind (full-width, featured project) -->
+        <div class="project-card full accent-cyan" data-project="localmind">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-cyan">🇨🇦</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-mvp">MVP</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">LocalMind Sovereign</div>
+            <div class="project-tagline">Canada's sovereign document intelligence platform. Upload PDFs and docs — LocalMind extracts insights, detects PII, generates bilingual summaries, and enables AI conversations. Every extraction, every inference, every byte stays in Canada. Built on Cloudflare's Canadian edge. Zero US exposure.</div>
+            <div class="project-tags">
+              <span class="tag">Cloudflare Workers</span><span class="tag">Cloudflare Vectorize</span><span class="tag">Cloudflare D1 + R2</span><span class="tag">Claude API</span><span class="tag">PIPEDA</span><span class="tag">PHIPA</span><span class="tag">Canadian Edge</span>
+            </div>
+          </div>
+        </div>
 
         <!-- Row 1: Consul (featured, 2-col) + LoonieLog (1-col) -->
         <div class="project-card featured accent-blue" data-project="consul">
@@ -995,6 +1023,14 @@
 
   <script>
     const PROJECTS = {
+      localmind: {
+        icon:'🇨🇦', iconClass:'icon-cyan', name:'LocalMind Sovereign', badge:'<span class="project-badge badge-mvp">MVP</span>',
+        links:[{label:'localmind-app.pages.dev',url:'https://localmind-app.pages.dev',icon:'web'}],
+        desc:'Canada\'s sovereign document intelligence platform for organizations that can\'t compromise on data residency. Upload PDFs and docs — LocalMind extracts insights, detects PII, generates bilingual EN/FR summaries, and enables document-scoped AI chat. Built on Cloudflare\'s Canadian edge network: every extraction, every AI inference, every byte stays in Canada. Zero US exposure. PIPEDA-compliant by design.',
+        features:['Document Upload & Processing — drag-and-drop with real-time status; PDF, DOCX, TXT, Markdown','Insight Extraction — key topics, key points, and metadata auto-extracted on upload','PII Detection & Redaction — SIN, credit card, health ID auto-detected; amber redaction bars in viewer (Phase 4)','Bilingual Summaries — auto-detect language, generate EN/FR summaries on demand (Phase 5)','Document-Scoped Chat — ask questions about specific docs; every answer cites page + section (Phase 6)','100% Canadian Computation — all inference pinned to Cloudflare Canadian edge; <5ms cold start vs AWS Lambda\'s 100-1000ms','Audit Logs + RBAC — tamper-proof access logs, owner/member/viewer roles for PHIPA, TBS compliance'],
+        tags:['Cloudflare Workers','Cloudflare Vectorize','Cloudflare D1','Cloudflare R2','Durable Objects','Claude API','BGE-Small Embeddings','PIPEDA','PHIPA','TBS'],
+        impact:[{num:'100%',label:'Canadian computation'},{num:'<5ms',label:'Edge cold start'},{num:'0',label:'US data exposure'},{num:'2',label:'Phases shipped'}],
+      },
       consul: {
         icon:'💼', iconClass:'icon-blue', name:'Consul', badge:'<span class="project-badge badge-app">Web App</span>',
         desc:'An AI Chief of Staff for private wealth management. Consul is not a dashboard — it\'s a fiduciary-grade advisor that reads your portfolio, understands your life, and briefs you like a CFO. Python calculates everything; Claude writes the narrative.',
