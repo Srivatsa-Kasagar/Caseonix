@@ -623,8 +623,8 @@
           <span class="panel-live"><span class="panel-live-dot"></span>Building</span>
         </div>
         <div class="panel-project">
-          <div class="pp-icon icon-cyan">🔒</div>
-          <div class="pp-info"><div class="pp-name">LocalMind — Private AI Search</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:38%;background:linear-gradient(90deg,#22D3EE,#06B6D4)"></div></div></div>
+          <div class="pp-icon icon-cyan">🇨🇦</div>
+          <div class="pp-info"><div class="pp-name">LocalMind — Sovereign Doc AI</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:38%;background:linear-gradient(90deg,#22D3EE,#06B6D4)"></div></div></div>
           <span class="pp-badge badge-amber">MVP</span>
         </div>
         <div class="panel-project">
@@ -750,7 +750,7 @@
         <div class="project-card full accent-cyan" data-project="localmind">
           <div class="project-card-top">
             <div class="project-card-top-left">
-              <div class="project-icon icon-cyan">🔒</div>
+              <div class="project-icon icon-cyan">🇨🇦</div>
             </div>
             <div class="project-card-badges">
               <div class="project-arrow">↗</div>
@@ -758,10 +758,10 @@
             </div>
           </div>
           <div class="project-content">
-            <div class="project-name">LocalMind</div>
-            <div class="project-tagline">Privacy-first AI search for your local files. Natural language queries across PDFs, DOCX, XLSX, and code — all AI runs locally via Ollama. Your data never leaves your machine. macOS menubar app with a Python sidecar for indexing and retrieval.</div>
+            <div class="project-name">LocalMind Sovereign</div>
+            <div class="project-tagline">Canada's sovereign document intelligence platform. Upload documents — LocalMind classifies, extracts entities, detects PII, runs compliance checklists, and enables AI-powered review and comparison. Every computation stays in Canada on Cloudflare's edge.</div>
             <div class="project-tags">
-              <span class="tag">SwiftUI</span><span class="tag">Python 3.11</span><span class="tag">FastAPI</span><span class="tag">Ollama</span><span class="tag">LanceDB</span><span class="tag">Mistral 7B</span><span class="tag">nomic-embed-text</span>
+              <span class="tag">React 18</span><span class="tag">Hono</span><span class="tag">Cloudflare Workers</span><span class="tag">D1 + R2 + Vectorize</span><span class="tag">Workers AI</span><span class="tag">Claude API</span><span class="tag">Drizzle ORM</span><span class="tag">Durable Objects</span>
             </div>
           </div>
         </div>
@@ -1024,12 +1024,12 @@
   <script>
     const PROJECTS = {
       localmind: {
-        icon:'🔒', iconClass:'icon-cyan', name:'LocalMind', badge:'<span class="project-badge badge-mvp">MVP</span>',
+        icon:'🇨🇦', iconClass:'icon-cyan', name:'LocalMind Sovereign', badge:'<span class="project-badge badge-mvp">MVP</span>',
         links:[{label:'localmind.caseonix.ca',url:'https://localmind.caseonix.ca',icon:'web'}],
-        desc:'Privacy-first AI search that turns your local files into an intelligent knowledge base. Natural language queries across PDFs, DOCX, XLSX, PPTX, and code files — all AI computation runs locally via Ollama. Your data never leaves your machine. macOS menubar app with a Python FastAPI sidecar for indexing and retrieval.',
-        features:['Natural Language Search — ask questions across all your local files with cited source results','Local File Indexing — PDF, DOCX, XLSX, PPTX, TXT, Markdown, code files with real-time FSEvents watcher','Zero Cloud Dependency — all inference via Ollama (Mistral 7B / Phi-3 Mini); nothing leaves your machine','SHA-256 Deduplication — skip unchanged files for fast incremental re-indexing','Battery-Aware Throttling — reduces CPU usage automatically when on battery power','Vector Search — 512-token chunking with nomic-embed-text embeddings stored in LanceDB','Model Selector — auto-detects hardware and picks Phi-3 Mini (8GB) or Mistral 7B (16GB+)'],
-        tags:['SwiftUI','Python 3.11','FastAPI','Ollama','LanceDB','Mistral 7B','Phi-3 Mini','nomic-embed-text','watchdog','PyInstaller'],
-        impact:[{num:'100%',label:'Local computation'},{num:'0',label:'Cloud dependency'},{num:'7+',label:'File formats'},{num:'<5ms',label:'Query latency'}],
+        desc:'Canada\'s sovereign document intelligence platform for organizations that can\'t compromise on data residency. Upload documents — LocalMind auto-classifies, extracts entities, detects PII, runs compliance checklists, flags risks, and enables AI-powered review and multi-document comparison. Built on Cloudflare\'s Canadian edge — every computation stays in Canada.',
+        features:['Auto-Classification — documents classified as contract, invoice, policy, financial report, HR, or technical','AI Review Agent — structured extraction, compliance checklist (pass/fail), and severity-rated risk brief per document','PII Detection & Redaction — SIN, credit card, health ID auto-detected; amber redaction bars in viewer with redacted download','Multi-Document Comparison — cross-reference contracts, flag contradictions, gap analysis, shared entity mapping','Document-Scoped Chat — ask questions about specific docs or across document sets; every answer cites source','Named Entity Recognition — people, organizations, dates, monetary values extracted and indexed','Team Workspaces — multi-tenant with namespace-isolated vector search, RBAC (owner/admin/member/viewer)','100% Canadian Computation — all inference pinned to Cloudflare Canadian edge; <5ms cold start'],
+        tags:['React 18','Hono','Cloudflare Workers','Cloudflare D1','Cloudflare R2','Cloudflare Vectorize','Durable Objects','Workers AI','Claude API via AI Gateway','Drizzle ORM','Clerk Auth','Zod','Vite 5','Tailwind CSS 4'],
+        impact:[{num:'100%',label:'Canadian computation'},{num:'<5ms',label:'Edge cold start'},{num:'0',label:'US data exposure'},{num:'6',label:'Doc intelligence features'}],
       },
       consul: {
         icon:'💼', iconClass:'icon-blue', name:'Consul', badge:'<span class="project-badge badge-app">Web App</span>',
