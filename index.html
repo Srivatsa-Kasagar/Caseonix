@@ -176,6 +176,42 @@
     .nav-links a.active { color: var(--text); }
     .nav-links a.active::after { transform: scaleX(1); }
 
+    /* HAMBURGER */
+    .hamburger {
+      display: none; width: 38px; height: 38px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--surface);
+      cursor: pointer; align-items: center; justify-content: center;
+      flex-direction: column; gap: 5px; padding: 0;
+      transition: border-color 0.2s;
+    }
+    .hamburger:hover { border-color: var(--border-hover); }
+    .hamburger span {
+      display: block; width: 18px; height: 2px; background: var(--text-2);
+      border-radius: 2px; transition: transform 0.3s, opacity 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* MOBILE MENU */
+    .mobile-menu {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 199; background: var(--bg); padding: 90px 24px 40px;
+      flex-direction: column; gap: 0;
+      opacity: 0; transform: translateY(-10px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .mobile-menu.visible { display: flex; }
+    .mobile-menu.open { opacity: 1; transform: translateY(0); }
+    .mobile-menu a {
+      display: block; padding: 16px 0; font-size: 1.1rem; font-weight: 600;
+      color: var(--text-2); text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover, .mobile-menu a:active { color: var(--text); }
+    .mobile-menu a:last-child { border-bottom: none; }
+
     .nav-right { display: flex; align-items: center; gap: 12px; }
     .theme-toggle {
       width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
@@ -602,6 +638,7 @@
     @media (max-width: 960px) {
       nav { padding: 16px 24px; }
       .nav-links { display: none; }
+      .hamburger { display: flex; }
       .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 40px; }
       .hero-right { display: none; }
       .hero-stats { flex-wrap: wrap; gap: 22px; }
@@ -638,8 +675,20 @@
     <div class="nav-right">
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☀️</button>
       <a href="#contact" class="nav-cta">Work Together</a>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" data-mobile-link>About</a>
+    <a href="#thinking" data-mobile-link>Thinking</a>
+    <a href="#projects" data-mobile-link>Projects</a>
+    <a href="#expertise" data-mobile-link>Expertise</a>
+    <a href="#contact" data-mobile-link>Contact</a>
+    <a href="/blog/index.html">Blog</a>
+  </div>
 
   <!-- HERO -->
   <section class="hero" id="home">
@@ -1246,6 +1295,30 @@
     sections.forEach(id => {
       const el = document.getElementById(id);
       if (el) navObserver.observe(el);
+    });
+
+    // Hamburger mobile menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      const isOpen = hamburger.classList.toggle('open');
+      if (isOpen) {
+        mobileMenu.classList.add('visible');
+        requestAnimationFrame(() => requestAnimationFrame(() => mobileMenu.classList.add('open')));
+        document.body.style.overflow = 'hidden';
+      } else {
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+        setTimeout(() => mobileMenu.classList.remove('visible'), 300);
+      }
+    });
+    document.querySelectorAll('[data-mobile-link]').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+        setTimeout(() => mobileMenu.classList.remove('visible'), 300);
+      });
     });
   </script>
 </body>
