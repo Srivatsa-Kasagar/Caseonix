@@ -401,6 +401,8 @@
 
       <p>If you've been waiting for Ottawa to sort out AI regulation, you'll be waiting a while longer. Bill C-27 &mdash; which would have introduced the Consumer Privacy Protection Act (CPPA) and the Artificial Intelligence and Data Act (AIDA) &mdash; <strong>died when Parliament was prorogued in January 2025</strong>. A snap federal election in April 2025 pushed reform further down the road. As of April 2026, Canada has no federal AI-specific legislation.</p>
 
+      <p>I spent 25 years in financial services before starting to build AI tools for this market. The compliance landscape isn't new to me &mdash; but the gap between what AI vendors promise and what Canadian regulations actually require was wide enough to build a company in.</p>
+
       <p>That doesn't mean you're operating in a vacuum. Three frameworks define your compliance obligations right now:</p>
 
       <ul>
@@ -463,14 +465,14 @@
 
       <h2>Five Design Principles for Compliance-First AI</h2>
 
-      <p>After building several production AI systems for Canadian organizations (including <a href="https://localmind.caseonix.ca">LocalMind</a>, a sovereign document intelligence platform), I've arrived at five architectural principles that make compliance a design spec rather than an afterthought.</p>
+      <p>After building <a href="https://localmind.caseonix.ca">LocalMind</a>, a sovereign document intelligence platform for the Canadian market, I've arrived at five architectural principles that make compliance a design spec rather than an afterthought.</p>
 
       <h3>1. Pin computation to geography</h3>
 
       <p>Don't just store data in Canada &mdash; <strong>process it there too</strong>. Every API call to a US-hosted LLM is a cross-border transfer under PIPEDA. Cloudflare Workers run at the edge and can be pinned to Canadian data centres using <a href="https://blog.cloudflare.com/custom-regions/">Custom Regions</a> (launched March 2026). Workers AI provides embedding models that execute on-region. For LLM inference, route through an AI Gateway with jurisdiction controls.</p>
 
       <div class="callout">
-        <div class="callout-title">&#128161; What we do at LocalMind</div>
+        <div class="callout-title">&#128161; How I built LocalMind</div>
         <p>All TLS termination, embedding generation, vector search, and document processing runs on Cloudflare's Canadian edge. LLM calls route through AI Gateway with Canadian jurisdiction pinning. The result: sub-5ms cold starts and zero US data exposure.</p>
       </div>
 
@@ -591,7 +593,7 @@
 
       <div class="callout success">
         <div class="callout-title">&#9989; The bottom line</div>
-        <p>Building compliant AI in Canada isn't about waiting for perfect legislation. It's about treating privacy as a design constraint &mdash; the same way you'd treat latency or uptime. The organizations that build compliance into their architecture now will have a structural advantage when federal regulation eventually catches up.</p>
+        <p>I built LocalMind with compliance as a design constraint &mdash; the same way you'd treat latency or uptime. The regulatory landscape will catch up eventually. The question is whether your architecture is ready when it does.</p>
       </div>
 
       <h2>Further Reading</h2>

@@ -446,6 +446,8 @@
 
       <p>This article isn't about whether your firm should use AI. That debate is over. It's about the difference between using AI <em>well</em> &mdash; with privilege protection, data sovereignty, and audit trails &mdash; and using it in a way that could get you sanctioned, fined, or worse.</p>
 
+      <p>I've been building sovereign AI tooling for the Canadian market &mdash; it's the problem I chose to spend my time on after 25 years in financial services. Here's the comparison I wish I'd had when I started.</p>
+
       <h2>The Case for ChatGPT: What It Gets Right</h2>
 
       <p>Let's be fair to ChatGPT. There are legitimate reasons it became the default AI tool in legal practice:</p>
@@ -547,7 +549,7 @@
 
       <h3>Option A: Edge-deployed AI (Cloudflare Workers AI, etc.)</h3>
 
-      <p>Run AI models on distributed edge infrastructure that can be <strong>pinned to Canadian data centres</strong>. This is the approach behind <a href="https://localmind.caseonix.ca">LocalMind</a> &mdash; embedding generation, vector search, document classification, and PII detection all execute on Cloudflare's Canadian Points of Presence. LLM calls for summarization and review route through AI Gateway with jurisdiction controls. No data crosses the border, cold starts are under 5ms, and costs scale per-request rather than per-server.</p>
+      <p>Run AI models on distributed edge infrastructure that can be <strong>pinned to Canadian data centres</strong>. This is the approach I took with <a href="https://localmind.caseonix.ca">LocalMind</a> &mdash; embedding generation, vector search, document classification, and PII detection all execute on Cloudflare's Canadian Points of Presence. LLM calls for summarization and review route through AI Gateway with jurisdiction controls. Cloudflare is US-incorporated, so this is Tier 2 in the sovereignty model I described in my <a href="/blog/building-pipeda-compliant-ai-tools.html">PIPEDA post</a> &mdash; I chose it for the edge performance and cost tradeoffs, and I'm transparent about that. No data crosses the border, cold starts are under 5ms, and costs scale per-request rather than per-server.</p>
 
       <p>This model works particularly well for document intelligence workloads: intake classification, contract review, discovery summarization, and compliance checking.</p>
 
@@ -559,7 +561,7 @@
 
       <h3>Option C: On-premise GPU deployment</h3>
 
-      <p>For the largest firms with existing IT infrastructure, running models locally on NVIDIA A100/H100 GPUs provides maximum control. Models like Llama 4 Maverick (400B parameters with mixture-of-experts) can run inference on a multi-GPU setup. The tradeoff is significant hardware investment and ongoing operational overhead &mdash; but for firms that already maintain secure data centres, the marginal cost is manageable.</p>
+      <p>For the largest firms with existing IT infrastructure, I see teams evaluating on-premise GPU deployment &mdash; running models locally on NVIDIA A100/H100 hardware for maximum control. Models like Llama 4 Maverick (400B parameters with mixture-of-experts) can run inference on a multi-GPU setup. The tradeoff is significant hardware investment and ongoing operational overhead &mdash; but for firms that already maintain secure data centres, the marginal cost is manageable.</p>
 
       <h2>Head-to-Head Comparison</h2>
 
