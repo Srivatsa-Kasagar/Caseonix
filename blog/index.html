@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog | Caseonix &mdash; AI Consulting for Canadian Financial Services</title>
+  <meta name="description" content="Articles on building compliant AI tools for the Canadian market. Covers PIPEDA, data sovereignty, self-hosted AI, and practical architecture for regulated industries." />
+  <meta name="author" content="Srivatsa Kasagar" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://caseonix.ca/blog/" />
+
+  <meta property="og:title" content="Blog | Caseonix" />
+  <meta property="og:description" content="Articles on building compliant AI tools for the Canadian market." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://caseonix.ca/blog/" />
+  <meta property="og:image" content="https://caseonix.ca/og-image.png" />
+  <meta property="og:site_name" content="Caseonix" />
+  <meta property="og:locale" content="en_CA" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%235B8BFF'/><text y='.9em' font-size='60' font-family='sans-serif' font-weight='bold' fill='white' x='50%' text-anchor='middle' dominant-baseline='hanging' dy='18'>C</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #04040A;
+      --surface: #0C0C18;
+      --surface-2: #12121F;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(91,139,255,0.32);
+      --blue: #5B8BFF;
+      --teal: #00D4C8;
+      --gold: #F0B429;
+      --text: #EEEEF8;
+      --text-2: #8888AA;
+      --text-3: #55557A;
+      --nav-bg: rgba(4,4,10,0.82);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    [data-theme="light"] {
+      --bg: #F4F4FB;
+      --surface: #FFFFFF;
+      --surface-2: #EEEEF8;
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(91,139,255,0.35);
+      --text: #0D0D20;
+      --text-2: #555588;
+      --text-3: #9999BB;
+      --nav-bg: rgba(244,244,251,0.88);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+    .nav-logo span { color: var(--blue); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--surface); cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 0.95rem; color: var(--text-2);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); transform: rotate(20deg); color: var(--text); }
+    .nav-cta {
+      padding: 9px 20px; background: var(--blue); color: #fff; border-radius: 8px;
+      text-decoration: none; font-size: 0.85rem; font-weight: 600;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .blog-wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+    }
+
+    .blog-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.85rem; color: var(--blue); text-decoration: none;
+      font-weight: 500; margin-bottom: 32px;
+      transition: opacity 0.2s;
+    }
+    .blog-back:hover { opacity: 0.7; }
+
+    .blog-header {
+      margin-bottom: 48px;
+    }
+    .blog-header h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+    .blog-header p {
+      font-size: 1.05rem; color: var(--text-2); line-height: 1.7;
+    }
+
+    .post-card {
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 20px;
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .post-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .post-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 5px;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; background: rgba(91,139,255,0.12);
+      color: var(--blue); margin-bottom: 12px;
+    }
+    .post-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.3rem; font-weight: 700;
+      letter-spacing: -0.02em; line-height: 1.25;
+      color: var(--text); margin-bottom: 10px;
+    }
+    .post-excerpt {
+      font-size: 0.92rem; color: var(--text-2);
+      line-height: 1.7; margin-bottom: 12px;
+    }
+    .post-meta {
+      font-size: 0.78rem; color: var(--text-3);
+    }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 32px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 1;
+    }
+    .footer-logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .footer-logo span { color: var(--blue); }
+    footer p { font-size: 0.75rem; color: var(--text-3); }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .blog-wrapper { padding: 100px 20px 60px; }
+      footer { padding: 24px; flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Case<span>onix</span></a>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+      <a href="/#contact" class="nav-cta">Work Together</a>
+    </div>
+  </nav>
+
+  <div class="blog-wrapper">
+    <a href="/" class="blog-back">&larr; Back to caseonix.ca</a>
+
+    <div class="blog-header">
+      <h1>Blog</h1>
+      <p>Practical writing on building compliant AI tools for the Canadian market &mdash; covering data sovereignty, privacy regulation, and production architecture for regulated industries.</p>
+    </div>
+
+    <a href="/blog/chatgpt-vs-self-hosted-ai-law-firms.html" class="post-card">
+      <div class="post-tag">AI &amp; Legal</div>
+      <div class="post-title">ChatGPT vs Self-Hosted AI for Canadian Law Firms</div>
+      <div class="post-excerpt">93% of legal professionals now use AI, but when solicitor-client privilege is on the line and the CLOUD Act reaches across borders, the choice of which AI matters more than whether you use one at all.</div>
+      <div class="post-meta">April 7, 2026 &middot; 14 min read</div>
+    </a>
+
+    <a href="/blog/building-pipeda-compliant-ai-tools.html" class="post-card">
+      <div class="post-tag">Compliance &amp; AI</div>
+      <div class="post-title">Building PIPEDA-Compliant AI Tools in 2026: A Developer's Guide</div>
+      <div class="post-excerpt">Canada still runs on PIPEDA, Bill C-27 died on the Order Paper, and the CLOUD Act didn't go anywhere. Here's what that actually means if you're building AI tools for the Canadian market.</div>
+      <div class="post-meta">April 7, 2026 &middot; 12 min read</div>
+    </a>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Case<span>onix</span></div>
+    <p>&copy; 2026 Caseonix</p>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+      try { localStorage.setItem('caseonix-theme', t); } catch(e) {}
+    }
+    toggle.addEventListener('click', () => {
+      setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+    try {
+      const saved = localStorage.getItem('caseonix-theme');
+      if (saved) setTheme(saved);
+    } catch(e) {}
+  </script>
+
+</body>
+</html>
