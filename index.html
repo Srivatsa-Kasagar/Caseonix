@@ -727,6 +727,11 @@
           <span class="pp-badge badge-amber">MVP</span>
         </div>
         <div class="panel-project">
+          <div class="pp-icon icon-rose">🍁</div>
+          <div class="pp-info"><div class="pp-name">FinLit — CRA Document Extraction</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:75%;background:linear-gradient(90deg,#FB7185,#E11D48)"></div></div></div>
+          <span class="pp-badge badge-green">v0.3</span>
+        </div>
+        <div class="panel-project">
           <div class="pp-icon icon-blue">💼</div>
           <div class="pp-info"><div class="pp-name">Consul — Wealth Advisor</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:88%;background:linear-gradient(90deg,#5B8BFF,#7B6EFF)"></div></div></div>
           <span class="pp-badge badge-green">Live</span>
@@ -745,11 +750,6 @@
           <div class="pp-icon icon-teal">🧾</div>
           <div class="pp-info"><div class="pp-name">LoonieLog — Receipt Tracker</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:82%;background:linear-gradient(90deg,#00D4C8,#0891B2)"></div></div></div>
           <span class="pp-badge badge-blue">Free</span>
-        </div>
-        <div class="panel-project">
-          <div class="pp-icon icon-rose">🏛️</div>
-          <div class="pp-info"><div class="pp-name">PensionClarity — DB Pension AI</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:55%;background:linear-gradient(90deg,#FB7185,#E11D48)"></div></div></div>
-          <span class="pp-badge badge-rose">In Dev</span>
         </div>
         <div class="panel-project">
           <div class="pp-icon icon-green">⚡</div>
@@ -875,7 +875,32 @@
           </div>
         </div>
 
-        <!-- Row 1: Consul (featured, 2-col) + LoonieLog (1-col) -->
+        <!-- Row 1: FinLit (1-col) + Consul (featured, 2-col) -->
+        <div class="project-card accent-rose" data-project="finlit">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-rose">🍁</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-live">Open Source</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">FinLit</div>
+            <div class="project-tagline">Open-source Python library for extracting structured data from Canadian financial documents — T4s, T5s, SEDAR filings, bank statements — with PIPEDA PII detection and an audit trail built in.</div>
+            <div class="project-tags">
+              <span class="tag">Python</span><span class="tag">Docling</span><span class="tag">pydantic-ai</span><span class="tag">Claude / OpenAI / Ollama</span><span class="tag">Presidio</span>
+            </div>
+            <div class="card-links">
+              <a class="card-link-btn" href="https://github.com/Srivatsa-Kasagar/FinLit" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div class="project-card featured accent-blue" data-project="consul">
           <div class="project-card-top">
             <div class="project-card-top-left">
@@ -901,6 +926,7 @@
           </div>
         </div>
 
+        <!-- Row 2: LoonieLog + Tax CRA + Regulatory (1-1-1) -->
         <div class="project-card accent-teal" data-project="looinielog">
           <div class="project-card-top">
             <div class="project-card-top-left">
@@ -930,7 +956,6 @@
           </div>
         </div>
 
-        <!-- Row 2: Tax CRA + Regulatory + PensionClarity (1-1-1) -->
         <div class="project-card accent-gold" data-project="tax-cra">
           <div class="project-card-top">
             <div class="project-card-top-left">
@@ -977,25 +1002,6 @@
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
                 GitHub
               </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="project-card accent-rose" data-project="pensionclarify">
-          <div class="project-card-top">
-            <div class="project-card-top-left">
-              <div class="project-icon icon-rose">🏛️</div>
-            </div>
-            <div class="project-card-badges">
-              <div class="project-arrow">↗</div>
-              <span class="project-badge badge-wip">In Dev</span>
-            </div>
-          </div>
-          <div class="project-content">
-            <div class="project-name">PensionClarity</div>
-            <div class="project-tagline">Upload your defined benefit pension statement. AI extracts plan terms, runs six retirement scenarios, answers plain-English questions — grounded in your document.</div>
-            <div class="project-tags">
-              <span class="tag">FastAPI</span><span class="tag">Next.js 14</span><span class="tag">Claude Haiku/Sonnet</span><span class="tag">RAG + FAISS</span><span class="tag">Stripe</span>
             </div>
           </div>
         </div>
@@ -1178,12 +1184,13 @@
         tags:['Claude Code Plugin','11 Regulatory Domains','Fed + ON BC AB QC','8 Notice Templates','Risk Flagging'],
         impact:[{num:'11',label:'Regulatory domains'},{num:'8',label:'Notice templates'},{num:'5',label:'Core commands'},{num:'4',label:'Provinces + Federal'}],
       },
-      pensionclarify: {
-        icon:'🏛️', iconClass:'icon-rose', name:'PensionClarity', badge:'<span class="project-badge badge-wip">In Dev</span>',
-        desc:'A Canadian B2C SaaS that demystifies defined benefit pensions. Upload your pension statement PDF — AI extracts your plan terms, runs six deterministic retirement scenarios, and answers plain-English questions grounded solely in your document.',
-        features:['Drag-and-drop pension statement PDF upload (up to 20MB)','Claude Haiku extracts plan terms into typed PlanTerms model; Sonnet escalates on low-confidence fields','Six retirement scenarios: normal, early, rule-of-points, bridge, CPP integration, commuted value','RAG-powered chat: every answer cites the exact chunk from your uploaded document','Two-pass anomaly detector flags discrepancies between stated numbers and formula results','Unified income view: DB pension + DC/RRSP drawdown + CPP + OAS in stacked area chart','Stripe payments: one-time $49 or annual $99; privacy-first Umami analytics'],
-        tags:['Python 3.12','FastAPI','Next.js 14','Claude Haiku + Sonnet','LlamaIndex + FAISS','PostgreSQL','AWS S3 ca-central-1','Stripe','Vercel + Railway'],
-        impact:[{num:'6',label:'Retirement scenarios'},{num:'$49',label:'One-time price'},{num:'RAG',label:'Document-grounded'},{num:'CA',label:'Canadian market'}],
+      finlit: {
+        icon:'🍁', iconClass:'icon-rose', name:'FinLit', badge:'<span class="project-badge badge-live">Open Source</span>',
+        links:[{label:'GitHub',url:'https://github.com/Srivatsa-Kasagar/FinLit',icon:'github'}],
+        desc:'Open-source Python library for extracting structured data from Canadian financial documents — T4s, T5s, SEDAR filings, bank statements — with a compliance audit trail built in. Wraps Docling (IBM\'s parser) and pydantic-ai for model-agnostic LLM orchestration. Runs entirely inside your infrastructure; with Ollama even LLM calls stay on-prem, suitable for OSFI-regulated and air-gapped deployments. Built for Canadian fintechs, banks, credit unions, and accounting software that need on-premises extraction with a PIPEDA/OSFI-friendly audit trail.',
+        features:['Versioned CRA schemas — T4, T5, T4A, NR4 and bank statements, updated annually from CRA XML specs','Per-field confidence scoring with configurable review thresholds — low-confidence fields flagged, never silently wrong','Source traceability — every extracted value traces back to page and bounding box in the source PDF','PIPEDA PII detection via Presidio — SIN, CRA BNs, postal codes detected and annotated','Immutable audit log — every pipeline event recorded for compliance review','Vision fallback for scans and form-heavy documents — Claude, OpenAI, Gemini, or local Ollama multimodal models','Fully local mode via Ollama — air-gapped and OSFI-compliant deployments with no external API calls','Custom schemas in YAML — add any Canadian document type with one file and one line of Python'],
+        tags:['Python 3.10+','Docling','pydantic-ai','Claude API','OpenAI API','Ollama','Presidio','spaCy','Apache 2.0'],
+        impact:[{num:'5',label:'CRA schemas built-in'},{num:'100%',label:'On-premises capable'},{num:'OSS',label:'Apache 2.0 licensed'},{num:'CA',label:'PIPEDA + OSFI ready'}],
       },
       rpa: {
         icon:'⚡', iconClass:'icon-green', name:'Agentic RPA Platform', badge:'<span class="project-badge badge-framework">Framework</span>',
