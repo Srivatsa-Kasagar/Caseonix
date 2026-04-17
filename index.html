@@ -322,6 +322,11 @@
     .badge-amber { background: rgba(251,191,36,0.13); color: #FBBF24; }
     .badge-rose  { background: rgba(251,113,133,0.13); color: var(--rose); }
 
+    .panel-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 12px 0 10px; }
+    [data-theme="light"] .panel-divider { background: rgba(0,0,0,0.06); }
+    .pp-shipped { font-size: 0.68rem; font-weight: 500; color: #34D399; display: flex; align-items: center; gap: 5px; }
+    .pp-shipped::before { content: '✓'; font-weight: 700; }
+
     .panel-footer { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; gap: 6px; flex-wrap: wrap; }
     .panel-chip { padding: 3px 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; color: var(--text-3); }
     [data-theme="light"] .panel-chip { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); }
@@ -718,8 +723,7 @@
     <div class="hero-right">
       <div class="hero-panel">
         <div class="panel-header">
-          <span class="panel-title">Active Projects</span>
-          <span class="panel-live"><span class="panel-live-dot"></span>Building</span>
+          <span class="panel-title">Projects</span>
         </div>
         <div class="panel-project">
           <div class="pp-icon icon-cyan">🇨🇦</div>
@@ -727,9 +731,9 @@
           <span class="pp-badge badge-amber">MVP</span>
         </div>
         <div class="panel-project">
-          <div class="pp-icon icon-rose">🍁</div>
-          <div class="pp-info"><div class="pp-name">FinLit — CRA Document Extraction</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:75%;background:linear-gradient(90deg,#FB7185,#E11D48)"></div></div></div>
-          <span class="pp-badge badge-green">v0.3</span>
+          <div class="pp-icon icon-green">🧭</div>
+          <div class="pp-info"><div class="pp-name">wealth-guide — Open-Source CFP Skill</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:85%;background:linear-gradient(90deg,#34D399,#10B981)"></div></div></div>
+          <span class="pp-badge badge-green">v1.0</span>
         </div>
         <div class="panel-project">
           <div class="pp-icon icon-blue">💼</div>
@@ -737,24 +741,30 @@
           <span class="pp-badge badge-green">Live</span>
         </div>
         <div class="panel-project">
+          <div class="pp-icon icon-green">⚡</div>
+          <div class="pp-info"><div class="pp-name">Agentic RPA Platform</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:70%;background:linear-gradient(90deg,#34D399,#059669)"></div></div></div>
+          <span class="pp-badge badge-amber">Docs</span>
+        </div>
+        <div class="panel-divider"></div>
+        <div class="panel-project">
+          <div class="pp-icon icon-rose">🍁</div>
+          <div class="pp-info"><div class="pp-name">FinLit — CRA Document Extraction</div><div class="pp-shipped">Phase 1 shipped</div></div>
+          <span class="pp-badge badge-green">v0.3</span>
+        </div>
+        <div class="panel-project">
           <div class="pp-icon icon-gold">🍁</div>
-          <div class="pp-info"><div class="pp-name">Canadian Tax &amp; CRA Plugin</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:95%;background:linear-gradient(90deg,#F0B429,#F59E0B)"></div></div></div>
+          <div class="pp-info"><div class="pp-name">Canadian Tax &amp; CRA Plugin</div><div class="pp-shipped">Shipped</div></div>
           <span class="pp-badge badge-green">v0.5</span>
         </div>
         <div class="panel-project">
           <div class="pp-icon icon-purple">⚖️</div>
-          <div class="pp-info"><div class="pp-name">Regulatory Compliance Plugin</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:90%;background:linear-gradient(90deg,#A78BFA,#7C3AED)"></div></div></div>
+          <div class="pp-info"><div class="pp-name">Regulatory Compliance Plugin</div><div class="pp-shipped">Shipped</div></div>
           <span class="pp-badge badge-green">v0.4</span>
         </div>
         <div class="panel-project">
           <div class="pp-icon icon-teal">🧾</div>
-          <div class="pp-info"><div class="pp-name">LoonieLog — Receipt Tracker</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:82%;background:linear-gradient(90deg,#00D4C8,#0891B2)"></div></div></div>
+          <div class="pp-info"><div class="pp-name">LoonieLog — Receipt Tracker</div><div class="pp-shipped">Shipped</div></div>
           <span class="pp-badge badge-blue">Free</span>
-        </div>
-        <div class="panel-project">
-          <div class="pp-icon icon-green">⚡</div>
-          <div class="pp-info"><div class="pp-name">Agentic RPA Platform</div><div class="pp-bar-track"><div class="pp-bar-fill" style="width:70%;background:linear-gradient(90deg,#34D399,#059669)"></div></div></div>
-          <span class="pp-badge badge-amber">Docs</span>
         </div>
         <div class="panel-footer">
           <span class="panel-chip">Claude API</span>
@@ -875,7 +885,7 @@
           </div>
         </div>
 
-        <!-- Row 1: FinLit (1-col) + Consul (featured, 2-col) -->
+        <!-- Row 1: FinLit + wealth-guide + Consul (1-1-1) -->
         <div class="project-card accent-rose" data-project="finlit">
           <div class="project-card-top">
             <div class="project-card-top-left">
@@ -901,7 +911,36 @@
           </div>
         </div>
 
-        <div class="project-card featured accent-blue" data-project="consul">
+        <div class="project-card accent-green" data-project="wealth-guide">
+          <div class="project-card-top">
+            <div class="project-card-top-left">
+              <div class="project-icon icon-green">🧭</div>
+            </div>
+            <div class="project-card-badges">
+              <div class="project-arrow">↗</div>
+              <span class="project-badge badge-live">Open Source</span>
+            </div>
+          </div>
+          <div class="project-content">
+            <div class="project-name">wealth-guide</div>
+            <div class="project-tagline">Open-source Claude Code skill that dispatches six specialist agents — diagnostician, research analyst, market analyst, strategist, risk officer, planner — to produce a 12-section CFP-quality wealth plan with real fund tickers, tax strategies, and a prioritized action checklist. US, Canada, India.</div>
+            <div class="project-tags">
+              <span class="tag">Claude Code Skill</span><span class="tag">Opus 4.6</span><span class="tag">Sonnet 4.5</span><span class="tag">Python stdlib</span><span class="tag">SQLite</span><span class="tag">MIT</span>
+            </div>
+            <div class="card-links">
+              <a class="card-link-btn" href="https://github.com/Srivatsa-Kasagar/wealth-guide" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                GitHub
+              </a>
+              <a class="card-link-btn" href="/blog/building-multi-agent-claude-skills-wealth-guide.html" onclick="event.stopPropagation()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                Architecture
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card accent-blue" data-project="consul">
           <div class="project-card-top">
             <div class="project-card-top-left">
               <div class="project-icon icon-blue">💼</div>
@@ -1183,6 +1222,14 @@
         features:['/compliance-review — Review a document for regulatory gaps with risk flagging (High/Medium/Low)','/compliance-checklist — Generate a Canadian regulatory checklist for your business type','/casl-review — Review email/SMS campaigns for CASL compliance','/draft-notice — Draft from 8 notice templates: PIPEDA breach, FINTRAC STR, OH&S, ESA termination','/compliance-qa — Answer any Canadian regulatory compliance question','11 auto-loading skills: PIPEDA, Employment, CASL, FINTRAC, OSFI, FCAC, Environmental, Immigration, and more','Jurisdictions: Federal, Ontario, BC, Alberta, Quebec'],
         tags:['Claude Code Plugin','11 Regulatory Domains','Fed + ON BC AB QC','8 Notice Templates','Risk Flagging'],
         impact:[{num:'11',label:'Regulatory domains'},{num:'8',label:'Notice templates'},{num:'5',label:'Core commands'},{num:'4',label:'Provinces + Federal'}],
+      },
+      'wealth-guide': {
+        icon:'🧭', iconClass:'icon-green', name:'wealth-guide', badge:'<span class="project-badge badge-live">Open Source</span>',
+        links:[{label:'GitHub',url:'https://github.com/Srivatsa-Kasagar/wealth-guide',icon:'github'},{label:'Architecture Blog',url:'/blog/building-multi-agent-claude-skills-wealth-guide.html',icon:'web'}],
+        desc:'Open-source Claude Code skill that puts a six-specialist wealth team on your case. A 10-question interview (≈3 minutes) produces a 12-section CFP-quality financial plan with real numbers — specific fund tickers, tax strategies, debt payoff math, and a prioritized action checklist. Three specialists (diagnostician, research analyst, market analyst) run in parallel; three seniors (strategist, risk officer, planner) build on their findings. Works for US, Canada, and India out of the box. Every recommendation traces back to a hand-curated knowledge base with current contribution limits, tax brackets, and methodology citations. Zero dependencies — only the Python standard library. Your financial data never leaves your machine.',
+        features:['Six specialist agents orchestrated via Claude Code Task tool — Opus 4.6 for strategist and planner, Sonnet 4.5 for analysts','Parallel Phase 1 dispatch (diagnostician + research analyst + market analyst) for ~3× faster roadmap generation','12-section roadmap: executive summary, financial position, 3-scenario wealth projections, strategy blueprint, debt strategy, tax strategy, cash flow plan, risk assessment, action plan, market context, learning path, key dates','Country-aware output — US (Roth ladders, HSA, Social Security), Canada (RRSP/TFSA/FHSA, CPP deferral, Smith Manoeuvre), India (old vs new tax regime, 80C/80D/80E layering, SIP-based wealth building)','Live market data via web search — current rates, indices, real estate, inflation baked into every plan','Print-ready HTML export with charts — net worth donut, wealth projection lines, cash flow waterfall, health score gauge','Local SQLite profile persistence with 0600 permissions — 24-hour cache, 30-day partial refresh, full re-interview after that','Aggregated midpoint values sent to specialists, never raw financial inputs — privacy-by-default architecture'],
+        tags:['Claude Code Skill','Claude Opus 4.6','Claude Sonnet 4.5','Python stdlib','SQLite','US + Canada + India','MIT'],
+        impact:[{num:'6',label:'Specialist agents'},{num:'12',label:'Roadmap sections'},{num:'3',label:'Countries supported'},{num:'MIT',label:'Open source'}],
       },
       finlit: {
         icon:'🍁', iconClass:'icon-rose', name:'FinLit', badge:'<span class="project-badge badge-live">Open Source</span>',
