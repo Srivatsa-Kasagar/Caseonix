@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building Multi-Agent Claude Code Skills — The wealth-guide Architecture | Caseonix</title>
+  <meta name="description" content="A walkthrough of how to structure ambitious Claude Code skills as multi-agent pipelines — parallel dispatch, knowledge grounding, deterministic templates, and model routing — using wealth-guide, an open-source 6-agent financial planner." />
+  <meta name="author" content="Srivatsa Kasagar" />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="Claude Code skill, multi-agent pipeline, Claude subagents, wealth-guide open source, Opus vs Sonnet routing, AI financial planner, parallel Task dispatch, Claude Code knowledge base, SKILL.md architecture, AskUserQuestion" />
+  <link rel="canonical" href="https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Building Multi-Agent Claude Code Skills — The wealth-guide Architecture" />
+  <meta property="og:description" content="How to build ambitious Claude Code skills the right way — six specialist subagents, parallel dispatch, curated knowledge base, Opus/Sonnet routing, and local SQLite state. Full reference implementation on GitHub." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html" />
+  <meta property="og:image" content="https://caseonix.ca/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Caseonix" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:author" content="Srivatsa Kasagar" />
+  <meta property="article:published_time" content="2026-04-17" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Building Multi-Agent Claude Code Skills — The wealth-guide Architecture" />
+  <meta name="twitter:description" content="Stop building ambitious skills as one giant prompt. Here's the six-agent pattern, with working code from wealth-guide — open source on GitHub." />
+  <meta name="twitter:image" content="https://caseonix.ca/og-image.png" />
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Building Multi-Agent Claude Code Skills — The wealth-guide Architecture",
+    "description": "A walkthrough of how to structure ambitious Claude Code skills as multi-agent pipelines — parallel dispatch, knowledge grounding, deterministic templates, and Opus/Sonnet routing — using wealth-guide, an open-source 6-agent financial planner.",
+    "author": {
+      "@type": "Person",
+      "name": "Srivatsa Kasagar",
+      "url": "https://caseonix.ca",
+      "jobTitle": "AI Builder & Solutions Architect"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Caseonix",
+      "url": "https://caseonix.ca"
+    },
+    "datePublished": "2026-04-17",
+    "dateModified": "2026-04-17",
+    "url": "https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html",
+    "image": "https://caseonix.ca/og-image.png",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html"
+    },
+    "keywords": ["Claude Code skill", "multi-agent pipeline", "Claude subagents", "wealth-guide open source", "Opus vs Sonnet routing", "AI financial planner", "parallel Task dispatch", "SKILL.md architecture"]
+  }
+  </script>
+
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #04040A;
+      --surface: #0C0C18;
+      --surface-2: #12121F;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(91,139,255,0.32);
+      --blue: #5B8BFF;
+      --teal: #00D4C8;
+      --gold: #F0B429;
+      --purple: #A78BFA;
+      --green: #34D399;
+      --rose: #FB7185;
+      --text: #EEEEF8;
+      --text-2: #8888AA;
+      --text-3: #55557A;
+      --nav-bg: rgba(4,4,10,0.82);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    [data-theme="light"] {
+      --bg: #F4F4FB;
+      --surface: #FFFFFF;
+      --surface-2: #EEEEF8;
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(91,139,255,0.35);
+      --text: #0D0D20;
+      --text-2: #555588;
+      --text-3: #9999BB;
+      --nav-bg: rgba(244,244,251,0.88);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+    .nav-logo span { color: var(--blue); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--surface); cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 0.95rem; color: var(--text-2);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); transform: rotate(20deg); color: var(--text); }
+    .nav-cta {
+      padding: 9px 20px; background: var(--blue); color: #fff; border-radius: 8px;
+      text-decoration: none; font-size: 0.85rem; font-weight: 600;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ARTICLE */
+    .article-wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+    }
+
+    .article-meta { margin-bottom: 32px; }
+
+    .article-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.85rem; color: var(--blue); text-decoration: none;
+      font-weight: 500; margin-bottom: 24px;
+      transition: opacity 0.2s;
+    }
+    .article-back:hover { opacity: 0.7; }
+
+    .article-tag {
+      display: inline-block; padding: 4px 12px; border-radius: 6px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; background: rgba(91,139,255,0.12);
+      color: var(--blue); margin-bottom: 16px;
+    }
+
+    .article-title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      line-height: 1.15; margin-bottom: 16px;
+    }
+
+    .article-subtitle {
+      font-size: 1.1rem; color: var(--text-2);
+      line-height: 1.7; margin-bottom: 20px;
+    }
+
+    .article-info {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      font-size: 0.82rem; color: var(--text-3);
+      padding-bottom: 32px; border-bottom: 1px solid var(--border);
+    }
+    .article-info a { color: var(--blue); text-decoration: none; }
+    .article-info a:hover { text-decoration: underline; }
+
+    /* CONTENT */
+    .article-content h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.55rem; font-weight: 700;
+      letter-spacing: -0.02em; margin: 48px 0 16px;
+      line-height: 1.25;
+    }
+
+    .article-content h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.15rem; font-weight: 600;
+      margin: 32px 0 12px; line-height: 1.3;
+    }
+
+    .article-content p {
+      font-size: 1rem; color: var(--text-2);
+      line-height: 1.82; margin-bottom: 20px;
+    }
+
+    .article-content strong { color: var(--text); font-weight: 600; }
+
+    .article-content a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
+    .article-content a:hover { opacity: 0.8; }
+
+    .article-content ul, .article-content ol {
+      margin: 0 0 20px 24px;
+      color: var(--text-2);
+    }
+
+    .article-content li {
+      font-size: 1rem; line-height: 1.78;
+      margin-bottom: 8px;
+    }
+
+    .article-content li strong { color: var(--text); }
+
+    /* CALLOUT BOX */
+    .callout {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout.warning { border-left-color: var(--gold); }
+    .callout.success { border-left-color: var(--green); }
+    .callout.danger  { border-left-color: var(--rose); }
+    .callout-title {
+      font-weight: 700; font-size: 0.88rem;
+      margin-bottom: 8px; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .callout p { margin-bottom: 0; font-size: 0.95rem; }
+
+    /* TABLE */
+    .table-wrapper {
+      overflow-x: auto; margin: 24px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th {
+      text-align: left; padding: 12px 16px;
+      background: var(--surface);
+      font-weight: 600; color: var(--text);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 16px; color: var(--text-2);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* CODE */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; padding: 2px 7px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 5px; color: var(--teal);
+    }
+
+    pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px; margin: 24px 0;
+      overflow-x: auto;
+    }
+    pre code {
+      padding: 0; background: none; border: none;
+      font-size: 0.84rem; line-height: 1.7; color: var(--text-2);
+    }
+
+    /* VERDICT BOX */
+    .verdict-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px; margin: 32px 0;
+    }
+    .verdict-box h3 { margin-top: 0; margin-bottom: 16px; }
+    .verdict-row { display: flex; gap: 20px; margin-bottom: 12px; }
+    .verdict-label {
+      flex-shrink: 0; width: 140px;
+      font-size: 0.85rem; font-weight: 600; color: var(--text);
+    }
+    .verdict-value { font-size: 0.9rem; color: var(--text-2); line-height: 1.6; }
+
+    /* FOOTER */
+    .article-footer {
+      margin-top: 56px; padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .author-card {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      margin-bottom: 32px;
+    }
+    .author-avatar {
+      width: 52px; height: 52px; border-radius: 13px;
+      background: rgba(91,139,255,0.14); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.25rem; flex-shrink: 0;
+    }
+    .author-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .author-bio { font-size: 0.85rem; color: var(--text-2); line-height: 1.6; }
+    .author-links { display: flex; gap: 12px; margin-top: 8px; }
+    .author-links a {
+      font-size: 0.8rem; color: var(--blue); text-decoration: none; font-weight: 500;
+    }
+    .author-links a:hover { text-decoration: underline; }
+
+    /* SHARE BUTTONS */
+    .share-bar {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 20px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .share-label { font-size: 0.8rem; color: var(--text-3); font-weight: 500; margin-right: 4px; }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-2); font-size: 0.78rem; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .share-btn:hover { border-color: var(--border-hover); color: var(--text); background: rgba(91,139,255,0.07); }
+    .share-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .share-btn.copied { border-color: var(--green); color: var(--green); }
+
+    /* RELATED POSTS */
+    .related-posts {
+      margin-top: 24px; padding: 20px 24px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .related-posts-title {
+      font-size: 0.82rem; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;
+    }
+    .related-posts a {
+      display: block; font-size: 0.92rem; color: var(--blue);
+      text-decoration: none; line-height: 1.6; padding: 4px 0;
+    }
+    .related-posts a:hover { text-decoration: underline; }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 32px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 1;
+    }
+    .footer-logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .footer-logo span { color: var(--blue); }
+    footer p { font-size: 0.75rem; color: var(--text-3); }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .article-wrapper { padding: 100px 20px 60px; }
+      .article-title { font-size: 1.6rem; }
+      .author-card { flex-direction: column; }
+      .verdict-row { flex-direction: column; gap: 4px; }
+      .verdict-label { width: auto; }
+      footer { padding: 24px; flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Case<span>onix</span></a>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+      <a href="/#contact" class="nav-cta">Work Together</a>
+    </div>
+  </nav>
+
+  <article class="article-wrapper">
+    <div class="article-meta">
+      <a href="/" class="article-back">&larr; Back to caseonix.ca</a>
+      <div class="article-tag">Claude Code &amp; AI</div>
+      <h1 class="article-title">Building Multi-Agent Claude Code Skills</h1>
+      <p class="article-subtitle">Most Claude Code skills are one prompt in a markdown file. That works for single-turn tasks. For anything ambitious — a tax tool, a legal intake, a financial planner — you'll collapse into a tangle of conditionals inside one system prompt. This is the architecture that gets you out of that hole, walked through with a working open-source example.</p>
+      <div class="article-info">
+        <span>By <a href="/">Srivatsa Kasagar</a></span>
+        <span>&middot;</span>
+        <span>April 17, 2026</span>
+        <span>&middot;</span>
+        <span>13 min read</span>
+      </div>
+
+      <div class="share-bar">
+        <span class="share-label">Share:</span>
+        <a class="share-btn" id="shareLinkedIn" href="#" target="_blank" rel="noopener" aria-label="Share on LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a class="share-btn" id="shareTwitter" href="#" target="_blank" rel="noopener" aria-label="Share on X">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X
+        </a>
+        <button class="share-btn" id="shareCopy" aria-label="Copy link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Copy link
+        </button>
+      </div>
+    </div>
+
+    <div class="article-content">
+
+      <h2>The Problem Every Skill-Builder Hits</h2>
+
+      <p>You start with a Claude Code skill that does something genuinely useful. Summarize a codebase. Walk a user through a tax filing. Review a contract. You write a single <code>SKILL.md</code> with a good system prompt and some trigger phrases. It works. You ship it.</p>
+
+      <p>Then the scope grows. You want the skill to ask questions, branch on answers, read external reference material, cross-check its reasoning, and produce a structured output a non-technical user can actually act on. You try to do all of that inside the one prompt. By version four you have a 3,000-word system prompt with numbered steps, nested conditionals, and a table of contents. By version seven you're debugging why the output occasionally drops sections. By version ten you've accepted that any interesting change risks breaking something unrelated.</p>
+
+      <p>This is the failure mode. A real product is not a single prompt. It's a pipeline. Different parts of the problem need different context, different models, and sometimes parallel execution. The skill format supports this, and Claude Code's subagent primitive is exactly the tool — but there is almost no written guidance on how to structure it.</p>
+
+      <p>I recently open-sourced <a href="https://github.com/Srivatsa-Kasagar/wealth-guide">wealth-guide</a>, a Claude Code skill that builds a CFP-quality financial plan for US, Canadian, and Indian users. Six specialist subagents. A curated knowledge base. Templated output. Local state. This post is the architecture walkthrough I wish I'd had before building it.</p>
+
+      <h2>Why a Single Prompt Collapses</h2>
+
+      <p>The naive first pass at wealth-guide was exactly the thing I'm warning against — one large skill file that read a user's answers, walked through a mental checklist, and generated a plan. Here's an abbreviated version of what that looked like:</p>
+
+<pre><code>---
+name: wealth-guide
+description: Build a personalized financial plan.
+---
+
+# Wealth Guide
+
+Ask the user about their income, expenses, savings, debt, and goals.
+Then:
+
+1. Assess their financial health and identify what's broken.
+2. Consider their country's tax system and retirement accounts.
+3. Look at current market conditions.
+4. Generate 3-5 investment strategies with specific fund picks.
+5. Stress-test each strategy against market crashes.
+6. Produce a prioritized action plan with deadlines.
+
+Country-specific rules:
+- If US: 401(k), IRA, Roth, HSA. Use Vanguard tickers.
+- If Canada: RRSP, TFSA, FHSA. Consider Smith Manoeuvre.
+- If India: old vs new regime, Section 80C layering, SIPs in Nifty 50.
+
+Use current tax year limits. Do not recommend products you are not
+sure about. Be specific with dollar amounts. ...</code></pre>
+
+      <p>Every run of this produced something. Some runs produced something decent. None produced the same output twice given the same inputs. Section 4 occasionally skipped fund tickers. Section 5 sometimes became three sentences of hedging. Tax limits drifted year-to-year because the model was reconstructing them from training data rather than looking them up. There was no traceable reasoning — when a number was wrong, you could not tell whether the diagnosis was wrong, the research was wrong, or the synthesis had just wandered.</p>
+
+      <p>A real wealth management firm does not have one person do all of this. It has an intake analyst, a research team, a market desk, a strategist, a risk officer, and a planner. Each has their own context and their own specialization, and they check each other's work. The skill needs the same shape.</p>
+
+      <h2>The Mental Model: Mirror the Firm</h2>
+
+      <p>Once I stopped trying to fit everything into one prompt and started thinking of the skill as a small firm, the design got much easier. The <code>SKILL.md</code> stops being the worker. It becomes the orchestrator — the partner who decides who does what, in what order, and passes findings downstream.</p>
+
+      <p>In wealth-guide, the partner dispatches six specialists across three phases:</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Phase</th>
+              <th>Specialist</th>
+              <th>What they do</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Phase 1 (parallel)</td>
+              <td><strong>financial-diagnostician</strong></td>
+              <td>Scores savings rate, debt-to-income, emergency fund coverage. Benchmarks against country + income bracket.</td>
+            </tr>
+            <tr>
+              <td>Phase 1 (parallel)</td>
+              <td><strong>knowledge-advisor</strong></td>
+              <td>Reads the full knowledge base, matches strategies and tax rules to the user's profile, runs web search for current news.</td>
+            </tr>
+            <tr>
+              <td>Phase 1 (parallel)</td>
+              <td><strong>market-context-analyzer</strong></td>
+              <td>Pulls live interest rates, index performance, inflation, gold prices via web search.</td>
+            </tr>
+            <tr>
+              <td>Phase 2</td>
+              <td><strong>wealth-strategist</strong></td>
+              <td>Synthesizes phase 1 into 3–5 ranked strategies with fund tickers, dollar amounts, tax-optimized account placement.</td>
+            </tr>
+            <tr>
+              <td>Phase 2</td>
+              <td><strong>risk-reward-evaluator</strong></td>
+              <td>Stress-tests each strategy (40% crash, job loss, rate shock). Assigns verdicts: recommended, caution, not suitable.</td>
+            </tr>
+            <tr>
+              <td>Phase 3</td>
+              <td><strong>action-plan-generator</strong></td>
+              <td>Synthesizes everything into a 12-section roadmap using a template with placeholder slots.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>That's the architecture. The rest of this post is how each piece is actually built.</p>
+
+      <h2>Step 1 — Decompose into Subagents</h2>
+
+      <p>Claude Code ships a <code>Task</code> tool that launches a subagent with its own context, its own system prompt, and optionally its own model. The subagent runs, returns a result, and the main conversation continues. This is the primitive. What makes it useful for skills is that each subagent definition lives in its own file and you reference it by <code>subagent_type</code>.</p>
+
+      <p>Here's the skeleton of a single specialist call from wealth-guide's <code>SKILL.md</code>:</p>
+
+<pre><code>Task(
+    subagent_type="financial-diagnostician",
+    model="claude-sonnet-4-5-20250929",
+    description="Diagnose financial health",
+    prompt=f"""
+    Analyze this user's financial health.
+
+    Profile:
+    - Country: {country}
+    - Age: {age}
+    - Annual income: {income}
+    - Monthly expenses: {expense}
+    - Savings: {savings}
+    - Investments: {investments}
+    - Debt: {debt_summary}
+    - Risk tolerance: {risk}
+
+    Score the following 0-100 and return JSON:
+    - health_score (overall)
+    - savings_rate
+    - debt_to_income
+    - emergency_fund_months
+    - spending_efficiency
+
+    For each score, explain what's working and what's bleeding money.
+    Benchmark against people in the same country + income bracket.
+    """,
+)</code></pre>
+
+      <p>Each subagent has exactly one job. The diagnostician scores the financial position. It does not write strategy. It does not look at markets. If you ask it to do more, you get back the same kind of unfocused output you were trying to escape. The discipline is: one agent, one responsibility, one structured output.</p>
+
+      <p>The orchestrator reads the result, extracts the structured fields, and hands them to whichever agent needs them next. The main <code>SKILL.md</code> file stops being a giant prompt and becomes a coordination script — Python that reads config, collects interview answers, fires <code>Task</code> calls in the right order, and parses results.</p>
+
+      <h2>Step 2 — Parallelize Phase 1</h2>
+
+      <p>The diagnostician, the knowledge advisor, and the market analyzer don't need each other's output. They all read the user's profile and produce independent findings. Running them sequentially is wasted wall-clock time.</p>
+
+      <p>Claude Code runs <code>Task</code> calls in parallel when they appear in a single response block. Put three <code>Task</code> invocations in one message — they fire concurrently. Put them in three separate messages — they run one after the other. This is the single most important performance lever in the whole architecture.</p>
+
+<pre><code># All three Task calls in one block = parallel execution
+Task(
+    subagent_type="financial-diagnostician",
+    model="claude-sonnet-4-5-20250929",
+    prompt=f"Analyze financial health for profile: {profile_json}",
+)
+
+Task(
+    subagent_type="knowledge-advisor",
+    model="claude-sonnet-4-5-20250929",
+    prompt=f"""Read every file in {kb_dir} and {wf_dir}.
+    Match strategies to this profile: {profile_json}.
+    Run web search for current {country} financial news.
+    Return matched strategies as JSON.""",
+)
+
+Task(
+    subagent_type="market-context-analyzer",
+    model="claude-sonnet-4-5-20250929",
+    prompt=f"Pull current rates, indices, inflation for {country}.",
+)</code></pre>
+
+      <p>Wall-clock time drops from about 3 minutes sequential to around 60–75 seconds parallel, bounded by the slowest of the three. For a user waiting on a plan, that's the difference between "this is slow" and "this is responsive."</p>
+
+      <div class="callout warning">
+        <div class="callout-title">&#9888;&#65039; Ordering matters more than it looks</div>
+        <p>Any code in <code>SKILL.md</code> that reads a phase 1 result must appear <em>after</em> all three <code>Task</code> blocks, not between them. Putting a <code>print</code> or an assignment between two <code>Task</code> calls is enough to serialize them. Claude Code batches only the adjacent calls in a single response. This is easy to miss during refactoring and the only symptom is that things are slow again.</p>
+      </div>
+
+      <h2>Step 3 — Ground in a Knowledge Base</h2>
+
+      <p>Subagent reasoning is only as good as what it reads. If the knowledge-advisor's "knowledge" is whatever the base model remembers from its training data, you get yesterday's tax limits, outdated contribution caps, and product recommendations that were fine three years ago. For anything regulated — tax, legal, medical, financial — that is a liability.</p>
+
+      <p>wealth-guide ships a curated knowledge base: seven markdown files, roughly 2,300 lines total, with country-scoped sections for US, Canada, and India.</p>
+
+<pre><code>knowledge/
+├── career-income-growth.md
+├── index-investing.md
+├── money-fundamentals.md
+├── real-estate-investing.md
+├── retirement-planning.md
+├── side-hustles.md
+└── tax-optimization.md
+
+workflows/
+├── debt-freedom.md
+├── first-investment.md
+├── side-hustle-launch.md
+└── wealth-building.md</code></pre>
+
+      <p>Each file contains real numbers — current contribution limits, tax brackets, specific fund tickers with expense ratios, APR ranges, methodology citations, and step-by-step decision frameworks. A snippet of <code>tax-optimization.md</code>:</p>
+
+<pre><code>## Canada - Tax-Advantaged Accounts (2024)
+
+### RRSP (Registered Retirement Savings Plan)
+- Contribution room: 18% of earned income, capped at $31,560
+- Deduction reduces taxable income in the year of contribution
+- Withdrawals fully taxable; avoid withdrawing before retirement
+- Spousal RRSP: income-split in retirement if partner in lower bracket
+
+### TFSA (Tax-Free Savings Account)
+- 2024 contribution: $7,000. Lifetime room if 18+ since 2009: $95,000
+- Growth and withdrawals tax-free; room restored next calendar year
+- Hold highest-growth assets here (equities, not GICs)
+
+### FHSA (First Home Savings Account)
+- Annual limit: $8,000. Lifetime: $40,000
+- Combines RRSP-style deduction with TFSA-style tax-free growth
+- Unused room carries forward, up to $8,000 per year</code></pre>
+
+      <p>The knowledge-advisor is instructed to quote from this base when matching strategies, so every recommendation in the final plan traces back to a specific methodology and a specific number. When a user asks "where did 18% come from," you can point at a line in a file. That is auditability. A single-prompt skill cannot give you that.</p>
+
+      <h2>Step 4 — Deterministic Output with Templates</h2>
+
+      <p>Left to its own devices, an LLM will write prose that varies in structure every run. For a product where users expect the same 12 sections in the same order every time — executive summary, financial position, projections, strategy blueprint, debt plan, tax plan, cash flow, risk assessment, action plan, market context, learning path, key dates — prose is not good enough.</p>
+
+      <p>The pattern: a 232-line <code>roadmap-template.md</code> with <code>{PLACEHOLDER}</code> slots, and a final-stage agent whose job is to fill the placeholders. Excerpted:</p>
+
+<pre><code># Your Financial Roadmap
+
+## 1. Executive Summary
+
+{EXECUTIVE_SUMMARY_TABLE}
+
+{EXECUTIVE_SUMMARY_NARRATIVE}
+
+## 2. Financial Position
+
+Health Score: {HEALTH_SCORE}/100 ({HEALTH_BAND})
+
+{NET_WORTH_BREAKDOWN}
+
+{CASH_FLOW_SUMMARY}
+
+## 3. Wealth Projections (10-Year)
+
+{PROJECTIONS_TABLE}
+
+## 4. Strategy Blueprint
+
+{STRATEGY_1_BLOCK}
+{STRATEGY_2_BLOCK}
+{STRATEGY_3_BLOCK}
+
+...</code></pre>
+
+      <p>The action-plan-generator is instructed to produce content for each placeholder separately, using the diagnostician's scores, the strategist's ranked strategies, and the risk-evaluator's verdicts as inputs. The template enforces the shape. The agent enforces the content. Structure stops being a generation concern and becomes a compile-time guarantee.</p>
+
+      <p>The same pattern ports cleanly. If you were building a legal intake skill, you'd have a template with <code>{CLIENT_SUMMARY}</code>, <code>{JURISDICTION_ANALYSIS}</code>, <code>{RECOMMENDED_FORMS}</code>, <code>{DEADLINES_TABLE}</code>. If you were building a code review skill, you'd template <code>{ARCHITECTURE_NOTES}</code>, <code>{SECURITY_FINDINGS}</code>, <code>{PERFORMANCE_FLAGS}</code>. The mechanic doesn't change.</p>
+
+      <h2>Step 5 — Route Opus vs Sonnet by Cognitive Load</h2>
+
+      <p>Not every agent needs the same model. Scoring a user's savings rate is a mechanical task — Sonnet is fast, cheap, and entirely sufficient. Synthesizing a ranked strategy set that optimizes across tax, time horizon, and country-specific account mechanics is genuinely hard reasoning — worth Opus.</p>
+
+      <p>The routing in wealth-guide:</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Model</th>
+              <th>Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>financial-diagnostician</td>
+              <td>Sonnet 4.5</td>
+              <td>Pattern-match scoring against benchmarks. Fast, cheap, good enough.</td>
+            </tr>
+            <tr>
+              <td>knowledge-advisor</td>
+              <td>Sonnet 4.5</td>
+              <td>Reading + matching. Structured task, no multi-step inference.</td>
+            </tr>
+            <tr>
+              <td>market-context-analyzer</td>
+              <td>Sonnet 4.5</td>
+              <td>Web search + summary. Zero creative reasoning needed.</td>
+            </tr>
+            <tr>
+              <td><strong>wealth-strategist</strong></td>
+              <td><strong>Opus 4.6</strong></td>
+              <td>Multi-constraint optimization across tax, time, country, risk, and instrument availability. This is the hard thinking.</td>
+            </tr>
+            <tr>
+              <td>risk-reward-evaluator</td>
+              <td>Sonnet 4.5</td>
+              <td>Scoring and verdict-stamping. Sonnet follows a clear rubric well.</td>
+            </tr>
+            <tr>
+              <td><strong>action-plan-generator</strong></td>
+              <td><strong>Opus 4.6</strong></td>
+              <td>Synthesizing everything upstream into a coherent 12-section plan with internal consistency. Opus keeps the threads together.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Four Sonnet runs, two Opus runs. The Opus agents get 120-second timeouts in <code>config/agent-config.yaml</code> because serious reasoning takes time. The Sonnet agents get 60. The economics work out to a single full roadmap costing a small fraction of what Opus-everywhere would cost, with no visible quality drop on the parts that don't need Opus.</p>
+
+      <h2>Step 6 — Local State with SQLite</h2>
+
+      <p>LLMs are stateless between runs. A multi-session product isn't. Users want to come back tomorrow and not re-answer ten interview questions. They also want their financial data stored somewhere they control, not in an API provider's logs.</p>
+
+      <p>wealth-guide stores profile data in a local SQLite file at <code>~/.claude/skills/wealth-guide/data/profiles.db</code>, with <code>0600</code> permissions set on creation. Two tables:</p>
+
+<pre><code>CREATE TABLE profiles (
+    id INTEGER PRIMARY KEY,
+    country TEXT,
+    age INTEGER,
+    annual_income REAL,
+    monthly_expense REAL,
+    savings TEXT,
+    investment_assets TEXT,
+    debt_credit_card TEXT,
+    debt_personal_student TEXT,
+    debt_mortgage TEXT,
+    risk_tolerance TEXT,
+    experience TEXT,
+    goal TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE session_history (
+    id INTEGER PRIMARY KEY,
+    profile_id INTEGER,
+    strategies_matched TEXT,
+    roadmap_path TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(profile_id) REFERENCES profiles(id)
+);</code></pre>
+
+      <p>On startup the orchestrator checks for an existing profile. Under 24 hours old, it offers to reuse. Between 1 and 30 days, it offers a partial refresh (update income/expenses only). Past 30 days, fresh interview. The thresholds are in <code>agent-config.yaml</code> so you can tune without code changes.</p>
+
+      <div class="callout danger">
+        <div class="callout-title">&#9888;&#65039; Never send raw user financial inputs to an external API</div>
+        <p>The skill asks the user questions like "annual income" and "total debt." The subagents don't receive those raw numbers. They receive <em>midpoints of bracket ranges</em> — the user picked "$100k-$150k", the agent sees "$125k". This keeps individual financial data out of the model's context and out of any inference provider's logs. For anything regulated, bracket-midpoint aggregation is the minimum standard. Raw-value passthrough is the single most common PII mistake I see in AI products, and it's almost always avoidable.</p>
+      </div>
+
+      <h2>Putting It Together: wealth-guide</h2>
+
+      <p>The full skill is open-source and MIT licensed. The directory layout:</p>
+
+<pre><code>wealth-guide/
+├── SKILL.md                   # Orchestrator (1,802 lines)
+├── config/
+│   ├── agent-config.yaml      # Timeouts, thresholds, retry
+│   └── init_db.py             # SQLite schema
+├── knowledge/                 # 7 curated MD files, US/CA/IN
+├── workflows/                 # 4 step-by-step playbooks
+├── templates/
+│   └── roadmap-template.md    # 232-line output template
+├── scripts/
+│   └── md_to_html.py          # Print-ready HTML export with charts
+├── data/                      # SQLite profile DB (gitignored)
+├── roadmaps/                  # Generated plans (gitignored)
+└── README.md</code></pre>
+
+      <p>Install is one symlink — no <code>pip install</code>, no virtualenv, no dependencies beyond Python standard library for the SQLite piece:</p>
+
+<pre><code>git clone https://github.com/Srivatsa-Kasagar/wealth-guide.git
+
+mkdir -p ~/.claude/skills
+ln -s "$(pwd)/wealth-guide" ~/.claude/skills/wealth-guide
+
+# In any Claude Code session:
+wealth guide</code></pre>
+
+      <p>The interview runs, the six specialists work the case, and a 12-section markdown roadmap lands in <code>~/.claude/skills/wealth-guide/roadmaps/</code> along with a print-ready HTML version with charts — a net worth donut, a wealth projection line chart, a cash flow waterfall, and a health score gauge. Cmd+P in the browser gives you a clean PDF.</p>
+
+      <h2>Build vs Custom GPT vs LangChain vs Claude Code Skill</h2>
+
+      <p>There are other ways to build something like this. They trade off differently.</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Approach</th>
+              <th>Time to ship</th>
+              <th>Parallel agents</th>
+              <th>Local state</th>
+              <th>Forkable</th>
+              <th>Runs where user works</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Custom GPT</strong></td>
+              <td>Hours</td>
+              <td>No</td>
+              <td>No</td>
+              <td>Partial</td>
+              <td>ChatGPT only</td>
+            </tr>
+            <tr>
+              <td><strong>LangChain + FastAPI</strong></td>
+              <td>Weeks</td>
+              <td>Yes, you wire it</td>
+              <td>Yes, you wire it</td>
+              <td>Yes</td>
+              <td>Your web app</td>
+            </tr>
+            <tr>
+              <td><strong>Claude Agent SDK</strong></td>
+              <td>Days</td>
+              <td>Yes, built in</td>
+              <td>Yes, you wire it</td>
+              <td>Yes</td>
+              <td>Your app / CLI</td>
+            </tr>
+            <tr>
+              <td><strong>Claude Code skill (this post)</strong></td>
+              <td>Days</td>
+              <td>Yes, built in</td>
+              <td>Yes, local SQLite</td>
+              <td>Yes, MIT repo</td>
+              <td>Developer's own terminal</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The skill approach wins specifically when your user is already a Claude Code user — developers, power users, people comfortable in a terminal. It loses when the user wants a URL to hit from a browser. For wealth-guide's audience (technical people curious about their own finances), skills were obviously the right substrate. For a consumer product with signup, use the Agent SDK and wrap it in a web app.</p>
+
+      <h2>Sibling Project: Consul (For When You Want the Browser Version)</h2>
+
+      <p>The same architectural principles port cleanly to a hosted web app. I know, because I built that version too — it's called <a href="https://consol-app.pages.dev">Consul</a>, and it's what I reach for when I want to do this kind of analysis on my own portfolio without standing up a terminal.</p>
+
+      <p>Consul is narrower in scope than wealth-guide — it's specifically a portfolio narrative tool, not a full life-stage financial planner. You drop in your positions (manually, CSV, or brokerage import), it enriches them with live market data (prices, sectors, beta, dividend yields, expense ratios), and Claude writes a plain-English strategic assessment: concentration risks, hidden exposures, fee drag, and actionable next steps. Multi-jurisdiction aware — US, Canada, UK, Australia, with understanding of TFSA, RRSP, IRA, Roth IRA, and taxable account mechanics.</p>
+
+      <p>The architectural principle it shares with wealth-guide is what I think matters most for any AI-in-finance product: <strong>math is deterministic, AI writes the story</strong>. Sharpe ratio, VaR at 95%, beta, HHI concentration, CAGR, 20-year fee drag — all computed in deterministic code before the model sees them. Claude never performs arithmetic; it only explains what the numbers mean for <em>you</em>. Every reasoning step is logged and inspectable. Every action needs explicit human approval. No black boxes.</p>
+
+      <p>Consul is <a href="https://consol-app.pages.dev">live at consol-app.pages.dev</a>. It is closed-source and actively developed — a deliberate contrast to wealth-guide, which is MIT-licensed and frozen at a clean reference-implementation state. Think of them as a matched pair: fork wealth-guide when you want to build your own skill; use Consul when you want the analysis without the build.</p>
+
+      <div class="callout">
+        <div class="callout-title">&#128200; If you're deciding between them</div>
+        <p><strong>wealth-guide</strong> is for multi-year life planning (goals, debt payoff, savings runway, country-specific tax optimization, 12-section roadmap). <strong>Consul</strong> is for portfolio-level analysis of what you already hold (risk, concentration, fees, narrative). They overlap only at the edges.</p>
+      </div>
+
+      <h2>Practical Notes from Building This</h2>
+
+      <p>A few things I'd have wanted to know earlier:</p>
+
+      <ul>
+        <li><strong>Parallel Task blocks are fragile to refactor.</strong> The rule — <em>no non-Task code between Task calls you want parallel</em> — holds rigidly. A well-meaning <code>print("Dispatching...")</code> in the middle of a block will silently serialize the agents. Comment-only lines are fine; any executable statement is not.</li>
+        <li><strong>Opus agents need 120-second timeouts, not 60.</strong> The strategist and planner produce 800–1,500 tokens of tightly-structured output after multi-step reasoning. Sonnet will cap at 60s comfortably; Opus needs headroom. Get this wrong and you'll see sporadic truncation on your hardest-thinking agents.</li>
+        <li><strong>Country context must propagate through every agent prompt.</strong> The user picks their country once, in screen 1 of the interview. If the diagnostician gets the country but the strategist doesn't, you get a US-style recommendation for an Indian user. Pass it explicitly into every <code>Task</code> prompt; don't rely on the orchestrator to "remember."</li>
+        <li><strong>Bracket ranges, midpoints, never raw.</strong> The interview uses four-option multiple-choice buckets (income, savings, debt). The orchestrator converts buckets to midpoints before any agent sees them. This is both better UX (no mental math) and better privacy.</li>
+        <li><strong>Put every tunable in YAML.</strong> Timeouts, retry counts, cache windows, skill-level thresholds. Anything that might want changing without a code edit goes in <code>config/agent-config.yaml</code>. Future you — or anyone forking the skill — will thank you.</li>
+        <li><strong>The knowledge base is the highest-leverage file to maintain.</strong> New tax year? Update the limits in one markdown file. New regulatory change? Add a section. No agent prompt needs to change. The plumbing is the expensive part to build once; the content is the expensive part to keep fresh.</li>
+      </ul>
+
+      <div class="callout success">
+        <div class="callout-title">&#9989; The short version</div>
+        <p>Stop cramming ambitious skills into one prompt. Decompose into subagents with single responsibilities. Parallelize the independent ones in a single response block. Ground reasoning in a curated knowledge base with real numbers. Template the output so structure is a compile-time guarantee. Route Opus only where reasoning is genuinely hard. Keep state in local SQLite with <code>0600</code> permissions. Never send raw user values across the API boundary. <a href="https://github.com/Srivatsa-Kasagar/wealth-guide">wealth-guide</a> is the full working reference — MIT licensed, fork it for your own domain.</p>
+      </div>
+
+      <h2>Further Reading</h2>
+
+      <ul>
+        <li><a href="https://github.com/Srivatsa-Kasagar/wealth-guide">wealth-guide on GitHub</a> — the full open-source skill walked through in this post</li>
+        <li><a href="https://consol-app.pages.dev">Consul</a> — the hosted browser-based portfolio narrative tool (sibling project, closed source)</li>
+        <li><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code documentation</a> — skills, subagents, the <code>Task</code> tool, and permissions</li>
+        <li><a href="https://docs.anthropic.com/en/docs/claude-code/sub-agents">Claude Code subagents reference</a> — how <code>subagent_type</code> resolution and parallel dispatch work under the hood</li>
+        <li><a href="https://docs.anthropic.com/en/api/agent-sdk-overview">Claude Agent SDK</a> — the programmatic equivalent if your users aren't in Claude Code</li>
+        <li><a href="/blog/extracting-t4-data-python-canadian-developer-guide.html">Extracting T4 Data from PDFs in Python</a> — another multi-component AI pipeline, on the Python side</li>
+        <li><a href="/blog/ai-canadian-financial-services-compliance-playbook.html">AI for Canadian Financial Services: The Compliance-First Playbook</a> — the regulatory context behind the raw-value-never rule</li>
+      </ul>
+
+    </div>
+
+    <div class="article-footer">
+      <div class="author-card">
+        <div class="author-avatar">&#128736;&#65039;</div>
+        <div>
+          <div class="author-name">Srivatsa Kasagar</div>
+          <div class="author-bio">AI Builder &amp; Solutions Architect with 25+ years in financial services. Building production-grade AI tools for the Canadian market at Caseonix &mdash; including LocalMind Sovereign, FinLit, wealth-guide, <a href="https://consol-app.pages.dev">Consul</a>, and compliance tooling for regulated industries.</div>
+          <div class="author-links">
+            <a href="https://linkedin.com/in/skasagar" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="https://github.com/Srivatsa-Kasagar" target="_blank" rel="noopener">GitHub</a>
+            <a href="/">All Projects</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="related-posts">
+        <div class="related-posts-title">More from Caseonix</div>
+        <a href="/blog/extracting-t4-data-python-canadian-developer-guide.html">Extracting T4 Data from PDFs in Python &mdash; A Canadian Developer's Guide</a>
+        <a href="/blog/chatgpt-vs-self-hosted-ai-law-firms.html">ChatGPT vs Self-Hosted AI for Canadian Law Firms: A 2026 Comparison</a>
+        <a href="/blog/building-pipeda-compliant-ai-tools.html">Building PIPEDA-Compliant AI Tools in 2026: A Developer's Guide</a>
+        <a href="/blog/ai-canadian-financial-services-compliance-playbook.html">AI for Canadian Financial Services: The Compliance-First Playbook</a>
+      </div>
+    </div>
+  </article>
+
+  <footer>
+    <div class="footer-logo">Case<span>onix</span></div>
+    <p>&copy; 2026 Caseonix</p>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+      try { localStorage.setItem('caseonix-theme', t); } catch(e) {}
+    }
+    toggle.addEventListener('click', () => {
+      setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+    try {
+      const saved = localStorage.getItem('caseonix-theme');
+      if (saved) setTheme(saved);
+    } catch(e) {}
+
+    const pageUrl = 'https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html';
+    const pageTitle = 'Building Multi-Agent Claude Code Skills — The wealth-guide Architecture';
+
+    document.getElementById('shareLinkedIn').href =
+      'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl);
+
+    document.getElementById('shareTwitter').href =
+      'https://x.com/intent/tweet?text=' + encodeURIComponent(pageTitle) + '&url=' + encodeURIComponent(pageUrl);
+
+    document.getElementById('shareCopy').addEventListener('click', function() {
+      navigator.clipboard.writeText(pageUrl).then(() => {
+        const btn = this;
+        btn.classList.add('copied');
+        const orig = btn.innerHTML;
+        btn.innerHTML = btn.innerHTML.replace('Copy link', 'Copied!');
+        setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+      });
+    });
+  </script>
+
+</body>
+</html>
