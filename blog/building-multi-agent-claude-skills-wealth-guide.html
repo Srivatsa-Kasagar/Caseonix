@@ -431,7 +431,7 @@
 
       <p>This is the failure mode. A real product is not a single prompt. It's a pipeline. Different parts of the problem need different context, different models, and sometimes parallel execution. The skill format supports this, and Claude Code's subagent primitive is exactly the tool — but there is almost no written guidance on how to structure it.</p>
 
-      <p>I recently open-sourced <a href="https://github.com/Srivatsa-Kasagar/wealth-guide">wealth-guide</a>, a Claude Code skill that builds a CFP-quality financial plan for US, Canadian, and Indian users. Six specialist subagents. A curated knowledge base. Templated output. Local state. This post is the architecture walkthrough I wish I'd had before building it.</p>
+      <p>I recently open-sourced <a href="https://github.com/caseonix/wealth-guide">wealth-guide</a>, a Claude Code skill that builds a CFP-quality financial plan for US, Canadian, and Indian users. Six specialist subagents. A curated knowledge base. Templated output. Local state. This post is the architecture walkthrough I wish I'd had before building it.</p>
 
       <h2>Why a Single Prompt Collapses</h2>
 
@@ -785,7 +785,7 @@ CREATE TABLE session_history (
 
       <p>Install is one symlink — no <code>pip install</code>, no virtualenv, no dependencies beyond Python standard library for the SQLite piece:</p>
 
-<pre><code>git clone https://github.com/Srivatsa-Kasagar/wealth-guide.git
+<pre><code>git clone https://github.com/caseonix/wealth-guide.git
 
 mkdir -p ~/.claude/skills
 ln -s "$(pwd)/wealth-guide" ~/.claude/skills/wealth-guide
@@ -880,13 +880,13 @@ wealth guide</code></pre>
 
       <div class="callout success">
         <div class="callout-title">&#9989; The short version</div>
-        <p>Stop cramming ambitious skills into one prompt. Decompose into subagents with single responsibilities. Parallelize the independent ones in a single response block. Ground reasoning in a curated knowledge base with real numbers. Template the output so structure is a compile-time guarantee. Route Opus only where reasoning is genuinely hard. Keep state in local SQLite with <code>0600</code> permissions. Never send raw user values across the API boundary. <a href="https://github.com/Srivatsa-Kasagar/wealth-guide">wealth-guide</a> is the full working reference — MIT licensed, fork it for your own domain.</p>
+        <p>Stop cramming ambitious skills into one prompt. Decompose into subagents with single responsibilities. Parallelize the independent ones in a single response block. Ground reasoning in a curated knowledge base with real numbers. Template the output so structure is a compile-time guarantee. Route Opus only where reasoning is genuinely hard. Keep state in local SQLite with <code>0600</code> permissions. Never send raw user values across the API boundary. <a href="https://github.com/caseonix/wealth-guide">wealth-guide</a> is the full working reference — MIT licensed, fork it for your own domain.</p>
       </div>
 
       <h2>Further Reading</h2>
 
       <ul>
-        <li><a href="https://github.com/Srivatsa-Kasagar/wealth-guide">wealth-guide on GitHub</a> — the full open-source skill walked through in this post</li>
+        <li><a href="https://github.com/caseonix/wealth-guide">wealth-guide on GitHub</a> — the full open-source skill walked through in this post</li>
         <li><a href="https://consol-app.pages.dev">Consul</a> — the hosted browser-based portfolio narrative tool (sibling project, closed source)</li>
         <li><a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code documentation</a> — skills, subagents, the <code>Task</code> tool, and permissions</li>
         <li><a href="https://docs.anthropic.com/en/docs/claude-code/sub-agents">Claude Code subagents reference</a> — how <code>subagent_type</code> resolution and parallel dispatch work under the hood</li>
@@ -905,7 +905,7 @@ wealth guide</code></pre>
           <div class="author-bio">AI Builder &amp; Solutions Architect with 25+ years in financial services. Building production-grade AI tools for the Canadian market at Caseonix &mdash; including LocalMind Sovereign, FinLit, wealth-guide, <a href="https://consol-app.pages.dev">Consul</a>, and compliance tooling for regulated industries.</div>
           <div class="author-links">
             <a href="https://linkedin.com/in/skasagar" target="_blank" rel="noopener">LinkedIn</a>
-            <a href="https://github.com/Srivatsa-Kasagar" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub</a>
             <a href="/">All Projects</a>
           </div>
         </div>
