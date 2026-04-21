@@ -64,41 +64,41 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #04040A;
-      --surface: #0C0C18;
-      --surface-2: #12121F;
+      --bg: #0F1B2A;
+      --surface: #1A2B3C;
+      --surface-2: #223549;
       --border: rgba(255,255,255,0.06);
-      --border-hover: rgba(91,139,255,0.32);
-      --blue: #5B8BFF;
-      --teal: #00D4C8;
-      --gold: #F0B429;
-      --purple: #A78BFA;
+      --border-hover: rgba(94,186,156,0.32);
+      --blue: #5EBA9C;
+      --teal: #7FCBB0;
+      --gold: #A0DDC9;
+      --purple: #4A9A80;
       --green: #34D399;
       --rose: #FB7185;
-      --text: #EEEEF8;
-      --text-2: #8888AA;
-      --text-3: #55557A;
-      --nav-bg: rgba(4,4,10,0.82);
+      --text: #E8ECF1;
+      --text-2: #94A3B8;
+      --text-3: #64748B;
+      --nav-bg: rgba(15,27,42,0.82);
       --radius: 16px;
       --radius-sm: 10px;
     }
 
     [data-theme="light"] {
-      --bg: #F4F4FB;
+      --bg: #F8FAFC;
       --surface: #FFFFFF;
-      --surface-2: #EEEEF8;
+      --surface-2: #F1F5F9;
       --border: rgba(0,0,0,0.08);
-      --border-hover: rgba(91,139,255,0.35);
-      --text: #0D0D20;
-      --text-2: #555588;
-      --text-3: #9999BB;
-      --nav-bg: rgba(244,244,251,0.88);
+      --border-hover: rgba(94,186,156,0.35);
+      --text: #0F172A;
+      --text-2: #334155;
+      --text-3: #64748B;
+      --nav-bg: rgba(248,250,252,0.88);
     }
 
     html { scroll-behavior: smooth; }
@@ -126,7 +126,7 @@
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+    .nav-logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
     .nav-logo span { color: var(--blue); }
     .nav-right { display: flex; align-items: center; gap: 12px; }
     .theme-toggle {
@@ -165,12 +165,12 @@
     .article-tag {
       display: inline-block; padding: 4px 12px; border-radius: 6px;
       font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
-      text-transform: uppercase; background: rgba(91,139,255,0.12);
+      text-transform: uppercase; background: rgba(94,186,156,0.12);
       color: var(--blue); margin-bottom: 16px;
     }
 
     .article-title {
-      font-family: 'Sora', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: clamp(1.8rem, 4vw, 2.6rem);
       font-weight: 800; letter-spacing: -0.03em;
       line-height: 1.15; margin-bottom: 16px;
@@ -191,14 +191,14 @@
 
     /* CONTENT */
     .article-content h2 {
-      font-family: 'Sora', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 1.55rem; font-weight: 700;
       letter-spacing: -0.02em; margin: 48px 0 16px;
       line-height: 1.25;
     }
 
     .article-content h3 {
-      font-family: 'Sora', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 1.15rem; font-weight: 600;
       margin: 32px 0 12px; line-height: 1.3;
     }
@@ -301,7 +301,7 @@
     }
     .author-avatar {
       width: 52px; height: 52px; border-radius: 13px;
-      background: rgba(91,139,255,0.14); display: flex;
+      background: rgba(94,186,156,0.14); display: flex;
       align-items: center; justify-content: center;
       font-size: 1.25rem; flex-shrink: 0;
     }
@@ -333,7 +333,7 @@
       transition: border-color 0.2s, color 0.2s, background 0.2s;
       font-family: 'Inter', sans-serif;
     }
-    .share-btn:hover { border-color: var(--border-hover); color: var(--text); background: rgba(91,139,255,0.07); }
+    .share-btn:hover { border-color: var(--border-hover); color: var(--text); background: rgba(94,186,156,0.07); }
     .share-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     .share-btn.copied { border-color: var(--green); color: var(--green); }
 
@@ -342,7 +342,7 @@
       display: flex; align-items: center; justify-content: space-between;
       position: relative; z-index: 1;
     }
-    .footer-logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .footer-logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.95rem; }
     .footer-logo span { color: var(--blue); }
     footer p { font-size: 0.75rem; color: var(--text-3); }
 
