@@ -376,11 +376,11 @@ flowchart LR
         <pre class="mermaid">
 flowchart TB
     L[parsed lines] --&gt; D{table?}
-    D --&gt;|CSV: 3+ comma fields,<br/>2+ rows| FC[flatten CSV]
-    D --&gt;|whitespace-aligned: 3+ columns,<br/>3+ rows| FW[flatten whitespace]
+    D --&gt;|"CSV: 3+ comma fields, 2+ rows"| FC[flatten CSV]
+    D --&gt;|"whitespace: 3+ cols, 3+ rows"| FW[flatten whitespace]
     D --&gt;|no| K[keep line]
-    FW --&gt; G[skip if numeric headers<br/>or wide financial]
-    FC --&gt; O[Header1: Val1 \| Header2: Val2 \| ...]
+    FW --&gt; G["skip if numeric headers<br/>or wide financial"]
+    FC --&gt; O["Header1: Val1 #124; Header2: Val2 #124; ..."]
     FW --&gt; O
     G --&gt; K
     K --&gt; R[output text]
