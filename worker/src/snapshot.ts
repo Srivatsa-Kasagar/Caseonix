@@ -95,9 +95,15 @@ function handlePush(snap: Snapshot, p: Record<string, unknown>): Snapshot {
     latency_ms: existing?.latency_ms,
   };
 
-  // Private repos: metadata only. No events, no latest_deploy impact.
+  // Private repos: metadata + redacted event. No message, no SHA, no deploy.
   if (isPrivate) {
-    return { ...snap, repos: nextRepos };
+    const nextEvents = prependEvent(snap.events, {
+      verb: "commit",
+      summary: `${repo.name} · <private>`,
+      ts,
+      repo: repo.name,
+    });
+    return { ...snap, repos: nextRepos, events: nextEvents };
   }
 
   const summary = firstLine(headCommit.message ?? "").slice(0, 80);
@@ -150,8 +156,14 @@ function handleRelease(snap: Snapshot, p: Record<string, unknown>): Snapshot {
   };
 
   if (isPrivate) {
-    // Private: bump version in REPOS tile but skip the public event line.
-    return { ...snap, repos: nextRepos };
+    // Private: bump version + redacted release event (no tag name, no title).
+    const nextEvents = prependEvent(snap.events, {
+      verb: "release",
+      summary: `${repo.name} · <private release>`,
+      ts,
+      repo: repo.name,
+    });
+    return { ...snap, repos: nextRepos, events: nextEvents };
   }
 
   const nextEvents = prependEvent(snap.events, {
