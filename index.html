@@ -1598,10 +1598,26 @@
             <div class="status-repo-row">
               <span class="status-repo-name">Caseonix</span>
               <span class="status-repo-lang">HTML</span>
-              <span class="status-repo-version">42 commits</span>
+              <span class="status-repo-version">45 commits</span>
               <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
               <span class="status-repo-latency"></span>
               <span class="status-repo-push">today</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">consul-ai</span>
+              <span class="status-repo-lang">TS</span>
+              <span class="status-repo-version">149 commits</span>
+              <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
+              <span class="status-repo-latency"></span>
+              <span class="status-repo-push">today</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">localmind</span>
+              <span class="status-repo-lang">TS</span>
+              <span class="status-repo-version">266 commits</span>
+              <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
+              <span class="status-repo-latency"></span>
+              <span class="status-repo-push">1d</span>
             </div>
             <div class="status-repo-row">
               <span class="status-repo-name">wealth-guide</span>
@@ -1626,6 +1642,22 @@
               <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
               <span class="status-repo-latency"></span>
               <span class="status-repo-push">3w</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">canadian-tax-cra</span>
+              <span class="status-repo-lang">HTML</span>
+              <span class="status-repo-version">21 commits</span>
+              <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
+              <span class="status-repo-latency"></span>
+              <span class="status-repo-push">30d</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">canadian-regulatory-compliance</span>
+              <span class="status-repo-lang">HTML</span>
+              <span class="status-repo-version">12 commits</span>
+              <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
+              <span class="status-repo-latency"></span>
+              <span class="status-repo-push">30d</span>
             </div>
           </div>
         </div>
@@ -2518,7 +2550,7 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
           };
         });
         rows.sort(function (a, b) { return (b.ts || '').localeCompare(a.ts || ''); });
-        rows = rows.slice(0, 4);
+        rows = rows.slice(0, 10);
         if (!rows.length) return;
 
         var html = '';

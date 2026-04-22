@@ -53,7 +53,7 @@ export const PRIVATE_REPO_BLOCKLIST: readonly string[] = [];
  * fully hidden. Metadata only (name, language, commit_count, last_push,
  * status) — never commit messages or SHAs.
  */
-export const PRIVATE_REPOS_ALLOWLIST: readonly string[] = ["localmind", "consol-cloud"];
+export const PRIVATE_REPOS_ALLOWLIST: readonly string[] = ["localmind", "consul-ai"];
 
 /**
  * Public endpoint for each repo that has one. Cron Trigger HEAD-checks these
@@ -64,7 +64,7 @@ export const PRIVATE_REPOS_ALLOWLIST: readonly string[] = ["localmind", "consol-
  */
 export const REPO_ENDPOINTS: Readonly<Record<string, string>> = {
   Caseonix: "https://caseonix.ca",
-  "consol-cloud": "https://consul.caseonix.ca",
+  "consul-ai": "https://consul.caseonix.ca",
   LoonieLog: "https://loonielog.ca",
   localmind: "https://localmind.caseonix.ca",
 };
