@@ -1457,11 +1457,12 @@
     }
     .status-repo-row {
       display: grid;
-      grid-template-columns: 1fr auto auto auto;
+      grid-template-columns: 1fr auto auto auto auto;
       gap: 10px; align-items: baseline;
     }
     .status-repo-name    { color: var(--text); }
     .status-repo-version { color: var(--text-3); }
+    .status-repo-latency { color: var(--text-3); font-size: 0.7rem; min-width: 42px; text-align: right; }
     .status-repo-dot     { color: var(--green); font-size: 0.6rem; }
     .status-repo-dot.warn { color: #FBBF24; }
     .status-repo-dot.off  { color: var(--text-3); opacity: 0.5; }
@@ -2460,6 +2461,7 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
             status: r.status || 'green',
             last_push: r.last_push || '',
             ts: r.last_push_ts || '',
+            latency_ms: r.latency_ms,
           };
         });
         rows.sort(function (a, b) { return (b.ts || '').localeCompare(a.ts || ''); });
@@ -2469,10 +2471,12 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
         var html = '';
         rows.forEach(function (r) {
           var label = r.status === 'green' ? 'healthy' : r.status === 'red' ? 'failing' : 'degraded';
+          var latencyTxt = typeof r.latency_ms === 'number' ? (r.latency_ms + 'ms') : '';
           html += '<div class="status-repo-row">'
                +    '<span class="status-repo-name">' + esc(r.name) + '</span>'
                +    '<span class="status-repo-version">' + esc(r.line2) + '</span>'
                +    '<span class="status-repo-dot" data-status="' + esc(r.status) + '" aria-label="' + esc(label) + '">●</span>'
+               +    '<span class="status-repo-latency">' + esc(latencyTxt) + '</span>'
                +    '<span class="status-repo-push">' + esc(r.last_push) + '</span>'
                +  '</div>';
         });

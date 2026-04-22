@@ -1,8 +1,10 @@
 import { PING_TIMEOUT_MS, REPO_ENDPOINTS, RepoStatus, Snapshot } from "./types";
 
-export async function pingAllEndpoints(): Promise<Record<string, RepoStatus>> {
+export type PingResult = { status: RepoStatus; latencyMs?: number };
+
+export async function pingAllEndpoints(): Promise<Record<string, PingResult>> {
   const entries = Object.entries(REPO_ENDPOINTS);
-  const out: Record<string, RepoStatus> = {};
+  const out: Record<string, PingResult> = {};
   await Promise.all(
     entries.map(async ([repo, url]) => {
       out[repo] = await pingOne(url);
@@ -11,9 +13,10 @@ export async function pingAllEndpoints(): Promise<Record<string, RepoStatus>> {
   return out;
 }
 
-async function pingOne(url: string): Promise<RepoStatus> {
+async function pingOne(url: string): Promise<PingResult> {
   const controller = new AbortController();
   const t = setTimeout(() => controller.abort(), PING_TIMEOUT_MS);
+  const start = Date.now();
   try {
     // HEAD first; fall back to GET for servers that reject HEAD (some CF
     // Access walls, some Worker routes). We don't read the body either way.
@@ -22,23 +25,28 @@ async function pingOne(url: string): Promise<RepoStatus> {
       r = await fetch(url, { method: "GET", redirect: "follow", signal: controller.signal });
     }
     clearTimeout(t);
-    if (r.ok) return "green";
-    if (r.status >= 500) return "red";
-    return "yellow";
+    const latencyMs = Date.now() - start;
+    if (r.ok) return { status: "green", latencyMs };
+    if (r.status >= 500) return { status: "red", latencyMs };
+    return { status: "yellow", latencyMs };
   } catch {
     clearTimeout(t);
-    return "red";
+    return { status: "red" };
   }
 }
 
 export function applyPingResults(
   prev: Snapshot,
-  results: Record<string, RepoStatus>
+  results: Record<string, PingResult>
 ): Snapshot {
   const repos = { ...prev.repos };
-  for (const [name, status] of Object.entries(results)) {
+  for (const [name, result] of Object.entries(results)) {
     if (repos[name]) {
-      repos[name] = { ...repos[name], status };
+      repos[name] = {
+        ...repos[name],
+        status: result.status,
+        latency_ms: result.latencyMs,
+      };
     }
   }
   return { ...prev, repos, updated_at: new Date().toISOString() };

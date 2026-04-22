@@ -14,6 +14,7 @@ export type RepoRow = {
   status: RepoStatus;
   commit_count?: number;
   last_push_ts: string;
+  latency_ms?: number;
 };
 
 export type LatestDeploy = {
