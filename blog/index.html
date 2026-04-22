@@ -243,6 +243,42 @@
     }
     .log-row:hover .log-title { text-decoration: underline; }
 
+    /* Tabs: Posts | Notes */
+    .log-tabs {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .log-tab {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      background: none;
+      border: none;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 120ms ease-out, border-color 120ms ease-out;
+    }
+    .log-tab:hover { color: var(--text-2); }
+    .log-tab.active {
+      color: var(--teal-1);
+      border-bottom-color: var(--teal-1);
+    }
+    .log-tab .log-tab-count {
+      color: var(--text-3);
+      font-size: 0.65rem;
+      margin-left: 6px;
+      font-weight: 400;
+    }
+    .log-pane { display: none; }
+    .log-pane.active { display: block; }
+
 
     /* ═══════════════════════════════════
        REVEAL + MOTION POLISH — Prompt 6
@@ -335,8 +371,7 @@
       <li><a href="/#projects">Field notes</a></li>
       <li><a href="/#arsenal">Arsenal</a></li>
       <li><a href="/blog/index.html" class="active">Log</a></li>
-      <li><a href="/now.html">Now</a></li>
-      <li><a href="/#contact">Contact</a></li>
+      <li><a href="/#contact">Open a thread</a></li>
     </ul>
     <div class="nav-right">
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
@@ -351,36 +386,64 @@
       <p class="log-sub">Working notes from a solo AI lab. New entries 2-4&times; per month.</p>
     </div>
 
-    <div class="log-year"><span>2026</span></div>
+    <div class="log-tabs" role="tablist" aria-label="Lab notes sections">
+      <button class="log-tab active" role="tab" aria-selected="true" aria-controls="tab-notes" data-tab="notes">
+        Notes<span class="log-tab-count">2</span>
+      </button>
+      <button class="log-tab" role="tab" aria-selected="false" aria-controls="tab-posts" data-tab="posts">
+        Posts<span class="log-tab-count">5</span>
+      </button>
+    </div>
 
-    <div class="log-month"><span>Apr</span></div>
-    <a href="/blog/building-multi-agent-claude-skills-wealth-guide.html" class="log-row" data-reveal data-reveal-stagger="1">
-      <span class="log-date">Apr 17</span>
-      <span class="log-sep" aria-hidden="true">&#9617;</span>
-      <span class="log-title">Building multi-agent Claude Code skills &mdash; the wealth-guide architecture</span>
-    </a>
-    <a href="/blog/extracting-t4-data-python-canadian-developer-guide.html" class="log-row" data-reveal data-reveal-stagger="2">
-      <span class="log-date">Apr 10</span>
-      <span class="log-sep" aria-hidden="true">&#9617;</span>
-      <span class="log-title">Extracting T4 data from PDFs in Python</span>
-    </a>
-    <a href="/blog/chatgpt-vs-self-hosted-ai-law-firms.html" class="log-row" data-reveal data-reveal-stagger="3">
-      <span class="log-date">Apr 07</span>
-      <span class="log-sep" aria-hidden="true">&#9617;</span>
-      <span class="log-title">ChatGPT vs self-hosted AI for Canadian law firms</span>
-    </a>
-    <a href="/blog/building-pipeda-compliant-ai-tools.html" class="log-row" data-reveal data-reveal-stagger="4">
-      <span class="log-date">Apr 07</span>
-      <span class="log-sep" aria-hidden="true">&#9617;</span>
-      <span class="log-title">Building PIPEDA-compliant AI tools in 2026</span>
-    </a>
+    <div id="tab-notes" class="log-pane active" role="tabpanel" aria-labelledby="tab-notes">
+      <div class="log-year"><span>2026</span></div>
 
-    <div class="log-month"><span>Feb</span></div>
-    <a href="/blog/ai-canadian-financial-services-compliance-playbook.html" class="log-row" data-reveal data-reveal-stagger="5">
-      <span class="log-date">Feb 14</span>
-      <span class="log-sep" aria-hidden="true">&#9617;</span>
-      <span class="log-title">AI for Canadian financial services &mdash; the compliance-first playbook</span>
-    </a>
+      <div class="log-month"><span>Mar</span></div>
+      <a href="/notes/auditlm-ai-governance-gap.html" class="log-row" data-reveal data-reveal-stagger="1">
+        <span class="log-date">Mar 18</span>
+        <span class="log-sep" aria-hidden="true">&#9617;</span>
+        <span class="log-title">AuditLM and the AI governance gap &mdash; research note</span>
+      </a>
+      <a href="/notes/nordid-canadian-business-identity.html" class="log-row" data-reveal data-reveal-stagger="2">
+        <span class="log-date">Mar 12</span>
+        <span class="log-sep" aria-hidden="true">&#9617;</span>
+        <span class="log-title">NordID and the Canadian business identity gap &mdash; research note</span>
+      </a>
+    </div>
+
+    <div id="tab-posts" class="log-pane" role="tabpanel" aria-labelledby="tab-posts" hidden>
+      <div class="log-year"><span>2026</span></div>
+
+      <div class="log-month"><span>Apr</span></div>
+      <a href="/blog/building-multi-agent-claude-skills-wealth-guide.html" class="log-row" data-reveal data-reveal-stagger="1">
+        <span class="log-date">Apr 17</span>
+        <span class="log-sep" aria-hidden="true">&#9617;</span>
+        <span class="log-title">Building multi-agent Claude Code skills &mdash; the wealth-guide architecture</span>
+      </a>
+      <a href="/blog/extracting-t4-data-python-canadian-developer-guide.html" class="log-row" data-reveal data-reveal-stagger="2">
+        <span class="log-date">Apr 10</span>
+        <span class="log-sep" aria-hidden="true">&#9617;</span>
+        <span class="log-title">Extracting T4 data from PDFs in Python</span>
+      </a>
+      <a href="/blog/chatgpt-vs-self-hosted-ai-law-firms.html" class="log-row" data-reveal data-reveal-stagger="3">
+        <span class="log-date">Apr 07</span>
+        <span class="log-sep" aria-hidden="true">&#9617;</span>
+        <span class="log-title">ChatGPT vs self-hosted AI for Canadian law firms</span>
+      </a>
+      <a href="/blog/building-pipeda-compliant-ai-tools.html" class="log-row" data-reveal data-reveal-stagger="4">
+        <span class="log-date">Apr 07</span>
+        <span class="log-sep" aria-hidden="true">&#9617;</span>
+        <span class="log-title">Building PIPEDA-compliant AI tools in 2026</span>
+      </a>
+
+      <div class="log-month"><span>Feb</span></div>
+      <a href="/blog/ai-canadian-financial-services-compliance-playbook.html" class="log-row" data-reveal data-reveal-stagger="5">
+        <span class="log-date">Feb 14</span>
+        <span class="log-sep" aria-hidden="true">&#9617;</span>
+        <span class="log-title">AI for Canadian financial services &mdash; the compliance-first playbook</span>
+      </a>
+    </div>
+
 
   </div>
 
@@ -394,7 +457,6 @@
         <a href="/#projects">Field notes</a>
         <a href="/#arsenal">Arsenal</a>
         <a href="/blog/index.html">Log</a>
-        <a href="/now.html">Now</a>
         <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub &#8599;</a>
       </nav>
       <div class="footer-v2-right">&copy; 2026 Caseonix</div>
@@ -436,6 +498,32 @@
         });
       }, { threshold: 0.2 });
       document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+    })();
+
+    // ── Tabs: Posts / Notes ──
+    (function () {
+      const tabs = document.querySelectorAll('.log-tab');
+      const panes = document.querySelectorAll('.log-pane');
+      if (!tabs.length) return;
+
+      function activate(name) {
+        tabs.forEach(t => {
+          const on = t.dataset.tab === name;
+          t.classList.toggle('active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        panes.forEach(p => {
+          const on = p.id === 'tab-' + name;
+          p.classList.toggle('active', on);
+          if (on) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+        });
+        try { history.replaceState(null, '', '#' + name); } catch (e) {}
+      }
+
+      tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.tab)));
+
+      const hash = (location.hash || '').replace('#', '');
+      if (hash === 'notes' || hash === 'posts') activate(hash);
     })();
   </script>
 
