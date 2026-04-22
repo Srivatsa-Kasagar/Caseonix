@@ -20,22 +20,23 @@ Cloudflare Worker powering the **Live Status** widget on caseonix.ca — receive
 
 ## First-time setup
 
+Use the Makefile — every command has a `make` target. `make help` shows them all.
+
 ```bash
 cd worker/
-npm install
+make install
 
-# 1. Create the KV namespace, paste the returned id into wrangler.toml
-wrangler kv namespace create STATUS_KV
+# 1. Create the KV namespace (auto-patches the id into wrangler.toml)
+make kv-create
 
-# 2. Generate and store secrets
-openssl rand -hex 32 | wrangler secret put GITHUB_WEBHOOK_SECRET
-openssl rand -hex 32 | wrangler secret put ADMIN_SEED_TOKEN
+# 2. Generate + store both secrets. Values print to your terminal — copy them.
+#    GITHUB_WEBHOOK_SECRET is what you paste into each GitHub repo webhook.
+#    ADMIN_SEED_TOKEN is what you export for 'make backfill'.
+make secrets
 
 # 3. Deploy
-wrangler deploy
+make deploy
 ```
-
-The generated `GITHUB_WEBHOOK_SECRET` is the value you paste into each GitHub repo's webhook config.
 
 ## GitHub webhook config (per repo)
 
@@ -53,9 +54,9 @@ Start with the `Caseonix` repo, verify end-to-end, then add the rest.
 
 ```bash
 # In worker/
-export ADMIN_SEED_TOKEN=<the value you set above>
-export GITHUB_READ_TOKEN=<fine-grained PAT with read on caseonix/* (optional)>
-npm run backfill
+export ADMIN_SEED_TOKEN=<the value 'make secrets' printed for you>
+export GITHUB_READ_TOKEN=<fine-grained PAT, read-only on caseonix/*, optional>
+make backfill
 ```
 
 After that first seed, webhooks drive all updates.
@@ -63,12 +64,20 @@ After that first seed, webhooks drive all updates.
 ## Verify
 
 ```bash
-curl -s https://caseonix.ca/api/status | jq
+make status     # curl caseonix.ca/api/status | jq
+make logs       # wrangler tail
 ```
 
-## Scripts
+## All Make targets
 
-- `npm run dev` — local dev server (wrangler)
-- `npm run deploy` — deploy to Cloudflare
-- `npm run typecheck` — `tsc --noEmit`
-- `npm run backfill` — one-shot local seed script
+- `make help` — full target list
+- `make install` — `npm install`
+- `make typecheck` — tsc across src/ + scripts/
+- `make dev` — local wrangler dev
+- `make deploy` — deploy Worker
+- `make kv-create` — create KV namespace + auto-patch wrangler.toml
+- `make secrets` — generate + store both secrets
+- `make secret-webhook` / `make secret-seed` — individual secret targets
+- `make backfill` — one-shot seed
+- `make status` / `make logs` — runtime checks
+- `make clean` — remove node_modules, .wrangler, dist
