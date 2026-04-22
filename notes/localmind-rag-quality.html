@@ -4,14 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lab note 2/3 — How I improved RAG quality | Caseonix</title>
-  <meta name="description" content="Eleven changes I made to LocalMind to move beyond a naïve RAG baseline — paragraph-aware chunking, contextual chunking, BGE asymmetric prefix, query expansion, calibrated similarity floor, two-stage rerank, fairness caps, citation binding." />
+  <meta name="description" content="Eleven techniques I used to lift RAG quality in LocalMind beyond a naïve baseline — paragraph-aware chunking, table flattening, contextual chunking, BGE asymmetric query prefix, multi-vector query expansion, tuned similarity floor, two-stage LLM reranking, per-document fairness cap, and citation-bound synthesis." />
   <meta name="author" content="Srivatsa Kasagar" />
-  <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="RAG quality, contextual chunking, BGE prefix, query expansion, LLM reranking, retrieval improvements, RAG evaluation, LocalMind" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="keywords" content="RAG quality improvements, contextual chunking Anthropic, BGE asymmetric query prefix, query expansion RAG, multi-vector search, LLM reranking, two-stage retrieval, retrieval cosine similarity threshold, RAG hallucination prevention, citation-bound LLM, RAG fairness cap, vector search precision recall, RAG evaluation, paragraph-aware chunking, LocalMind, retrieval-augmented generation tutorial, naïve RAG baseline" />
   <link rel="canonical" href="https://caseonix.ca/notes/localmind-rag-quality.html" />
+  <link rel="prev" href="https://caseonix.ca/notes/localmind-rag-pipeline.html" title="Lab note 1/3 — LocalMind RAG pipeline" />
+  <link rel="next" href="https://caseonix.ca/notes/localmind-nlp-layer.html" title="Lab note 3/3 — NLP layer in LocalMind" />
 
   <meta property="og:title" content="Lab note 2/3 — How I improved RAG quality" />
-  <meta property="og:description" content="Eleven changes I made to move beyond a naïve RAG baseline — chunking, embedding, retrieval, generation." />
+  <meta property="og:description" content="Eleven techniques to lift RAG beyond naïve baselines — contextual chunking, BGE prefix, query expansion, similarity floor, LLM rerank, fairness cap, citation binding." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://caseonix.ca/notes/localmind-rag-quality.html" />
   <meta property="og:image" content="https://caseonix.ca/og-image.png" />
@@ -25,28 +27,63 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Lab note 2/3 — How I improved RAG quality" />
-  <meta name="twitter:description" content="Eleven changes I made to move beyond a naïve RAG baseline." />
+  <meta name="twitter:description" content="Eleven techniques to lift RAG beyond naïve baselines — contextual chunking, BGE prefix, query expansion, similarity floor, LLM rerank, fairness cap." />
   <meta name="twitter:image" content="https://caseonix.ca/og-image.png" />
 
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Lab note 2/3 — How I improved RAG quality",
-    "description": "Eleven deliberate departures from a naïve RAG baseline.",
+    "@type": "TechArticle",
+    "headline": "Lab note 2/3 — How I improved RAG quality in LocalMind",
+    "alternativeHeadline": "Eleven techniques to lift RAG beyond a naïve baseline",
+    "description": "Eleven techniques I used to lift RAG quality in LocalMind beyond a naïve baseline — paragraph-aware chunking, table flattening, contextual chunking, BGE asymmetric query prefix, multi-vector query expansion, tuned similarity floor, two-stage LLM reranking, per-document fairness cap, and citation-bound synthesis.",
+    "articleSection": "Lab notes",
+    "inLanguage": "en-CA",
+    "wordCount": 1200,
     "author": {
       "@type": "Person",
       "name": "Srivatsa Kasagar",
       "url": "https://caseonix.ca",
       "jobTitle": "AI Builder & Solutions Architect"
     },
-    "publisher": { "@type": "Organization", "name": "Caseonix", "url": "https://caseonix.ca" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Caseonix",
+      "url": "https://caseonix.ca",
+      "logo": { "@type": "ImageObject", "url": "https://caseonix.ca/icon-512.png" }
+    },
     "datePublished": "2026-04-22",
     "dateModified": "2026-04-22",
     "url": "https://caseonix.ca/notes/localmind-rag-quality.html",
     "image": "https://caseonix.ca/og-image.png",
     "mainEntityOfPage": { "@type": "WebPage", "@id": "https://caseonix.ca/notes/localmind-rag-quality.html" },
-    "keywords": ["RAG quality", "contextual chunking", "BGE", "query expansion", "LLM reranking", "LocalMind"]
+    "isPartOf": {
+      "@type": "CreativeWorkSeries",
+      "name": "LocalMind RAG lab notes",
+      "url": "https://caseonix.ca/blog/index.html#notes"
+    },
+    "position": 2,
+    "about": [
+      { "@type": "Thing", "name": "Retrieval-augmented generation quality" },
+      { "@type": "Thing", "name": "Contextual chunking" },
+      { "@type": "Thing", "name": "LLM reranking" },
+      { "@type": "Thing", "name": "Query expansion" },
+      { "@type": "Thing", "name": "Vector similarity threshold" }
+    ],
+    "proficiencyLevel": "Expert",
+    "keywords": ["RAG quality", "contextual chunking", "BGE asymmetric prefix", "query expansion", "multi-vector search", "LLM reranking", "two-stage retrieval", "similarity floor", "RAG hallucination", "citation binding", "fairness cap", "LocalMind"]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Caseonix", "item": "https://caseonix.ca/" },
+      { "@type": "ListItem", "position": 2, "name": "Lab notes", "item": "https://caseonix.ca/blog/index.html#notes" },
+      { "@type": "ListItem", "position": 3, "name": "How I improved RAG quality", "item": "https://caseonix.ca/notes/localmind-rag-quality.html" }
+    ]
   }
   </script>
 
@@ -139,6 +176,61 @@
     }
     .note-series a:hover { border-color: var(--border-hover); color: var(--text); }
     .note-series .current { background: var(--surface); border-color: var(--border-hover); color: var(--teal-1); }
+
+    .note-live {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+      padding: 14px 18px;
+      margin: -16px 0 44px;
+      background: var(--surface);
+      border-radius: 10px;
+      border: 1px solid var(--border-hover);
+      font-size: 0.85rem;
+    }
+    .note-live-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal-1);
+      font-weight: 600;
+    }
+    .note-live a {
+      color: var(--text);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      transition: color 0.2s;
+    }
+    .note-live a:hover { color: var(--teal-1); }
+    .note-live-sep { color: var(--text-3); opacity: 0.5; }
+
+    .share-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin: 48px 0 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .share-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-right: 4px;
+    }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-2); font-size: 0.78rem; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .share-btn:hover { border-color: var(--border-hover); color: var(--text); background: rgba(94,186,156,0.07); }
+    .share-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .share-btn.copied { border-color: var(--blue); color: var(--blue); }
 
     .note-body p { font-size: 1.02rem; color: var(--text-2); margin-bottom: 22px; line-height: 1.75; }
     .note-body p strong, .note-body li strong { color: var(--text); font-weight: 600; }
@@ -270,12 +362,17 @@
       <a href="/notes/localmind-nlp-layer.html">3. NLP layer &rarr;</a>
     </div>
 
+    <div class="note-live">
+      <span class="note-live-label">&sect; Live app</span>
+      <a href="https://localmind.caseonix.ca" target="_blank" rel="noopener">localmind.caseonix.ca &#8599;</a>
+    </div>
+
     <div class="note-body">
       <p>A naïve "split by N tokens, embed, top-K cosine, stuff into prompt" pipeline is the baseline most RAG tutorials give you. I moved away from that baseline at almost every layer of LocalMind because each step had a real failure mode in my testing. This note lists every change I made and why.</p>
 
       <h2>Baseline vs. what I built</h2>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="Baseline vs LocalMind RAG comparison: a naïve RAG with fixed-window chunking, raw embeddings, single-query top-K cosine, and prompt stuffing — evolved into LocalMind's pipeline with paragraph-aware chunking, table flattening, PII redaction, contextual prepend, BGE query prefix, query expansion, multi-vector merge, similarity floor, Gemma rerank, token-budgeted context with per-doc fairness cap, and citation-bound synthesis.">
         <pre class="mermaid">
 flowchart TB
     subgraph Baseline["Naïve baseline RAG"]
@@ -297,7 +394,7 @@ flowchart TB
 
       <h2>Indexing-side improvements</h2>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="Indexing-side improvements stack: raw text flows through paragraph-aware chunking, table flattening, PII redaction, contextual prepend, and BGE query/doc asymmetry before being upserted into Vectorize.">
         <pre class="mermaid">
 flowchart LR
     R[raw text] --&gt; C1[paragraph-aware<br/>chunking]
@@ -316,7 +413,7 @@ flowchart LR
 
       <p><strong>Contextual chunking (the biggest single win).</strong> I applied Anthropic's contextual-retrieval idea here. For each chunk, Gemma writes a 1-2 sentence header that says where the chunk fits in the broader document &mdash; for example, "This chunk is from the risk-factors section of Acme's 2024 10-K and discusses supply-chain exposure to&hellip;". I prepend that header to the chunk <em>before embedding</em>, so the vector encodes both the local content and its global context. The display copy in D1 stays untouched, so users still see the clean original text in citations.</p>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="Dual-text split for contextual chunking: original chunk goes to D1 as the display copy, and a parallel path has Gemma write a 1-2 sentence header that is prepended to make a contextualized chunk, which is then BGE-embedded and stored in Vectorize as the retrieval copy.">
         <pre class="mermaid">
 flowchart LR
     OC[original chunk] --&gt; D1[(D1 — display copy)]
@@ -336,7 +433,7 @@ flowchart LR
 
       <h2>Retrieval-side improvements</h2>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="Retrieval-side improvements stack: user query passes through query expansion into 2-3 variants, multi-vector search at topK=15 in parallel, merge and dedupe by max score, similarity floor of 0.3, Gemma 1-5 LLM rerank, token-budgeted context with per-document fairness cap, and citation-bound synthesis.">
         <pre class="mermaid">
 flowchart TB
     Q[user query] --&gt; QE[query expansion<br/>2-3 variants]
@@ -403,6 +500,22 @@ flowchart TB
       <p style="margin-top: 40px; color: var(--text-3); font-size: 0.92rem;">Next: <a href="/notes/localmind-nlp-layer.html" style="color: var(--teal-1);">how the NLP layer fits alongside RAG &rarr;</a></p>
     </div>
 
+    <div class="share-bar">
+      <span class="share-label">Share</span>
+      <a class="share-btn" id="shareLinkedIn" href="#" target="_blank" rel="noopener" aria-label="Share on LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a class="share-btn" id="shareTwitter" href="#" target="_blank" rel="noopener" aria-label="Share on X">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+      </a>
+      <button class="share-btn" id="shareCopy" aria-label="Copy link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Copy link
+      </button>
+    </div>
+
     <a href="/#contact" class="note-cta">
       <div class="note-cta-body">
         <span class="note-cta-eyebrow">&sect; Open a thread</span>
@@ -465,6 +578,26 @@ flowchart TB
       const saved = localStorage.getItem('caseonix-theme');
       if (saved) setTheme(saved);
     } catch(e) {}
+
+    // Share buttons
+    (function() {
+      const pageUrl = 'https://caseonix.ca/notes/localmind-rag-quality.html';
+      const pageTitle = 'How I improved RAG quality in LocalMind · lab note 2/3';
+      const li = document.getElementById('shareLinkedIn');
+      const tw = document.getElementById('shareTwitter');
+      const cp = document.getElementById('shareCopy');
+      if (li) li.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl);
+      if (tw) tw.href = 'https://x.com/intent/tweet?text=' + encodeURIComponent(pageTitle) + '&url=' + encodeURIComponent(pageUrl);
+      if (cp) cp.addEventListener('click', function() {
+        navigator.clipboard.writeText(pageUrl).then(() => {
+          const btn = this;
+          btn.classList.add('copied');
+          const orig = btn.innerHTML;
+          btn.innerHTML = btn.innerHTML.replace('Copy link', 'Copied!');
+          setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+        });
+      });
+    })();
   </script>
 
 </body>

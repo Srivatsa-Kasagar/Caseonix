@@ -4,14 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lab note 1/3 — LocalMind RAG pipeline | Caseonix</title>
-  <meta name="description" content="How I wired retrieval-augmented generation end-to-end in LocalMind on the Cloudflare edge — chunking, embedding, vector index, retrieval, and generation, all with Workers AI, Vectorize, D1, and R2." />
+  <meta name="description" content="End-to-end retrieval-augmented generation (RAG) pipeline I built for LocalMind on Cloudflare's edge — paragraph-aware chunking, BGE-Small embeddings, contextual chunking, Vectorize ANN search with multi-tenant namespaces, Gemma 4 reranking, and citation-bound generation." />
   <meta name="author" content="Srivatsa Kasagar" />
-  <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="RAG, retrieval-augmented generation, Cloudflare Workers AI, Vectorize, BGE-Small, Gemma, contextual chunking, document chunking, vector search, LocalMind" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="keywords" content="RAG pipeline, retrieval-augmented generation, Cloudflare Workers AI, Cloudflare Vectorize, Cloudflare D1, Cloudflare R2, Durable Objects, BGE-Small embeddings, Gemma 4, contextual chunking, document chunking strategy, vector search edge, multi-tenant vector namespace, Hono framework, edge AI inference, LocalMind, document ingest pipeline, retrieval flow, query expansion, LLM rerank" />
   <link rel="canonical" href="https://caseonix.ca/notes/localmind-rag-pipeline.html" />
+  <link rel="next" href="https://caseonix.ca/notes/localmind-rag-quality.html" title="Lab note 2/3 — How I improved RAG quality" />
 
   <meta property="og:title" content="Lab note 1/3 — LocalMind RAG pipeline" />
-  <meta property="og:description" content="End-to-end retrieval-augmented generation on the Cloudflare edge: chunking, embedding, vector index, retrieval, generation." />
+  <meta property="og:description" content="End-to-end RAG pipeline on Cloudflare's edge — paragraph-aware chunking, BGE-Small embeddings, contextual chunking, Vectorize, Gemma 4 reranking, citation-bound generation." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://caseonix.ca/notes/localmind-rag-pipeline.html" />
   <meta property="og:image" content="https://caseonix.ca/og-image.png" />
@@ -25,15 +26,19 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Lab note 1/3 — LocalMind RAG pipeline" />
-  <meta name="twitter:description" content="End-to-end RAG on the Cloudflare edge — chunking, embedding, vector index, retrieval, generation." />
+  <meta name="twitter:description" content="End-to-end RAG on Cloudflare's edge — paragraph-aware chunking, BGE-Small embeddings, contextual chunking, Vectorize, Gemma 4 rerank." />
   <meta name="twitter:image" content="https://caseonix.ca/og-image.png" />
 
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "TechArticle",
     "headline": "Lab note 1/3 — LocalMind RAG pipeline",
-    "description": "How I wired retrieval-augmented generation end-to-end in LocalMind on the Cloudflare edge.",
+    "alternativeHeadline": "End-to-end retrieval-augmented generation on the Cloudflare edge",
+    "description": "End-to-end retrieval-augmented generation (RAG) pipeline I built for LocalMind on Cloudflare's edge — paragraph-aware chunking, BGE-Small embeddings, contextual chunking, Vectorize ANN search with multi-tenant namespaces, Gemma 4 reranking, and citation-bound generation.",
+    "articleSection": "Lab notes",
+    "inLanguage": "en-CA",
+    "wordCount": 1100,
     "author": {
       "@type": "Person",
       "name": "Srivatsa Kasagar",
@@ -43,7 +48,8 @@
     "publisher": {
       "@type": "Organization",
       "name": "Caseonix",
-      "url": "https://caseonix.ca"
+      "url": "https://caseonix.ca",
+      "logo": { "@type": "ImageObject", "url": "https://caseonix.ca/icon-512.png" }
     },
     "datePublished": "2026-04-22",
     "dateModified": "2026-04-22",
@@ -53,7 +59,33 @@
       "@type": "WebPage",
       "@id": "https://caseonix.ca/notes/localmind-rag-pipeline.html"
     },
-    "keywords": ["RAG", "Cloudflare Workers AI", "Vectorize", "BGE-Small", "Gemma", "contextual chunking", "LocalMind"]
+    "isPartOf": {
+      "@type": "CreativeWorkSeries",
+      "name": "LocalMind RAG lab notes",
+      "url": "https://caseonix.ca/blog/index.html#notes"
+    },
+    "position": 1,
+    "about": [
+      { "@type": "Thing", "name": "Retrieval-augmented generation" },
+      { "@type": "Thing", "name": "Cloudflare Workers AI" },
+      { "@type": "Thing", "name": "Vector search" },
+      { "@type": "Thing", "name": "BGE-Small" },
+      { "@type": "Thing", "name": "Gemma 4" }
+    ],
+    "proficiencyLevel": "Expert",
+    "keywords": ["RAG pipeline", "Cloudflare Workers AI", "Cloudflare Vectorize", "Cloudflare D1", "Durable Objects", "BGE-Small", "Gemma 4", "contextual chunking", "multi-tenant vector namespace", "edge AI", "Hono", "LocalMind", "document ingest", "query expansion", "LLM rerank"]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Caseonix", "item": "https://caseonix.ca/" },
+      { "@type": "ListItem", "position": 2, "name": "Lab notes", "item": "https://caseonix.ca/blog/index.html#notes" },
+      { "@type": "ListItem", "position": 3, "name": "LocalMind RAG pipeline", "item": "https://caseonix.ca/notes/localmind-rag-pipeline.html" }
+    ]
   }
   </script>
 
@@ -170,6 +202,61 @@
     }
     .note-series a:hover { border-color: var(--border-hover); color: var(--text); }
     .note-series .current { background: var(--surface); border-color: var(--border-hover); color: var(--teal-1); }
+
+    .note-live {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+      padding: 14px 18px;
+      margin: -16px 0 44px;
+      background: var(--surface);
+      border-radius: 10px;
+      border: 1px solid var(--border-hover);
+      font-size: 0.85rem;
+    }
+    .note-live-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal-1);
+      font-weight: 600;
+    }
+    .note-live a {
+      color: var(--text);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      transition: color 0.2s;
+    }
+    .note-live a:hover { color: var(--teal-1); }
+    .note-live-sep { color: var(--text-3); opacity: 0.5; }
+
+    .share-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin: 48px 0 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .share-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-right: 4px;
+    }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-2); font-size: 0.78rem; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .share-btn:hover { border-color: var(--border-hover); color: var(--text); background: rgba(94,186,156,0.07); }
+    .share-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .share-btn.copied { border-color: var(--blue); color: var(--blue); }
 
     .note-body p {
       font-size: 1.02rem; color: var(--text-2);
@@ -349,6 +436,11 @@
       <a href="/notes/localmind-nlp-layer.html">3. NLP layer &rarr;</a>
     </div>
 
+    <div class="note-live">
+      <span class="note-live-label">&sect; Live app</span>
+      <a href="https://localmind.caseonix.ca" target="_blank" rel="noopener">localmind.caseonix.ca &#8599;</a>
+    </div>
+
     <div class="note-body">
       <p>How I wired retrieval-augmented generation end-to-end in LocalMind: chunking, embedding, vector index, retrieval, generation. Everything runs on the Cloudflare edge &mdash; <strong>Workers AI</strong> for inference, <strong>Vectorize</strong> for ANN, <strong>D1</strong> for the canonical chunk text, and <strong>R2</strong> for the original blob. I use <code>teamId</code> as the Vectorize <strong>namespace</strong> on every read and write to keep tenants isolated.</p>
 
@@ -356,7 +448,7 @@
 
       <p>I put the whole ingest pipeline inside a per-team Durable Object so it can run async, hold rate-limit state, and use alarms to verify the vector index.</p>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="LocalMind ingest pipeline diagram: R2 file flows through parseDocument, flattenTables, chunkText, redactPII, then into D1 (display copy) and Vectorize (contextually enriched, embedded copy), with a Durable Object alarm verifying the vectors are indexed.">
         <pre class="mermaid">
 flowchart LR
     A[R2 file] --&gt; B[parseDocument<br/>PDF/DOCX/XLSX/OCR]
@@ -388,7 +480,7 @@ flowchart LR
 
       <h2>Retrieval &amp; generation (read path)</h2>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="LocalMind retrieval flow diagram: user query goes through Gemma query expansion into 2-3 variants, each is embedded with the BGE prefix and queried against Vectorize in parallel (topK=15 per variant), results merged and deduplicated, hydrated from D1, filtered by similarity floor of 0.3, reranked by Gemma 1-5 keeping top 7, assembled into context under a 6000-token cap, then Gemma synthesizes the final cited answer.">
         <pre class="mermaid">
 flowchart TB
     Q[user query] --&gt; E1[expandQuery<br/>Gemma → 2-3 variants]
@@ -450,6 +542,22 @@ flowchart TB
       </ul>
 
       <p style="margin-top: 40px; color: var(--text-3); font-size: 0.92rem;">Next: <a href="/notes/localmind-rag-quality.html" style="color: var(--teal-1);">how I improved the quality of this baseline &rarr;</a></p>
+    </div>
+
+    <div class="share-bar">
+      <span class="share-label">Share</span>
+      <a class="share-btn" id="shareLinkedIn" href="#" target="_blank" rel="noopener" aria-label="Share on LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a class="share-btn" id="shareTwitter" href="#" target="_blank" rel="noopener" aria-label="Share on X">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+      </a>
+      <button class="share-btn" id="shareCopy" aria-label="Copy link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Copy link
+      </button>
     </div>
 
     <a href="/#contact" class="note-cta">
@@ -515,6 +623,26 @@ flowchart TB
       const saved = localStorage.getItem('caseonix-theme');
       if (saved) setTheme(saved);
     } catch(e) {}
+
+    // Share buttons
+    (function() {
+      const pageUrl = 'https://caseonix.ca/notes/localmind-rag-pipeline.html';
+      const pageTitle = 'LocalMind RAG — the pipeline · lab note 1/3';
+      const li = document.getElementById('shareLinkedIn');
+      const tw = document.getElementById('shareTwitter');
+      const cp = document.getElementById('shareCopy');
+      if (li) li.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl);
+      if (tw) tw.href = 'https://x.com/intent/tweet?text=' + encodeURIComponent(pageTitle) + '&url=' + encodeURIComponent(pageUrl);
+      if (cp) cp.addEventListener('click', function() {
+        navigator.clipboard.writeText(pageUrl).then(() => {
+          const btn = this;
+          btn.classList.add('copied');
+          const orig = btn.innerHTML;
+          btn.innerHTML = btn.innerHTML.replace('Copy link', 'Copied!');
+          setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+        });
+      });
+    })();
   </script>
 
 </body>

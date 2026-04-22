@@ -4,14 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lab note 3/3 — NLP layer in LocalMind | Caseonix</title>
-  <meta name="description" content="The classical and LLM-based NLP that runs alongside RAG in LocalMind — layered PII redaction, hybrid NER, table structure recovery, document classification, structured analysis, and per-type review agents." />
+  <meta name="description" content="How I built the NLP layer alongside RAG in LocalMind — PIPEDA-aligned layered PII redaction (regex + LLM), hybrid regex and LLM named-entity recognition, table structure recovery for PDF and DOCX, document classification, sentiment with risk flags, and per-document-type review agents — all under JSON-schema constraints." />
   <meta name="author" content="Srivatsa Kasagar" />
-  <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="NLP, PII redaction PIPEDA, named entity recognition, table extraction, document classification, sentiment analysis, JSON schema LLM, LocalMind" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <meta name="keywords" content="NLP pipeline, PIPEDA PII redaction, PHIPA compliance, layered PII detection, regex NER, LLM named entity recognition, table extraction PDF, table flattening DOCX, document classification LLM, sentiment risk flags, JSON schema LLM, structured LLM output, Canadian privacy compliance NLP, document review agent, Cloudflare Workers AI, Gemma 4 NLP, LocalMind" />
   <link rel="canonical" href="https://caseonix.ca/notes/localmind-nlp-layer.html" />
+  <link rel="prev" href="https://caseonix.ca/notes/localmind-rag-quality.html" title="Lab note 2/3 — How I improved RAG quality" />
 
   <meta property="og:title" content="Lab note 3/3 — NLP layer in LocalMind" />
-  <meta property="og:description" content="Classical + LLM NLP alongside RAG: PII, NER, table flattening, classification, analysis, review." />
+  <meta property="og:description" content="Classical + LLM NLP alongside RAG — PIPEDA-aligned PII redaction, hybrid NER, PDF/DOCX table flattening, classification, structured analysis, and per-type review." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://caseonix.ca/notes/localmind-nlp-layer.html" />
   <meta property="og:image" content="https://caseonix.ca/og-image.png" />
@@ -25,28 +26,63 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Lab note 3/3 — NLP layer in LocalMind" />
-  <meta name="twitter:description" content="Classical + LLM NLP alongside RAG: PII, NER, table flattening, classification, analysis, review." />
+  <meta name="twitter:description" content="Classical + LLM NLP alongside RAG — PIPEDA-aligned PII redaction, hybrid NER, PDF/DOCX table flattening, classification, structured analysis." />
   <meta name="twitter:image" content="https://caseonix.ca/og-image.png" />
 
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Lab note 3/3 — NLP layer in LocalMind",
-    "description": "Classical and LLM-based NLP passes that run alongside RAG during ingest.",
+    "@type": "TechArticle",
+    "headline": "Lab note 3/3 — The NLP layer alongside LocalMind RAG",
+    "alternativeHeadline": "PIPEDA-aligned PII, hybrid NER, table flattening, classification, structured analysis",
+    "description": "How I built the NLP layer alongside RAG in LocalMind — PIPEDA-aligned layered PII redaction (regex + LLM), hybrid regex and LLM named-entity recognition, table structure recovery for PDF and DOCX, document classification, sentiment with risk flags, and per-document-type review agents — all under JSON-schema constraints.",
+    "articleSection": "Lab notes",
+    "inLanguage": "en-CA",
+    "wordCount": 1400,
     "author": {
       "@type": "Person",
       "name": "Srivatsa Kasagar",
       "url": "https://caseonix.ca",
       "jobTitle": "AI Builder & Solutions Architect"
     },
-    "publisher": { "@type": "Organization", "name": "Caseonix", "url": "https://caseonix.ca" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Caseonix",
+      "url": "https://caseonix.ca",
+      "logo": { "@type": "ImageObject", "url": "https://caseonix.ca/icon-512.png" }
+    },
     "datePublished": "2026-04-22",
     "dateModified": "2026-04-22",
     "url": "https://caseonix.ca/notes/localmind-nlp-layer.html",
     "image": "https://caseonix.ca/og-image.png",
     "mainEntityOfPage": { "@type": "WebPage", "@id": "https://caseonix.ca/notes/localmind-nlp-layer.html" },
-    "keywords": ["NLP", "PII redaction", "PIPEDA", "named entity recognition", "table extraction", "document classification", "LocalMind"]
+    "isPartOf": {
+      "@type": "CreativeWorkSeries",
+      "name": "LocalMind RAG lab notes",
+      "url": "https://caseonix.ca/blog/index.html#notes"
+    },
+    "position": 3,
+    "about": [
+      { "@type": "Thing", "name": "PIPEDA compliance" },
+      { "@type": "Thing", "name": "PII redaction" },
+      { "@type": "Thing", "name": "Named-entity recognition" },
+      { "@type": "Thing", "name": "Table extraction" },
+      { "@type": "Thing", "name": "Document classification" }
+    ],
+    "proficiencyLevel": "Expert",
+    "keywords": ["NLP pipeline", "PIPEDA PII redaction", "PHIPA compliance", "layered PII detection", "regex NER", "LLM NER", "table extraction PDF", "table flattening", "document classification", "sentiment risk flags", "JSON schema LLM output", "Canadian privacy compliance", "Workers AI", "Gemma 4", "LocalMind"]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Caseonix", "item": "https://caseonix.ca/" },
+      { "@type": "ListItem", "position": 2, "name": "Lab notes", "item": "https://caseonix.ca/blog/index.html#notes" },
+      { "@type": "ListItem", "position": 3, "name": "NLP layer in LocalMind", "item": "https://caseonix.ca/notes/localmind-nlp-layer.html" }
+    ]
   }
   </script>
 
@@ -139,6 +175,61 @@
     }
     .note-series a:hover { border-color: var(--border-hover); color: var(--text); }
     .note-series .current { background: var(--surface); border-color: var(--border-hover); color: var(--teal-1); }
+
+    .note-live {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+      padding: 14px 18px;
+      margin: -16px 0 44px;
+      background: var(--surface);
+      border-radius: 10px;
+      border: 1px solid var(--border-hover);
+      font-size: 0.85rem;
+    }
+    .note-live-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal-1);
+      font-weight: 600;
+    }
+    .note-live a {
+      color: var(--text);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      transition: color 0.2s;
+    }
+    .note-live a:hover { color: var(--teal-1); }
+    .note-live-sep { color: var(--text-3); opacity: 0.5; }
+
+    .share-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin: 48px 0 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .share-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      font-weight: 500;
+      margin-right: 4px;
+    }
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-2); font-size: 0.78rem; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .share-btn:hover { border-color: var(--border-hover); color: var(--text); background: rgba(94,186,156,0.07); }
+    .share-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .share-btn.copied { border-color: var(--blue); color: var(--blue); }
 
     .note-body p { font-size: 1.02rem; color: var(--text-2); margin-bottom: 22px; line-height: 1.75; }
     .note-body p strong, .note-body li strong { color: var(--text); font-weight: 600; }
@@ -277,6 +368,11 @@
       <span class="current">3. NLP layer</span>
     </div>
 
+    <div class="note-live">
+      <span class="note-live-label">&sect; Live app</span>
+      <a href="https://localmind.caseonix.ca" target="_blank" rel="noopener">localmind.caseonix.ca &#8599;</a>
+    </div>
+
     <div class="note-body">
       <p>RAG is the headline feature, but a fair amount of classical and LLM-based NLP runs alongside it during ingest. Each pass produces structured fields I persist on the <code>documents</code> row and surface in the UI, and several of them feed back into retrieval quality. This note covers what NLP I built, where it runs, and why it's there.</p>
 
@@ -284,7 +380,7 @@
 
       <p>Every document goes through this fan-out after parsing. The terminal nodes write structured fields to the <code>documents</code> row.</p>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="LocalMind NLP fan-out during ingest: parseDocument feeds tableFlattener, then a regex PII redactor, then an LLM PII detector. The cleaned text fans out into regex NER, document classifier, document analysis (title, description, topics, key points, people, orgs, sentiment with risk flags), and a document review agent. Regex and LLM entities are merged. Everything writes to the documents row in D1.">
         <pre class="mermaid">
 flowchart TB
     P[parseDocument<br/>PDF/DOCX/XLSX/OCR] --&gt; TF[tableFlattener<br/>re-attach headers]
@@ -309,7 +405,7 @@ flowchart TB
 
       <p>Privacy is the headline requirement of LocalMind, so PII handling has two layers &mdash; deterministic patterns first, LLM second.</p>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="Two-pass PII redaction flow: chunk text goes through a regex pass for 12 deterministic categories (SSN, SIN, credit card, etc.), then an LLM pass for 10 sensitive categories (medical, financial, ethnic, religious, etc.). Both passes contribute their detected types to a piiTypes set persisted on the documents row.">
         <pre class="mermaid">
 flowchart LR
     T[chunk text] --&gt; R[regex pass<br/>12 categories]
@@ -372,7 +468,7 @@ flowchart LR
 
       <p>The flattener detects two table shapes and re-emits each row as a <code>Header: Value | Header: Value | &hellip;</code> line.</p>
 
-      <div class="diagram-card">
+      <div class="diagram-card" role="figure" aria-label="Table flattener decision flow: each parsed line is checked for table shape — CSV (3+ comma fields, 2+ rows) gets flattened to Header: Value pairs; whitespace-aligned (3+ columns, 3+ rows) gets flattened too unless it has numeric headers or looks like a wide financial statement; non-table lines are kept as-is.">
         <pre class="mermaid">
 flowchart TB
     L[parsed lines] --&gt; D{table?}
@@ -487,6 +583,22 @@ flowchart TB
       <p style="margin-top: 40px; color: var(--text-3); font-size: 0.92rem;">Back to the start: <a href="/notes/localmind-rag-pipeline.html" style="color: var(--teal-1);">the RAG pipeline note &rarr;</a></p>
     </div>
 
+    <div class="share-bar">
+      <span class="share-label">Share</span>
+      <a class="share-btn" id="shareLinkedIn" href="#" target="_blank" rel="noopener" aria-label="Share on LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a class="share-btn" id="shareTwitter" href="#" target="_blank" rel="noopener" aria-label="Share on X">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+      </a>
+      <button class="share-btn" id="shareCopy" aria-label="Copy link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Copy link
+      </button>
+    </div>
+
     <a href="/#contact" class="note-cta">
       <div class="note-cta-body">
         <span class="note-cta-eyebrow">&sect; Open a thread</span>
@@ -549,6 +661,26 @@ flowchart TB
       const saved = localStorage.getItem('caseonix-theme');
       if (saved) setTheme(saved);
     } catch(e) {}
+
+    // Share buttons
+    (function() {
+      const pageUrl = 'https://caseonix.ca/notes/localmind-nlp-layer.html';
+      const pageTitle = 'The NLP layer alongside LocalMind RAG · lab note 3/3';
+      const li = document.getElementById('shareLinkedIn');
+      const tw = document.getElementById('shareTwitter');
+      const cp = document.getElementById('shareCopy');
+      if (li) li.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl);
+      if (tw) tw.href = 'https://x.com/intent/tweet?text=' + encodeURIComponent(pageTitle) + '&url=' + encodeURIComponent(pageUrl);
+      if (cp) cp.addEventListener('click', function() {
+        navigator.clipboard.writeText(pageUrl).then(() => {
+          const btn = this;
+          btn.classList.add('copied');
+          const orig = btn.innerHTML;
+          btn.innerHTML = btn.innerHTML.replace('Copy link', 'Copied!');
+          setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+        });
+      });
+    })();
   </script>
 
 </body>
