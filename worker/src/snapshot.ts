@@ -79,9 +79,14 @@ function handlePush(snap: Snapshot, p: Record<string, unknown>): Snapshot {
   // Metadata update applies to every allowed repo, including private-allowlist ones.
   const nextRepos = { ...snap.repos };
   const existing = nextRepos[repo.name];
+  // Refresh version when existing looks like a short SHA; preserve when it looks
+  // like a release tag (anything non-hex-only, or not 7 chars). Release handler
+  // sets explicit tags; without this, first backfill pins the version forever.
+  const existingIsSha = !!existing?.version && /^[a-f0-9]{7}$/i.test(existing.version);
+  const nextVersion = !existing?.version || existingIsSha ? sha : existing.version;
   nextRepos[repo.name] = {
     ...(existing ?? { status: "green", version: sha }),
-    version: existing?.version || sha,
+    version: nextVersion,
     last_push: shortDate(ts),
     last_push_ts: ts,
     status: existing?.status ?? "green",
