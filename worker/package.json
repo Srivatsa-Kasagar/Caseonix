@@ -1,0 +1,22 @@
+{
+  "name": "caseonix-status",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Webhook-driven status snapshot for the caseonix.ca hero widget.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
+    "backfill": "tsx scripts/backfill.ts"
+  },
+  "dependencies": {
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260401.0",
+    "@types/node": "^22.19.17",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "wrangler": "^3.80.0"
+  }
+}

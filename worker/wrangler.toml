@@ -1,0 +1,16 @@
+name = "caseonix-status"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+workers_dev = false
+
+[[kv_namespaces]]
+binding = "STATUS_KV"
+id = "REPLACE_WITH_KV_ID"
+
+[[routes]]
+pattern = "caseonix.ca/api/*"
+zone_name = "caseonix.ca"
+
+[[routes]]
+pattern = "caseonix.ca/webhooks/*"
+zone_name = "caseonix.ca"

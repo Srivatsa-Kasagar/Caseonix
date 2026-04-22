@@ -1519,25 +1519,25 @@
     </div>
 
     <div class="hero-right">
-      <div class="status-card" role="complementary" aria-label="Live status">
+      <div class="status-card" role="complementary" aria-label="Live status" data-live-status>
 
-        <!-- TILE 1: LATEST DEPLOY — UPDATE WEEKLY -->
-        <div class="status-tile">
+        <!-- TILE 1: LATEST DEPLOY — live, hydrated from /api/status; below is fallback -->
+        <div class="status-tile" data-tile="latest_deploy">
           <div class="status-tile-label">
             <span>LATEST DEPLOY</span>
             <span class="status-pulse" aria-hidden="true"></span>
           </div>
           <div class="status-tile-body">
-            <span class="status-tile-primary">consul.caseonix.ca</span>
-            <span class="status-tile-meta">0eeea18</span>
-            <span class="status-tile-meta">Apr 21</span>
+            <span class="status-tile-primary" data-field="domain">consul.caseonix.ca</span>
+            <span class="status-tile-meta" data-field="sha">0eeea18</span>
+            <span class="status-tile-meta" data-field="date">Apr 21</span>
           </div>
         </div>
 
-        <!-- TILE 2: EVENTS — UPDATE WEEKLY -->
-        <div class="status-tile">
+        <!-- TILE 2: EVENTS — live; fallback rows below -->
+        <div class="status-tile" data-tile="events">
           <div class="status-tile-label"><span>EVENTS</span></div>
-          <div class="status-events">
+          <div class="status-events" data-field="events">
             <div class="status-event-row">
               <span class="status-event-time">Apr 22 &middot; 09:14</span>
               <span class="status-event-action">commit</span>
@@ -1561,13 +1561,13 @@
           </div>
         </div>
 
-        <!-- TILE 3: REPOS — UPDATE WEEKLY -->
-        <div class="status-tile">
+        <!-- TILE 3: REPOS — live; fallback rows below -->
+        <div class="status-tile" data-tile="repos">
           <div class="status-tile-label">
             <span>REPOS</span>
-            <span class="status-label-right">Apr 2026</span>
+            <span class="status-label-right" data-field="repos_month">Apr 2026</span>
           </div>
-          <div class="status-repos">
+          <div class="status-repos" data-field="repos">
             <div class="status-repo-row">
               <span class="status-repo-name">localmind</span>
               <span class="status-repo-version">185 commits</span>
@@ -2391,6 +2391,105 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
         });
       }, { threshold: 0.2 });
       document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+    })();
+  </script>
+
+  <script>
+    // Live status hydration — fetches /api/status, paints tiles, polls every 60s.
+    // Falls back silently to the hardcoded HTML above on network/Worker error.
+    (function () {
+      var API = '/api/status';
+      var card = document.querySelector('[data-live-status]');
+      if (!card) return;
+
+      function qs(tile, field) {
+        var t = card.querySelector('[data-tile="' + tile + '"]');
+        return t ? t.querySelector('[data-field="' + field + '"]') : null;
+      }
+      function setText(el, text) {
+        if (el && typeof text === 'string') el.textContent = text;
+      }
+      function esc(s) { return String(s == null ? '' : s); }
+      function fmtMonthYear(iso) {
+        try {
+          var d = new Date(iso);
+          return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+        } catch (e) { return ''; }
+      }
+
+      function paintLatestDeploy(d) {
+        if (!d) return;
+        setText(qs('latest_deploy', 'domain'), d.domain || d.repo || '');
+        setText(qs('latest_deploy', 'sha'), d.sha || '');
+        setText(qs('latest_deploy', 'date'), d.date || '');
+      }
+
+      function paintEvents(events) {
+        var host = qs('events', 'events');
+        if (!host || !Array.isArray(events) || !events.length) return;
+        var html = '';
+        events.forEach(function (ev) {
+          var time = '';
+          try {
+            var d = new Date(ev.ts);
+            time = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', timeZone: 'UTC' });
+          } catch (e) {}
+          html += '<div class="status-event-row">'
+               +    '<span class="status-event-time">' + esc(time) + '</span>'
+               +    '<span class="status-event-action">' + esc(ev.verb) + '</span>'
+               +    '<span class="status-event-detail">' + esc(ev.summary) + '</span>'
+               +  '</div>';
+        });
+        host.innerHTML = html;
+      }
+
+      function paintRepos(repos, updatedAt) {
+        var host = qs('repos', 'repos');
+        var monthLabel = qs('repos', 'repos_month');
+        if (monthLabel && updatedAt) setText(monthLabel, fmtMonthYear(updatedAt));
+        if (!host || !repos) return;
+
+        var rows = Object.keys(repos).map(function (name) {
+          var r = repos[name];
+          return {
+            name: name,
+            line2: typeof r.commit_count === 'number' ? (r.commit_count + ' commits') : (r.version || ''),
+            status: r.status || 'green',
+            last_push: r.last_push || '',
+            ts: r.last_push_ts || '',
+          };
+        });
+        rows.sort(function (a, b) { return (b.ts || '').localeCompare(a.ts || ''); });
+        rows = rows.slice(0, 4);
+        if (!rows.length) return;
+
+        var html = '';
+        rows.forEach(function (r) {
+          var label = r.status === 'green' ? 'healthy' : r.status === 'red' ? 'failing' : 'degraded';
+          html += '<div class="status-repo-row">'
+               +    '<span class="status-repo-name">' + esc(r.name) + '</span>'
+               +    '<span class="status-repo-version">' + esc(r.line2) + '</span>'
+               +    '<span class="status-repo-dot" aria-label="' + esc(label) + '">●</span>'
+               +    '<span class="status-repo-push">' + esc(r.last_push) + '</span>'
+               +  '</div>';
+        });
+        host.innerHTML = html;
+      }
+
+      async function refresh() {
+        try {
+          var r = await fetch(API, { cache: 'no-store' });
+          if (!r.ok) return;
+          var snap = await r.json();
+          if (!snap || !snap.updated_at) return;
+          paintLatestDeploy(snap.latest_deploy);
+          paintEvents(snap.events);
+          paintRepos(snap.repos, snap.updated_at);
+        } catch (e) { /* fallback HTML stays */ }
+      }
+
+      refresh();
+      setInterval(refresh, 60000);
     })();
   </script>
 </body>
