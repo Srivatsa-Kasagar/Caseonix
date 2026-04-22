@@ -168,8 +168,8 @@ async function main() {
   console.log("\nSnapshot preview:");
   console.log(JSON.stringify(snap, null, 2));
 
-  console.log(`\nPOST ${WORKER_ORIGIN}/admin/seed`);
-  const r = await fetch(`${WORKER_ORIGIN}/admin/seed`, {
+  console.log(`\nPOST ${WORKER_ORIGIN}/api/seed`);
+  const r = await fetch(`${WORKER_ORIGIN}/api/seed`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Seed-Token": seedToken },
     body: JSON.stringify(snap),

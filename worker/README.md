@@ -16,7 +16,7 @@ Cloudflare Worker powering the **Live Status** widget on caseonix.ca — receive
 |---|---|---|
 | GET | `/api/status` | Returns current snapshot JSON. Edge-cached 30s. |
 | POST | `/webhooks/github` | Receives GitHub webhook. HMAC-validated. |
-| POST | `/admin/seed` | Gated one-shot seed endpoint. Auth: `X-Seed-Token` header. |
+| POST | `/api/seed` | Gated one-shot seed endpoint. Auth: `X-Seed-Token` header. |
 
 ## First-time setup
 

@@ -44,7 +44,7 @@ app.post("/webhooks/github", async (c) => {
   return new Response(null, { status: 204 });
 });
 
-app.post("/admin/seed", async (c) => {
+app.post("/api/seed", async (c) => {
   const token = c.req.header("x-seed-token");
   if (!token || token !== c.env.ADMIN_SEED_TOKEN) {
     return c.text("forbidden", 403);
