@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { verifyGithubSignature } from "./hmac";
+import { applyPingResults, pingAllEndpoints } from "./pings";
 import { patchSnapshot } from "./snapshot";
 import { DEFAULT_SNAPSHOT, Env, Snapshot } from "./types";
 
@@ -26,7 +27,7 @@ app.post("/webhooks/github", async (c) => {
   if (!ok) return c.text("invalid signature", 401);
 
   const eventType = c.req.header("x-github-event") ?? "";
-  const handled = new Set(["push", "release", "workflow_run", "create"]);
+  const handled = new Set(["push", "release", "workflow_run", "create", "page_build"]);
   if (!handled.has(eventType)) return new Response(null, { status: 204 });
 
   let payload: Record<string, unknown>;
@@ -68,4 +69,17 @@ app.post("/api/seed", async (c) => {
 
 app.all("*", (c) => c.text("not found", 404));
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(
+      (async () => {
+        const raw = await env.STATUS_KV.get(STATUS_KEY);
+        const prev: Snapshot = raw ? JSON.parse(raw) : DEFAULT_SNAPSHOT;
+        const results = await pingAllEndpoints();
+        const next = applyPingResults(prev, results);
+        await env.STATUS_KV.put(STATUS_KEY, JSON.stringify(next));
+      })()
+    );
+  },
+};

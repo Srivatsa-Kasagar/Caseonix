@@ -419,7 +419,7 @@
     /* Live Status card (right column) */
     .status-card {
       width: 100%;
-      max-width: 400px;
+      max-width: 480px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -1465,6 +1465,9 @@
     .status-repo-dot     { color: var(--green); font-size: 0.6rem; }
     .status-repo-dot.warn { color: #FBBF24; }
     .status-repo-dot.off  { color: var(--text-3); opacity: 0.5; }
+    .status-repo-dot[data-status="green"]  { color: var(--green); }
+    .status-repo-dot[data-status="yellow"] { color: #FBBF24; }
+    .status-repo-dot[data-status="red"]    { color: var(--rose); }
     .status-repo-push    { color: var(--text-3); }
 
   </style>
@@ -2469,7 +2472,7 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
           html += '<div class="status-repo-row">'
                +    '<span class="status-repo-name">' + esc(r.name) + '</span>'
                +    '<span class="status-repo-version">' + esc(r.line2) + '</span>'
-               +    '<span class="status-repo-dot" aria-label="' + esc(label) + '">●</span>'
+               +    '<span class="status-repo-dot" data-status="' + esc(r.status) + '" aria-label="' + esc(label) + '">●</span>'
                +    '<span class="status-repo-push">' + esc(r.last_push) + '</span>'
                +  '</div>';
         });

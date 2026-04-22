@@ -14,3 +14,6 @@ zone_name = "caseonix.ca"
 [[routes]]
 pattern = "caseonix.ca/webhooks/*"
 zone_name = "caseonix.ca"
+
+[triggers]
+crons = ["*/5 * * * *"]

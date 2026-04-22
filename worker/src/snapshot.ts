@@ -50,6 +50,7 @@ export function patchSnapshot(
   else if (eventType === "release") next = handleRelease(next, payload);
   else if (eventType === "workflow_run") next = handleWorkflowRun(next, payload);
   else if (eventType === "create") next = handleCreate(next, payload);
+  else if (eventType === "page_build") next = handlePageBuild(next, payload);
 
   return pruneStaleRepos(next);
 }
@@ -165,6 +166,55 @@ function handleCreate(snap: Snapshot, p: Record<string, unknown>): Snapshot {
 
   const nextRepos = { ...snap.repos, [repo.name]: { ...existing, version: ref } };
   return { ...snap, repos: nextRepos };
+}
+
+function handlePageBuild(snap: Snapshot, p: Record<string, unknown>): Snapshot {
+  const repo = p.repository as { name: string; private?: boolean } | undefined;
+  const build = p.build as
+    | {
+        status?: string;
+        commit?: string;
+        updated_at?: string;
+        created_at?: string;
+        error?: { message?: string | null };
+      }
+    | undefined;
+  if (!repo || !build) return snap;
+  if (repo.private || isBlocked(repo.name)) return snap;
+  if (repo.name !== SITE_REPO) return snap;
+
+  const ts = build.updated_at ?? build.created_at ?? new Date().toISOString();
+  const sha = shortSha(build.commit ?? "");
+
+  if (build.status === "built") {
+    const nextDeploy = {
+      repo: SITE_REPO,
+      sha,
+      date: shortDate(ts),
+      ts,
+      domain: SITE_DOMAIN,
+      summary: "GitHub Pages build ✓",
+    };
+    const nextEvents = prependEvent(snap.events, {
+      verb: "deploy",
+      summary: `${SITE_DOMAIN} ${sha} live`,
+      ts,
+      repo: SITE_REPO,
+    });
+    return { ...snap, latest_deploy: nextDeploy, events: nextEvents };
+  }
+
+  if (build.status === "errored") {
+    const nextEvents = prependEvent(snap.events, {
+      verb: "deploy",
+      summary: `${SITE_DOMAIN} ${sha} BUILD FAILED`,
+      ts,
+      repo: SITE_REPO,
+    });
+    return { ...snap, events: nextEvents };
+  }
+
+  return snap;
 }
 
 function firstLine(s: string): string {

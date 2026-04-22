@@ -45,6 +45,21 @@ export const SITE_DOMAIN = "caseonix.ca";
 
 export const PRIVATE_REPO_BLOCKLIST: readonly string[] = [];
 
+/**
+ * Public endpoint for each repo that has one. Cron Trigger HEAD-checks these
+ * every few minutes and writes the result into repos[name].status so the
+ * widget's dot colors reflect actual uptime, not a hardcoded green.
+ *
+ * Repos not in this map keep their last known status (default: green).
+ */
+export const REPO_ENDPOINTS: Readonly<Record<string, string>> = {
+  Caseonix: "https://caseonix.ca",
+  "consol-cloud": "https://consul.caseonix.ca",
+  LoonieLog: "https://loonielog.ca",
+};
+
+export const PING_TIMEOUT_MS = 5000;
+
 export const DEFAULT_SNAPSHOT: Snapshot = {
   updated_at: new Date(0).toISOString(),
   latest_deploy: { repo: "", sha: "", date: "", ts: new Date(0).toISOString() },
