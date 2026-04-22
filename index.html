@@ -241,8 +241,8 @@
     ═══════════════════════════════════ */
     .hero {
       position: relative; min-height: 100vh; z-index: 1;
-      display: grid; grid-template-columns: 1fr 1fr;
-      align-items: center; gap: 60px; padding: 120px 60px 80px; overflow: hidden;
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(440px, 520px);
+      align-items: center; gap: 72px; padding: 120px 60px 80px; overflow: hidden;
     }
     .hero-left { display: flex; flex-direction: column; align-items: flex-start; }
     .hero-right { display: flex; justify-content: center; align-items: center; }
@@ -381,7 +381,7 @@
       font-size: 1.125rem;
       font-weight: 400;
       color: var(--text-2);
-      max-width: 540px;
+      max-width: 600px;
       line-height: 1.6;
       margin-bottom: 36px;
     }
