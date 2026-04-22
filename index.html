@@ -1719,7 +1719,9 @@ answer = claude.<span class="f">ask</span>(query, context, audit_id=doc.id)
                 localmind.caseonix.ca
               </a>
               <a class="card-link-btn" href="https://github.com/caseonix/localmind" target="_blank" rel="noopener" onclick="event.stopPropagation()">GitHub</a>
+              <a class="card-link-btn" href="/notes/localmind-rag-pipeline.html" onclick="event.stopPropagation()">Lab notes</a>
             </div>
+            <a href="/notes/localmind-rag-pipeline.html" class="card-trace-link" onclick="event.stopPropagation()">Read RAG + NLP lab notes <span class="arrow">&rarr;</span></a>
           </div>
         </div>
 
@@ -2245,7 +2247,7 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
     const PROJECTS = {
       localmind: {
         icon:'🇨🇦', iconClass:'icon-cyan', name:'LocalMind Sovereign', badge:'<span class="project-badge badge-mvp">MVP</span>',
-        links:[{label:'localmind.caseonix.ca',url:'https://localmind.caseonix.ca',icon:'web'}],
+        links:[{label:'localmind.caseonix.ca',url:'https://localmind.caseonix.ca',icon:'web'},{label:'Lab notes — RAG + NLP',url:'/notes/localmind-rag-pipeline.html',icon:'web'}],
         desc:'A sovereign document intelligence platform built for Canadian organizations that prioritize data residency. Upload documents — LocalMind auto-classifies, extracts entities, detects PII, runs compliance checklists, flags risks, and enables AI-powered review and multi-document comparison. Inference routed through Cloudflare\'s Canadian edge; see architecture notes for full data-flow detail.',
         features:['Auto-Classification — documents classified as contract, invoice, policy, financial report, HR, or technical','AI Review Agent — structured extraction, compliance checklist (pass/fail), and severity-rated risk brief per document','PII Detection & Redaction — SIN, credit card, health ID auto-detected; amber redaction bars in viewer with redacted download','Multi-Document Comparison — cross-reference contracts, flag contradictions, gap analysis, shared entity mapping','Document-Scoped Chat — ask questions about specific docs or across document sets; every answer cites source','Named Entity Recognition — people, organizations, dates, monetary values extracted and indexed','Team Workspaces — multi-tenant with namespace-isolated vector search, RBAC (owner/admin/member/viewer)','Canadian-resident inference — Claude API routed via Cloudflare AI Gateway with CA region pinning; <5ms edge cold start'],
         tags:['React 18','Hono','Cloudflare Workers','Cloudflare D1','Cloudflare R2','Cloudflare Vectorize','Durable Objects','Workers AI','Claude API via AI Gateway','Drizzle ORM','Clerk Auth','Zod','Vite 5','Tailwind CSS 4'],
