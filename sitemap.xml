@@ -13,6 +13,24 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://caseonix.ca/notes/localmind-rag-pipeline.html</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://caseonix.ca/notes/localmind-rag-quality.html</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://caseonix.ca/notes/localmind-nlp-layer.html</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://caseonix.ca/notes/auditlm-ai-governance-gap.html</loc>
     <lastmod>2026-03-18</lastmod>
     <changefreq>monthly</changefreq>

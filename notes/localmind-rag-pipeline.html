@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab note 1/3 — LocalMind RAG pipeline | Caseonix</title>
+  <meta name="description" content="How I wired retrieval-augmented generation end-to-end in LocalMind on the Cloudflare edge — chunking, embedding, vector index, retrieval, and generation, all with Workers AI, Vectorize, D1, and R2." />
+  <meta name="author" content="Srivatsa Kasagar" />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="RAG, retrieval-augmented generation, Cloudflare Workers AI, Vectorize, BGE-Small, Gemma, contextual chunking, document chunking, vector search, LocalMind" />
+  <link rel="canonical" href="https://caseonix.ca/notes/localmind-rag-pipeline.html" />
+
+  <meta property="og:title" content="Lab note 1/3 — LocalMind RAG pipeline" />
+  <meta property="og:description" content="End-to-end retrieval-augmented generation on the Cloudflare edge: chunking, embedding, vector index, retrieval, generation." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://caseonix.ca/notes/localmind-rag-pipeline.html" />
+  <meta property="og:image" content="https://caseonix.ca/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Caseonix" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:author" content="Srivatsa Kasagar" />
+  <meta property="article:published_time" content="2026-04-22" />
+  <meta property="article:section" content="Lab notes" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lab note 1/3 — LocalMind RAG pipeline" />
+  <meta name="twitter:description" content="End-to-end RAG on the Cloudflare edge — chunking, embedding, vector index, retrieval, generation." />
+  <meta name="twitter:image" content="https://caseonix.ca/og-image.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Lab note 1/3 — LocalMind RAG pipeline",
+    "description": "How I wired retrieval-augmented generation end-to-end in LocalMind on the Cloudflare edge.",
+    "author": {
+      "@type": "Person",
+      "name": "Srivatsa Kasagar",
+      "url": "https://caseonix.ca",
+      "jobTitle": "AI Builder & Solutions Architect"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Caseonix",
+      "url": "https://caseonix.ca"
+    },
+    "datePublished": "2026-04-22",
+    "dateModified": "2026-04-22",
+    "url": "https://caseonix.ca/notes/localmind-rag-pipeline.html",
+    "image": "https://caseonix.ca/og-image.png",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://caseonix.ca/notes/localmind-rag-pipeline.html"
+    },
+    "keywords": ["RAG", "Cloudflare Workers AI", "Vectorize", "BGE-Small", "Gemma", "contextual chunking", "LocalMind"]
+  }
+  </script>
+
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0F1B2A;
+      --surface: #1A2B3C;
+      --surface-2: #223549;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(94,186,156,0.32);
+      --blue: #5EBA9C;
+      --teal-1: #7FCBB0;
+      --text: #E8ECF1;
+      --text-2: #94A3B8;
+      --text-3: #64748B;
+      --nav-bg: rgba(15,27,42,0.82);
+      --radius: 16px;
+    }
+
+    [data-theme="light"] {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-2: #F1F5F9;
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(94,186,156,0.35);
+      --text: #0F172A;
+      --text-2: #334155;
+      --text-3: #64748B;
+      --nav-bg: rgba(248,250,252,0.88);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.3s, color 0.3s;
+    }
+    :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+    .nav-logo span { color: var(--blue); }
+    .nav-links-blog { display: flex; gap: 30px; list-style: none; }
+    .nav-links-blog a { text-decoration: none; color: var(--text-2); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links-blog a:hover, .nav-links-blog a.active { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--surface); cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 0.95rem; color: var(--text-2);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); transform: rotate(20deg); color: var(--text); }
+    @media (max-width: 800px) { nav { padding: 16px 24px; } .nav-links-blog { display: none; } }
+
+    .note-wrapper { max-width: 760px; margin: 0 auto; padding: 140px 24px 80px; }
+    .note-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: var(--text-3); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
+      margin-bottom: 40px; transition: color 0.2s;
+    }
+    .note-back:hover { color: var(--teal-1); }
+    .note-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--teal-1); margin-bottom: 16px;
+    }
+    .note-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 600; letter-spacing: -0.025em;
+      color: var(--text); line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .note-meta {
+      display: flex; gap: 14px; align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem; color: var(--text-3);
+      margin-bottom: 24px;
+    }
+    .note-meta-sep { color: var(--text-3); opacity: 0.5; }
+
+    .note-series {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 48px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .note-series a, .note-series span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; padding: 6px 12px;
+      border: 1px solid var(--border); border-radius: 999px;
+      color: var(--text-2); text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .note-series a:hover { border-color: var(--border-hover); color: var(--text); }
+    .note-series .current { background: var(--surface); border-color: var(--border-hover); color: var(--teal-1); }
+
+    .note-body p {
+      font-size: 1.02rem; color: var(--text-2);
+      margin-bottom: 22px; line-height: 1.75;
+    }
+    .note-body p strong, .note-body li strong { color: var(--text); font-weight: 600; }
+    .note-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem; color: var(--teal-1);
+      background: var(--surface); padding: 1px 6px; border-radius: 4px;
+    }
+    .note-body h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.4rem; font-weight: 600;
+      color: var(--text); letter-spacing: -0.015em;
+      margin: 48px 0 18px;
+    }
+    .note-body h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem; font-weight: 600;
+      color: var(--text); margin: 32px 0 14px;
+    }
+    .note-body ul, .note-body ol {
+      margin: 0 0 22px 24px; color: var(--text-2);
+    }
+    .note-body li { margin-bottom: 8px; line-height: 1.7; font-size: 1.02rem; }
+    .note-body blockquote {
+      border-left: 2px solid var(--blue);
+      padding: 4px 16px;
+      margin: 22px 0;
+      color: var(--text-3);
+      font-size: 0.94rem;
+    }
+    .note-body blockquote a { color: var(--teal-1); text-decoration: none; }
+    .note-body blockquote a:hover { text-decoration: underline; }
+
+    .note-table-wrap {
+      overflow-x: auto;
+      margin: 0 0 28px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+    .note-body table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .note-body th, .note-body td {
+      padding: 10px 14px; text-align: left;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    .note-body th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3);
+      background: var(--surface-2);
+    }
+    .note-body tr:last-child td { border-bottom: none; }
+    .note-body td code { font-size: 0.8rem; }
+
+    .diagram-card {
+      background: #0F1B2A;
+      border: 1px solid rgba(94,186,156,0.18);
+      border-radius: 12px;
+      padding: 28px 20px;
+      margin: 28px 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+    .diagram-card .mermaid {
+      font-family: 'Inter', sans-serif;
+      display: inline-block;
+      min-width: 100%;
+    }
+    .diagram-caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-3);
+      margin-top: 14px;
+    }
+
+    .note-cta {
+      margin-top: 56px; padding: 28px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; transition: border-color 0.2s, background 0.2s;
+      text-decoration: none;
+    }
+    .note-cta:hover { border-color: var(--border-hover); background: var(--surface-2); }
+    .note-cta-body { display: flex; flex-direction: column; gap: 4px; }
+    .note-cta-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--teal-1);
+    }
+    .note-cta-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem; font-weight: 500;
+      color: var(--text); line-height: 1.4;
+    }
+    .note-cta-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      text-decoration: none; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em;
+      color: var(--teal-1); white-space: nowrap;
+    }
+    .note-cta-link .arrow { transition: transform 0.2s; }
+    .note-cta:hover .note-cta-link .arrow { transform: translateX(4px); }
+    @media (max-width: 640px) {
+      .note-cta { flex-direction: column; align-items: flex-start; }
+    }
+
+    .footer-v2 { border-top: 1px solid var(--border); padding: 40px 60px; margin-top: 80px; }
+    .footer-v2-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; gap: 32px;
+    }
+    .footer-v2-logo { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    .footer-v2-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-3); margin-top: 4px;
+    }
+    .footer-v2-nav { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .footer-v2-nav a {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; font-weight: 400;
+      color: var(--text-2); text-decoration: none;
+      transition: color 120ms ease-out;
+    }
+    .footer-v2-nav a:hover { color: var(--teal-1); }
+    .footer-v2-right {
+      text-align: right; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--text-3);
+    }
+    @media (max-width: 800px) {
+      .footer-v2 { padding: 40px 24px; }
+      .footer-v2-inner { grid-template-columns: 1fr; gap: 18px; text-align: center; }
+      .footer-v2-nav { justify-content: center; }
+      .footer-v2-right { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Case<span>onix</span></a>
+    <ul class="nav-links-blog">
+      <li><a href="/#projects">Field notes</a></li>
+      <li><a href="/#arsenal">Arsenal</a></li>
+      <li><a href="/blog/index.html" class="active">Log</a></li>
+      <li><a href="/#contact">Open a thread</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+    </div>
+  </nav>
+
+  <main class="note-wrapper">
+    <a href="/blog/index.html#notes" class="note-back">&larr; back to lab notes</a>
+
+    <div class="note-eyebrow">&sect; Lab note &middot; 1 of 3</div>
+    <h1 class="note-title">LocalMind RAG &mdash; the pipeline</h1>
+    <div class="note-meta">
+      <span>Apr 22, 2026</span>
+      <span class="note-meta-sep">&middot;</span>
+      <span>Working note &mdash; will evolve</span>
+    </div>
+    <div class="note-series">
+      <span class="current">1. Pipeline</span>
+      <a href="/notes/localmind-rag-quality.html">2. Quality improvements &rarr;</a>
+      <a href="/notes/localmind-nlp-layer.html">3. NLP layer &rarr;</a>
+    </div>
+
+    <div class="note-body">
+      <p>How I wired retrieval-augmented generation end-to-end in LocalMind: chunking, embedding, vector index, retrieval, generation. Everything runs on the Cloudflare edge &mdash; <strong>Workers AI</strong> for inference, <strong>Vectorize</strong> for ANN, <strong>D1</strong> for the canonical chunk text, and <strong>R2</strong> for the original blob. I use <code>teamId</code> as the Vectorize <strong>namespace</strong> on every read and write to keep tenants isolated.</p>
+
+      <h2>Ingest pipeline (write path)</h2>
+
+      <p>I put the whole ingest pipeline inside a per-team Durable Object so it can run async, hold rate-limit state, and use alarms to verify the vector index.</p>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart LR
+    A[R2 file] --&gt; B[parseDocument<br/>PDF/DOCX/XLSX/OCR]
+    B --&gt; C[flattenTables<br/>rejoin headers]
+    C --&gt; D[chunkText<br/>≤512 tok, 50 overlap]
+    D --&gt; E[redactPII<br/>regex + LLM]
+    E --&gt; F[(D1: document_chunks<br/>display copy)]
+    E --&gt; G[generateChunkContext<br/>Gemma — 1-2 sentence header]
+    G --&gt; H[generateEmbeddings<br/>BGE-Small, batch 32]
+    H --&gt; I[(Vectorize.upsert<br/>namespace=teamId)]
+    I --&gt; J[DO alarm — verify<br/>retry 5× / 90s]
+        </pre>
+        <div class="diagram-caption">Diagram 1 &mdash; ingest pipeline inside the per-team Durable Object</div>
+      </div>
+
+      <p>Orchestration lives in <code>workers/src/durableObjects/teamState.ts</code> (<code>processDocument</code>). The main twist I added is a <strong>dual-text split</strong>: D1 stores the redacted-but-otherwise-original chunk that users see in citations, and Vectorize stores a <em>contextually enriched</em> version where Gemma 4 has prepended a 1-2 sentence header that says where the chunk fits in the document (via <code>generateChunkContext</code>). The header improves recall for chunks that would otherwise be too short or too back-referencing to retrieve on their own, and it never shows up in the user-facing citation.</p>
+
+      <h2>Chunking</h2>
+
+      <p>The chunker in <code>workers/src/services/document.ts</code> (<code>chunkText</code>) is small and deterministic. It splits the text on paragraph breaks (<code>\n{2,}</code>) and packs whole paragraphs into a buffer until the buffer would go over <code>MAX_CHUNK_TOKENS</code> (512 tokens, approximated as 4 chars/token). When a paragraph won't fit, I flush the buffer and carry a 50-token tail forward as overlap so context isn't cut off in the middle of a thought. If a single paragraph is bigger than the cap on its own, I fall back to a sentence regex and pack sentences instead. No tokenizer call, no LLM &mdash; paragraph structure is the main signal, and the token math is conservative on purpose.</p>
+
+      <p>Before chunks ever touch D1 or Vectorize, I run them through two PII passes (regex + LLM). The redaction is applied to both the display copy in D1 and the version that gets embedded &mdash; privacy was a hard requirement for me, so nothing identifiable leaves the chunk pipeline. The PII layer is detailed in the <a href="/notes/localmind-nlp-layer.html">NLP note</a>.</p>
+
+      <h2>Embedding</h2>
+
+      <p>The embedding service in <code>workers/src/services/embedding.ts</code> is small on purpose &mdash; a single short module with two functions. It calls <code>@cf/baai/bge-small-en-v1.5</code> via Workers AI for both the document side (<code>generateEmbeddings</code>) and the query side (<code>generateQueryEmbedding</code>). On the query path I prepend BGE's asymmetric prefix <code>"Represent this sentence for searching relevant passages: "</code>. That's how BGE was trained on the query side, and using it raises cosine similarity for relevant chunks above the noise floor.</p>
+
+      <p>In the DO, I batch embeddings at 32, then call <code>Vectorize.upsert</code> in batches of 100. Vectorize is eventually consistent, so once the upsert returns I schedule a Durable Object alarm 90 seconds out. The alarm re-queries the first and last chunk IDs to check they're indexed, retries up to 5 times, and only marks the document <code>ready</code> for search once both ends are visible. If verification fails after the final retry, I flip the document to <code>error</code> so the user knows search won't work for it.</p>
+
+      <h2>Retrieval &amp; generation (read path)</h2>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart TB
+    Q[user query] --&gt; E1[expandQuery<br/>Gemma → 2-3 variants]
+    E1 --&gt; E2[generateQueryEmbedding ×N<br/>BGE prefix applied]
+    E2 --&gt; V[Vectorize.query ×N<br/>namespace=teamId, topK=15]
+    V --&gt; M[merge + dedupe<br/>max score per chunk]
+    M --&gt; H[hydrate from D1<br/>drop sim &lt; 0.3]
+    H --&gt; R[rerankChunks<br/>Gemma 1-5, keep ≥3, top 7]
+    R --&gt; C[buildContextFromChunks<br/>≤6000 tok, ≤2/doc team-wide]
+    C --&gt; S[synthesizeAnswer<br/>Gemma + history + cite]
+    S --&gt; A[answer + sources]
+        </pre>
+        <div class="diagram-caption">Diagram 2 &mdash; retrieval flow inside POST /api/search</div>
+      </div>
+
+      <p>The whole flow is in the <code>POST /api/search</code> handler in <code>workers/src/routes/search.ts</code>. Step by step:</p>
+
+      <ol>
+        <li><strong>Query expansion</strong> (<code>expandQuery</code>). Gemma rewrites the user's query into 2-3 variants under a JSON schema. The original is always kept, and I cap variants at <code>QUERY_EXPANSION_MAX = 3</code>. If the LLM call fails I fall back to the original query only.</li>
+        <li><strong>Multi-vector search.</strong> I embed each variant with the BGE query prefix and dispatch all of them in parallel to <code>Vectorize.query</code>, scoped to the team's namespace with <code>topK = 15</code>.</li>
+        <li><strong>Merge and dedupe.</strong> I union results by chunk ID and keep the highest cosine score across variants &mdash; so a chunk that matches multiple phrasings gets credit but isn't double-counted.</li>
+        <li><strong>Hydrate and threshold.</strong> I load chunk text from D1 in a single <code>inArray</code> query, join it to document names, and drop anything below <code>MIN_SIMILARITY = 0.3</code>. (BGE-Small puts truly relevant chunks in the 0.35-0.55 band on my corpus, so 0.3 is the tuned floor.)</li>
+        <li><strong>LLM rerank</strong> (<code>rerankChunks</code>). I send the top 15 candidates to Gemma with a strict 1-5 relevance rubric, again JSON-schema constrained. I cut anything below <code>RERANK_MIN_SCORE = 3</code> and keep <code>RERANK_TOP_K = 7</code>. If fewer than 2 chunks pass, I fall back to the vector ranking.</li>
+        <li><strong>Context assembly</strong> (<code>buildContextFromChunks</code>). I concatenate chunks with <code>[N] filename</code> headers and <code>---</code> separators, stopping when I hit <code>MAX_CONTEXT_TOKENS = 6000</code>. For team-wide searches I cap each document at <code>MAX_CHUNKS_PER_DOC_TEAM_SEARCH = 2</code> so one chatty document can't crowd out the others.</li>
+        <li><strong>Synthesis</strong> (<code>synthesizeAnswer</code>). The system prompt binds Gemma to the supplied context, requires <code>[Document: filename]</code> citations, and forbids external knowledge. I walk conversation history newest-first and trim it at <code>MAX_HISTORY_TOKENS = 1500</code> so long chats don't blow the context window.</li>
+      </ol>
+
+      <h2>Tunables &mdash; single source of truth</h2>
+
+      <p>I keep all retrieval and chunking knobs in <code>shared/constants.ts</code>:</p>
+
+      <div class="note-table-wrap">
+        <table>
+          <thead>
+            <tr><th>Knob</th><th>Value</th><th>What it controls</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>MAX_CHUNK_TOKENS</code></td><td>512</td><td>chunker upper bound</td></tr>
+            <tr><td><code>CHUNK_OVERLAP_TOKENS</code></td><td>50</td><td>tail carried between chunks</td></tr>
+            <tr><td><code>TOP_K</code></td><td>15</td><td>vectors retrieved per query variant</td></tr>
+            <tr><td><code>MIN_SIMILARITY</code></td><td>0.3</td><td>post-vector floor</td></tr>
+            <tr><td><code>QUERY_EXPANSION_MAX</code></td><td>3</td><td>LLM rewrites per query</td></tr>
+            <tr><td><code>RERANK_TOP_K</code></td><td>7</td><td>chunks kept after rerank</td></tr>
+            <tr><td><code>RERANK_MIN_SCORE</code></td><td>3</td><td>Gemma relevance cutoff (1-5)</td></tr>
+            <tr><td><code>MAX_CONTEXT_TOKENS</code></td><td>6000</td><td>budget for synthesis prompt</td></tr>
+            <tr><td><code>MAX_CHUNKS_PER_DOC_TEAM_SEARCH</code></td><td>2</td><td>per-doc cap in team-wide context</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Models</h2>
+
+      <ul>
+        <li><strong>Embedder:</strong> <code>@cf/baai/bge-small-en-v1.5</code> (BGE-Small, 384-dim) on Workers AI.</li>
+        <li><strong>Generator / reranker / classifier:</strong> <code>@cf/google/gemma-4-26b-a4b-it</code>, configurable via <code>WORKERS_AI_MODEL</code>.</li>
+        <li><strong>Vector index:</strong> Cloudflare Vectorize, partitioned by <code>teamId</code> namespace.</li>
+        <li><strong>Chunk store:</strong> Cloudflare D1 (SQLite) via Drizzle.</li>
+        <li><strong>Blob store:</strong> Cloudflare R2.</li>
+      </ul>
+
+      <p style="margin-top: 40px; color: var(--text-3); font-size: 0.92rem;">Next: <a href="/notes/localmind-rag-quality.html" style="color: var(--teal-1);">how I improved the quality of this baseline &rarr;</a></p>
+    </div>
+
+    <a href="/#contact" class="note-cta">
+      <div class="note-cta-body">
+        <span class="note-cta-eyebrow">&sect; Open a thread</span>
+        <span class="note-cta-text">Building RAG on the edge? Let's compare notes on what's working.</span>
+      </div>
+      <span class="note-cta-link">Start a thread <span class="arrow" aria-hidden="true">&rarr;</span></span>
+    </a>
+  </main>
+
+  <footer class="footer-v2">
+    <div class="footer-v2-inner">
+      <div class="footer-v2-left">
+        <div class="footer-v2-logo">caseonix</div>
+        <div class="footer-v2-meta">A solo AI lab &middot; Est. 2024 &middot; Waterloo, ON</div>
+      </div>
+      <nav class="footer-v2-nav" aria-label="Footer navigation">
+        <a href="/#projects">Field notes</a>
+        <a href="/#arsenal">Arsenal</a>
+        <a href="/blog/index.html">Log</a>
+        <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub &#8599;</a>
+      </nav>
+      <div class="footer-v2-right">&copy; 2026 Caseonix</div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        background: '#0F1B2A',
+        primaryColor: '#1A2B3C',
+        primaryTextColor: '#E8ECF1',
+        primaryBorderColor: '#5EBA9C',
+        lineColor: '#7FCBB0',
+        secondaryColor: '#223549',
+        tertiaryColor: '#0F1B2A',
+        fontFamily: 'Inter, sans-serif',
+        nodeBorder: '#5EBA9C',
+        clusterBkg: '#1A2B3C',
+        clusterBorder: '#5EBA9C',
+        edgeLabelBackground: '#1A2B3C',
+        textColor: '#E8ECF1',
+      }
+    });
+  </script>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '☀️' : '🌙';
+      try { localStorage.setItem('caseonix-theme', t); } catch(e) {}
+    }
+    toggle.addEventListener('click', () => {
+      setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+    try {
+      const saved = localStorage.getItem('caseonix-theme');
+      if (saved) setTheme(saved);
+    } catch(e) {}
+  </script>
+
+</body>
+</html>

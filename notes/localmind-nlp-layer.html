@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab note 3/3 — NLP layer in LocalMind | Caseonix</title>
+  <meta name="description" content="The classical and LLM-based NLP that runs alongside RAG in LocalMind — layered PII redaction, hybrid NER, table structure recovery, document classification, structured analysis, and per-type review agents." />
+  <meta name="author" content="Srivatsa Kasagar" />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="NLP, PII redaction PIPEDA, named entity recognition, table extraction, document classification, sentiment analysis, JSON schema LLM, LocalMind" />
+  <link rel="canonical" href="https://caseonix.ca/notes/localmind-nlp-layer.html" />
+
+  <meta property="og:title" content="Lab note 3/3 — NLP layer in LocalMind" />
+  <meta property="og:description" content="Classical + LLM NLP alongside RAG: PII, NER, table flattening, classification, analysis, review." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://caseonix.ca/notes/localmind-nlp-layer.html" />
+  <meta property="og:image" content="https://caseonix.ca/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Caseonix" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:author" content="Srivatsa Kasagar" />
+  <meta property="article:published_time" content="2026-04-22" />
+  <meta property="article:section" content="Lab notes" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lab note 3/3 — NLP layer in LocalMind" />
+  <meta name="twitter:description" content="Classical + LLM NLP alongside RAG: PII, NER, table flattening, classification, analysis, review." />
+  <meta name="twitter:image" content="https://caseonix.ca/og-image.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Lab note 3/3 — NLP layer in LocalMind",
+    "description": "Classical and LLM-based NLP passes that run alongside RAG during ingest.",
+    "author": {
+      "@type": "Person",
+      "name": "Srivatsa Kasagar",
+      "url": "https://caseonix.ca",
+      "jobTitle": "AI Builder & Solutions Architect"
+    },
+    "publisher": { "@type": "Organization", "name": "Caseonix", "url": "https://caseonix.ca" },
+    "datePublished": "2026-04-22",
+    "dateModified": "2026-04-22",
+    "url": "https://caseonix.ca/notes/localmind-nlp-layer.html",
+    "image": "https://caseonix.ca/og-image.png",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://caseonix.ca/notes/localmind-nlp-layer.html" },
+    "keywords": ["NLP", "PII redaction", "PIPEDA", "named entity recognition", "table extraction", "document classification", "LocalMind"]
+  }
+  </script>
+
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0F1B2A; --surface: #1A2B3C; --surface-2: #223549;
+      --border: rgba(255,255,255,0.06); --border-hover: rgba(94,186,156,0.32);
+      --blue: #5EBA9C; --teal-1: #7FCBB0;
+      --text: #E8ECF1; --text-2: #94A3B8; --text-3: #64748B;
+      --nav-bg: rgba(15,27,42,0.82); --radius: 16px;
+    }
+    [data-theme="light"] {
+      --bg: #F8FAFC; --surface: #FFFFFF; --surface-2: #F1F5F9;
+      --border: rgba(0,0,0,0.08); --border-hover: rgba(94,186,156,0.35);
+      --text: #0F172A; --text-2: #334155; --text-3: #64748B;
+      --nav-bg: rgba(248,250,252,0.88);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; transition: background 0.3s, color 0.3s; }
+    :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px; background: var(--nav-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+    .nav-logo span { color: var(--blue); }
+    .nav-links-blog { display: flex; gap: 30px; list-style: none; }
+    .nav-links-blog a { text-decoration: none; color: var(--text-2); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links-blog a:hover, .nav-links-blog a.active { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--surface); cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 0.95rem; color: var(--text-2);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); transform: rotate(20deg); color: var(--text); }
+    @media (max-width: 800px) { nav { padding: 16px 24px; } .nav-links-blog { display: none; } }
+
+    .note-wrapper { max-width: 760px; margin: 0 auto; padding: 140px 24px 80px; }
+    .note-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: var(--text-3); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
+      margin-bottom: 40px; transition: color 0.2s;
+    }
+    .note-back:hover { color: var(--teal-1); }
+    .note-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--teal-1); margin-bottom: 16px;
+    }
+    .note-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 600; letter-spacing: -0.025em;
+      color: var(--text); line-height: 1.15; margin-bottom: 18px;
+    }
+    .note-meta {
+      display: flex; gap: 14px; align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem; color: var(--text-3);
+      margin-bottom: 24px;
+    }
+    .note-meta-sep { color: var(--text-3); opacity: 0.5; }
+    .note-series {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 48px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .note-series a, .note-series span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; padding: 6px 12px;
+      border: 1px solid var(--border); border-radius: 999px;
+      color: var(--text-2); text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .note-series a:hover { border-color: var(--border-hover); color: var(--text); }
+    .note-series .current { background: var(--surface); border-color: var(--border-hover); color: var(--teal-1); }
+
+    .note-body p { font-size: 1.02rem; color: var(--text-2); margin-bottom: 22px; line-height: 1.75; }
+    .note-body p strong, .note-body li strong { color: var(--text); font-weight: 600; }
+    .note-body code {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.86rem;
+      color: var(--teal-1); background: var(--surface);
+      padding: 1px 6px; border-radius: 4px;
+    }
+    .note-body pre {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem; color: var(--text);
+      overflow-x: auto; margin: 0 0 24px;
+    }
+    .note-body h2 {
+      font-family: 'Inter', sans-serif; font-size: 1.4rem; font-weight: 600;
+      color: var(--text); letter-spacing: -0.015em; margin: 48px 0 18px;
+    }
+    .note-body h3 {
+      font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 600;
+      color: var(--text); margin: 32px 0 14px;
+    }
+    .note-body ul, .note-body ol { margin: 0 0 22px 24px; color: var(--text-2); }
+    .note-body li { margin-bottom: 8px; line-height: 1.7; font-size: 1.02rem; }
+    .note-body em { color: var(--text); font-style: italic; }
+
+    .note-table-wrap {
+      overflow-x: auto; margin: 0 0 28px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--surface);
+    }
+    .note-body table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .note-body th, .note-body td {
+      padding: 10px 14px; text-align: left;
+      border-bottom: 1px solid var(--border); color: var(--text-2);
+    }
+    .note-body th {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-3); background: var(--surface-2);
+    }
+    .note-body tr:last-child td { border-bottom: none; }
+    .note-body td code { font-size: 0.8rem; }
+
+    .diagram-card {
+      background: #0F1B2A; border: 1px solid rgba(94,186,156,0.18);
+      border-radius: 12px; padding: 28px 20px; margin: 28px 0;
+      overflow-x: auto; text-align: center;
+    }
+    .diagram-card .mermaid { font-family: 'Inter', sans-serif; display: inline-block; min-width: 100%; }
+    .diagram-caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-3);
+      margin-top: 14px;
+    }
+
+    .note-cta {
+      margin-top: 56px; padding: 28px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; transition: border-color 0.2s, background 0.2s; text-decoration: none;
+    }
+    .note-cta:hover { border-color: var(--border-hover); background: var(--surface-2); }
+    .note-cta-body { display: flex; flex-direction: column; gap: 4px; }
+    .note-cta-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal-1);
+    }
+    .note-cta-text { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 500; color: var(--text); line-height: 1.4; }
+    .note-cta-link {
+      display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em;
+      color: var(--teal-1); white-space: nowrap;
+    }
+    .note-cta-link .arrow { transition: transform 0.2s; }
+    .note-cta:hover .note-cta-link .arrow { transform: translateX(4px); }
+    @media (max-width: 640px) { .note-cta { flex-direction: column; align-items: flex-start; } }
+
+    .footer-v2 { border-top: 1px solid var(--border); padding: 40px 60px; margin-top: 80px; }
+    .footer-v2-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 32px; }
+    .footer-v2-logo { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    .footer-v2-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-3); margin-top: 4px;
+    }
+    .footer-v2-nav { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .footer-v2-nav a {
+      font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 400;
+      color: var(--text-2); text-decoration: none;
+      transition: color 120ms ease-out;
+    }
+    .footer-v2-nav a:hover { color: var(--teal-1); }
+    .footer-v2-right { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-3); }
+    @media (max-width: 800px) {
+      .footer-v2 { padding: 40px 24px; }
+      .footer-v2-inner { grid-template-columns: 1fr; gap: 18px; text-align: center; }
+      .footer-v2-nav { justify-content: center; }
+      .footer-v2-right { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Case<span>onix</span></a>
+    <ul class="nav-links-blog">
+      <li><a href="/#projects">Field notes</a></li>
+      <li><a href="/#arsenal">Arsenal</a></li>
+      <li><a href="/blog/index.html" class="active">Log</a></li>
+      <li><a href="/#contact">Open a thread</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+    </div>
+  </nav>
+
+  <main class="note-wrapper">
+    <a href="/blog/index.html#notes" class="note-back">&larr; back to lab notes</a>
+
+    <div class="note-eyebrow">&sect; Lab note &middot; 3 of 3</div>
+    <h1 class="note-title">The NLP layer alongside LocalMind RAG</h1>
+    <div class="note-meta">
+      <span>Apr 22, 2026</span>
+      <span class="note-meta-sep">&middot;</span>
+      <span>Working note &mdash; will evolve</span>
+    </div>
+    <div class="note-series">
+      <a href="/notes/localmind-rag-pipeline.html">&larr; 1. Pipeline</a>
+      <a href="/notes/localmind-rag-quality.html">&larr; 2. Quality improvements</a>
+      <span class="current">3. NLP layer</span>
+    </div>
+
+    <div class="note-body">
+      <p>RAG is the headline feature, but a fair amount of classical and LLM-based NLP runs alongside it during ingest. Each pass produces structured fields I persist on the <code>documents</code> row and surface in the UI, and several of them feed back into retrieval quality. This note covers what NLP I built, where it runs, and why it's there.</p>
+
+      <h2>NLP fan-out during ingest</h2>
+
+      <p>Every document goes through this fan-out after parsing. The terminal nodes write structured fields to the <code>documents</code> row.</p>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart TB
+    P[parseDocument<br/>PDF/DOCX/XLSX/OCR] --&gt; TF[tableFlattener<br/>re-attach headers]
+    TF --&gt; R1[regex PII redactor<br/>SSN/SIN/CC/addr/...]
+    R1 --&gt; R2[LLM PII detector<br/>medical/financial/...]
+    R2 --&gt; CL[redacted text]
+    CL --&gt; N1[regex NER<br/>email/phone/date/$/%/url]
+    CL --&gt; N2[document classifier<br/>contract/financial/policy/<br/>hr/invoice/general]
+    CL --&gt; N3[document analysis<br/>title + description + topics +<br/>key points + people + orgs +<br/>sentiment + risk flags]
+    CL --&gt; N4[document review agent<br/>per-type checklist + risks]
+    N1 --&gt; M[merge entities<br/>regex + LLM]
+    N3 --&gt; M
+    M --&gt; DB[(D1: documents row)]
+    N2 --&gt; DB
+    N3 --&gt; DB
+    N4 --&gt; DB
+        </pre>
+        <div class="diagram-caption">Diagram 1 &mdash; NLP fan-out after parsing</div>
+      </div>
+
+      <h2>Layered PII redaction (regex + LLM)</h2>
+
+      <p>Privacy is the headline requirement of LocalMind, so PII handling has two layers &mdash; deterministic patterns first, LLM second.</p>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart LR
+    T[chunk text] --&gt; R[regex pass<br/>12 categories]
+    R --&gt; P[LLM pass<br/>10 sensitive categories]
+    P --&gt; O[fully redacted text]
+    R -.detected types.-&gt; M[piiTypes set]
+    P -.detected categories.-&gt; M
+    M --&gt; DB[(documents.pii_types)]
+        </pre>
+        <div class="diagram-caption">Diagram 2 &mdash; two-pass PII redaction</div>
+      </div>
+
+      <h3>Regex pass &mdash; <code>services/piiRedactor.ts</code></h3>
+
+      <p>I wrote a pattern bank for the 12 deterministic PII categories: SSN, SIN, credit card, IP address, DOB, Canadian postal code, US ZIP, street address, PO box, health card, passport number, driver's license. Three redaction modes are available: <code>full</code> (<code>[SSN REDACTED]</code>), <code>partial</code> (<code>***-**-1234</code>), and <code>strip</code> (delete the match).</p>
+
+      <p>Partial mode is the default. It keeps the last few digits or characters visible so a human reviewer can still cross-reference (<code>****-****-****-9876</code>) without exposing the full value. Each pattern has its own masking function so the partial form makes sense for the data type &mdash; for a postal code I keep the FSA, for an address I keep the street type word, for a phone-like field I keep the last 4.</p>
+
+      <h3>LLM pass &mdash; <code>services/llmPiiDetector.ts</code></h3>
+
+      <p>Regex can't catch unstructured sensitive PII like "diagnosed with Type 2 diabetes" or "donated to the Liberal Party". For that I run Gemma over the regex-cleaned text with a JSON schema that enforces 10 sensitive categories: medical condition, medication, financial detail, ethnic/racial, religious, sexual orientation, criminal/legal, biometric, family relationship, political opinion.</p>
+
+      <p>The model returns <em>exact text spans</em> (not paraphrases), which I apply via <code>replaceAll</code>. That keeps redaction lossless and the labels predictable (<code>[MEDICAL CONDITION REDACTED]</code>, etc). I framed the categories against PIPEDA / PHIPA so the output maps to a real Canadian compliance posture.</p>
+
+      <p>Both passes union their detected types into the <code>documents.pii_types</code> array, which the UI shows as a chip strip.</p>
+
+      <h2>Hybrid named-entity recognition</h2>
+
+      <p>Two NER passes run on every document and their outputs are merged before persisting.</p>
+
+      <h3>Regex NER &mdash; <code>services/entityExtractor.ts</code></h3>
+
+      <p>Six deterministic categories with a pattern bank:</p>
+
+      <div class="note-table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Pattern handles</th></tr></thead>
+          <tbody>
+            <tr><td><code>email</code></td><td>standard RFC-ish addresses, lowercased on normalize</td></tr>
+            <tr><td><code>phone</code></td><td>NANP with optional country code, separators stripped on normalize</td></tr>
+            <tr><td><code>date</code></td><td>ISO <code>2024-03-15</code>, slashed <code>3/15/24</code>, written <code>March 15, 2024</code>, fiscal <code>Q3 2024</code></td></tr>
+            <tr><td><code>currency</code></td><td><code>$</code>, <code>&euro;</code>, <code>&pound;</code> with K/M/B suffixes (<code>$4.2M</code>)</td></tr>
+            <tr><td><code>percentage</code></td><td><code>12.5%</code></td></tr>
+            <tr><td><code>url</code></td><td><code>http(s)://...</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>After matching, each (type, normalized-value) pair is counted, and the result is sorted by frequency. The most-mentioned entities float to the top of the entities list &mdash; useful for "what is this document about" at a glance.</p>
+
+      <h3>LLM NER &mdash; inside <code>generateDocumentAnalysis</code></h3>
+
+      <p>The document analysis pass also returns <code>people</code> and <code>organizations</code> arrays &mdash; the fuzzy entities that regex can't reliably extract. These get merged with the regex entities and stored on <code>documents.entities</code>. So the entities list ends up being a hybrid: deterministic stuff with frequency counts plus LLM-extracted names.</p>
+
+      <h2>Table structure recovery &mdash; <code>services/tableFlattener.ts</code></h2>
+
+      <p>This is the bit I'm proudest of, and it's a pure-NLP problem disguised as text processing.</p>
+
+      <p>Document parsers (PDF text extraction, XLSX) destroy table semantics: column headers end up on one line, data rows on subsequent lines, and after chunking the headers and values are completely disconnected. A row that originally read "Q3 2024 | Revenue | $4.2M | +18%" comes out of the parser as a strip of numbers with no header context, which is useless for both retrieval and reading.</p>
+
+      <p>The flattener detects two table shapes and re-emits each row as a <code>Header: Value | Header: Value | &hellip;</code> line.</p>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart TB
+    L[parsed lines] --&gt; D{table?}
+    D --&gt;|CSV: 3+ comma fields,<br/>2+ rows| FC[flatten CSV]
+    D --&gt;|whitespace-aligned: 3+ columns,<br/>3+ rows| FW[flatten whitespace]
+    D --&gt;|no| K[keep line]
+    FW --&gt; G[skip if numeric headers<br/>or wide financial]
+    FC --&gt; O[Header1: Val1 \| Header2: Val2 \| ...]
+    FW --&gt; O
+    G --&gt; K
+    K --&gt; R[output text]
+    O --&gt; R
+        </pre>
+        <div class="diagram-caption">Diagram 3 &mdash; table detection and flattening decision flow</div>
+      </div>
+
+      <p>The interesting parts:</p>
+
+      <ul>
+        <li><strong>CSV detection guards against <code>$32,100</code> false positives</strong> &mdash; if any field has a run of 2+ whitespace inside it, the commas are probably inside numbers, not delimiters. The detector rejects.</li>
+        <li><strong>Whitespace-aligned table detection</strong> finds gap regions (positions where 2+ consecutive characters are spaces across all rows) to infer column boundaries. It needs at least 3 rows so single-line false positives don't slip through.</li>
+        <li><strong>Financial-statement guard.</strong> Wide whitespace tables where the "headers" are mostly numeric (column dates, $ totals) get <em>skipped</em> &mdash; flattening makes them harder to read, not easier. Narrow invoice/pricing tables (3-4 columns) still get flattened.</li>
+        <li><strong>Sanity check.</strong> If the flattened output is more than 2&times; the input length, something went wrong with boundary detection &mdash; fall back to the original.</li>
+      </ul>
+
+      <p>Each flattened row becomes a self-contained semantic unit that embeds well, so a query like "Q3 revenue" can match against the actual data.</p>
+
+      <h2>Document classification &mdash; <code>services/documentClassifier.ts</code></h2>
+
+      <p>A single Gemma call buckets each document into one of six types: <code>contract</code>, <code>financial</code>, <code>policy</code>, <code>hr</code>, <code>invoice</code>, <code>general</code>. Falls through to <code>general</code> if the model misbehaves.</p>
+
+      <p>The classification is the routing key for the downstream review agent &mdash; each document type gets a different review checklist. So classification isn't just a UI tag, it's a control-flow decision.</p>
+
+      <h2>Document analysis (summary + topics + sentiment)</h2>
+
+      <p>A single Gemma call (<code>generateDocumentAnalysis</code>) produces seven structured fields under one JSON schema:</p>
+
+      <div class="note-table-wrap">
+        <table>
+          <thead><tr><th>Field</th><th>Type</th><th>What it is</th></tr></thead>
+          <tbody>
+            <tr><td><code>title</code></td><td>string</td><td>descriptive title</td></tr>
+            <tr><td><code>description</code></td><td>string</td><td>1-2 sentence overview</td></tr>
+            <tr><td><code>keyTopics</code></td><td>string[]</td><td>3-5 short topic strings</td></tr>
+            <tr><td><code>keyPoints</code></td><td>string[]</td><td>3-6 bullet points of the most important facts</td></tr>
+            <tr><td><code>people</code></td><td>string[]</td><td>person names (LLM NER)</td></tr>
+            <tr><td><code>organizations</code></td><td>string[]</td><td>company/org names (LLM NER)</td></tr>
+            <tr><td><code>sentiment</code></td><td>object</td><td>structured sentiment, see below</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Sentiment itself is structured:</p>
+
+      <pre>{
+  "label": "positive | negative | neutral | mixed",
+  "confidence": 0.0,
+  "riskFlags": ["legal risk", "compliance concern", "..."]
+}</pre>
+
+      <p>The free-form <code>riskFlags</code> array is the design choice I want to highlight. Instead of forcing the model to pick from a fixed risk taxonomy, I let it call out concerning content in its own words, then let the UI surface those flags. That way the model can flag a "supply-chain concentration risk" without needing me to predefine that bucket.</p>
+
+      <p>There's a plain-text fallback path: if the schema-constrained call fails, I try a simple "summarize this document in 2-3 sentences" prompt and persist that as the description. I'd rather degrade gracefully than leave a document with no summary at all.</p>
+
+      <h2>Document review agent &mdash; <code>services/reviewAgent.ts</code></h2>
+
+      <p>Layered on top of classification, the review agent runs a per-document-type review (checklist items + extracted fields + risk brief), persisted as <code>review_json</code>. This is where domain knowledge gets injected &mdash; different rubrics per document type rather than a one-size-fits-all summary. A contract gets a contract checklist; an invoice gets an invoice checklist.</p>
+
+      <p>The classifier output picks the rubric, which keeps the prompts small and the output predictable.</p>
+
+      <h2>JSON-schema constraints everywhere</h2>
+
+      <p>Every LLM-NLP call I wrote (PII detection, query expansion, reranking, document analysis, review) uses Workers AI's <code>response_format: { type: 'json_schema', json_schema: ... }</code> to force well-typed output.</p>
+
+      <p>This matters for three reasons:</p>
+
+      <ol>
+        <li><strong>No regex-parsing of model output.</strong> Either <code>JSON.parse</code> succeeds and the schema validates, or I fall back to a simpler path.</li>
+        <li><strong>Failure modes are explicit.</strong> A schema validation failure is a clear log line, not a silent quality regression.</li>
+        <li><strong>Prompts stay shorter.</strong> The schema documents the contract, so the system prompt doesn't need to repeat "respond with JSON in the format&hellip;".</li>
+      </ol>
+
+      <h2>Where it all lands</h2>
+
+      <p>Everything above writes to columns on the <code>documents</code> row:</p>
+
+      <div class="note-table-wrap">
+        <table>
+          <thead><tr><th>Column</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td><code>summary</code></td><td><code>generateDocumentAnalysis</code> (title + description + key topics + key points)</td></tr>
+            <tr><td><code>pii_redacted</code>, <code>pii_types</code>, <code>pii_count</code></td><td>regex + LLM PII passes</td></tr>
+            <tr><td><code>entities</code></td><td>regex NER + LLM NER, merged</td></tr>
+            <tr><td><code>sentiment_label</code>, <code>sentiment_json</code></td><td><code>generateDocumentAnalysis</code></td></tr>
+            <tr><td><code>review_json</code></td><td><code>runDocumentReview</code> (classifier + per-type rubric)</td></tr>
+            <tr><td><code>processing_stage</code></td><td>DO updates as the pipeline progresses (<code>scanning_pii</code>, <code>embedding</code>, <code>analyzing</code>, <code>finalizing</code>)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The frontend reads these straight off the documents API and renders them as panels on the document detail page, so the NLP work is visible to users as soon as ingest finishes.</p>
+
+      <h2>What's next</h2>
+
+      <ul>
+        <li>Move regex NER into a streaming pass over chunks instead of full text &mdash; same output, lower memory.</li>
+        <li>The LLM PII detector currently truncates input at 8K chars. For long docs it should sample multiple windows.</li>
+        <li>Cache classifier results by content hash so reprocessed documents skip the classification call.</li>
+        <li>Add an "entity timeline" view &mdash; the date entities are already extracted, just need to be plotted against <code>keyPoints</code>.</li>
+      </ul>
+
+      <p style="margin-top: 40px; color: var(--text-3); font-size: 0.92rem;">Back to the start: <a href="/notes/localmind-rag-pipeline.html" style="color: var(--teal-1);">the RAG pipeline note &rarr;</a></p>
+    </div>
+
+    <a href="/#contact" class="note-cta">
+      <div class="note-cta-body">
+        <span class="note-cta-eyebrow">&sect; Open a thread</span>
+        <span class="note-cta-text">Building NLP for Canadian compliance? Let's compare notes on PIPEDA / PHIPA-aware redaction.</span>
+      </div>
+      <span class="note-cta-link">Start a thread <span class="arrow" aria-hidden="true">&rarr;</span></span>
+    </a>
+  </main>
+
+  <footer class="footer-v2">
+    <div class="footer-v2-inner">
+      <div class="footer-v2-left">
+        <div class="footer-v2-logo">caseonix</div>
+        <div class="footer-v2-meta">A solo AI lab &middot; Est. 2024 &middot; Waterloo, ON</div>
+      </div>
+      <nav class="footer-v2-nav" aria-label="Footer navigation">
+        <a href="/#projects">Field notes</a>
+        <a href="/#arsenal">Arsenal</a>
+        <a href="/blog/index.html">Log</a>
+        <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub &#8599;</a>
+      </nav>
+      <div class="footer-v2-right">&copy; 2026 Caseonix</div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        background: '#0F1B2A',
+        primaryColor: '#1A2B3C',
+        primaryTextColor: '#E8ECF1',
+        primaryBorderColor: '#5EBA9C',
+        lineColor: '#7FCBB0',
+        secondaryColor: '#223549',
+        tertiaryColor: '#0F1B2A',
+        fontFamily: 'Inter, sans-serif',
+        nodeBorder: '#5EBA9C',
+        clusterBkg: '#1A2B3C',
+        clusterBorder: '#5EBA9C',
+        edgeLabelBackground: '#1A2B3C',
+        textColor: '#E8ECF1',
+      }
+    });
+  </script>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '☀️' : '🌙';
+      try { localStorage.setItem('caseonix-theme', t); } catch(e) {}
+    }
+    toggle.addEventListener('click', () => {
+      setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+    try {
+      const saved = localStorage.getItem('caseonix-theme');
+      if (saved) setTheme(saved);
+    } catch(e) {}
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab note 2/3 — How I improved RAG quality | Caseonix</title>
+  <meta name="description" content="Eleven changes I made to LocalMind to move beyond a naïve RAG baseline — paragraph-aware chunking, contextual chunking, BGE asymmetric prefix, query expansion, calibrated similarity floor, two-stage rerank, fairness caps, citation binding." />
+  <meta name="author" content="Srivatsa Kasagar" />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="RAG quality, contextual chunking, BGE prefix, query expansion, LLM reranking, retrieval improvements, RAG evaluation, LocalMind" />
+  <link rel="canonical" href="https://caseonix.ca/notes/localmind-rag-quality.html" />
+
+  <meta property="og:title" content="Lab note 2/3 — How I improved RAG quality" />
+  <meta property="og:description" content="Eleven changes I made to move beyond a naïve RAG baseline — chunking, embedding, retrieval, generation." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://caseonix.ca/notes/localmind-rag-quality.html" />
+  <meta property="og:image" content="https://caseonix.ca/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Caseonix" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:author" content="Srivatsa Kasagar" />
+  <meta property="article:published_time" content="2026-04-22" />
+  <meta property="article:section" content="Lab notes" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lab note 2/3 — How I improved RAG quality" />
+  <meta name="twitter:description" content="Eleven changes I made to move beyond a naïve RAG baseline." />
+  <meta name="twitter:image" content="https://caseonix.ca/og-image.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Lab note 2/3 — How I improved RAG quality",
+    "description": "Eleven deliberate departures from a naïve RAG baseline.",
+    "author": {
+      "@type": "Person",
+      "name": "Srivatsa Kasagar",
+      "url": "https://caseonix.ca",
+      "jobTitle": "AI Builder & Solutions Architect"
+    },
+    "publisher": { "@type": "Organization", "name": "Caseonix", "url": "https://caseonix.ca" },
+    "datePublished": "2026-04-22",
+    "dateModified": "2026-04-22",
+    "url": "https://caseonix.ca/notes/localmind-rag-quality.html",
+    "image": "https://caseonix.ca/og-image.png",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://caseonix.ca/notes/localmind-rag-quality.html" },
+    "keywords": ["RAG quality", "contextual chunking", "BGE", "query expansion", "LLM reranking", "LocalMind"]
+  }
+  </script>
+
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0F1B2A; --surface: #1A2B3C; --surface-2: #223549;
+      --border: rgba(255,255,255,0.06); --border-hover: rgba(94,186,156,0.32);
+      --blue: #5EBA9C; --teal-1: #7FCBB0;
+      --text: #E8ECF1; --text-2: #94A3B8; --text-3: #64748B;
+      --nav-bg: rgba(15,27,42,0.82); --radius: 16px;
+    }
+    [data-theme="light"] {
+      --bg: #F8FAFC; --surface: #FFFFFF; --surface-2: #F1F5F9;
+      --border: rgba(0,0,0,0.08); --border-hover: rgba(94,186,156,0.35);
+      --text: #0F172A; --text-2: #334155; --text-3: #64748B;
+      --nav-bg: rgba(248,250,252,0.88);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; transition: background 0.3s, color 0.3s; }
+    :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px; background: var(--nav-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+    .nav-logo span { color: var(--blue); }
+    .nav-links-blog { display: flex; gap: 30px; list-style: none; }
+    .nav-links-blog a { text-decoration: none; color: var(--text-2); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links-blog a:hover, .nav-links-blog a.active { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--surface); cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 0.95rem; color: var(--text-2);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); transform: rotate(20deg); color: var(--text); }
+    @media (max-width: 800px) { nav { padding: 16px 24px; } .nav-links-blog { display: none; } }
+
+    .note-wrapper { max-width: 760px; margin: 0 auto; padding: 140px 24px 80px; }
+    .note-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: var(--text-3); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
+      margin-bottom: 40px; transition: color 0.2s;
+    }
+    .note-back:hover { color: var(--teal-1); }
+    .note-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--teal-1); margin-bottom: 16px;
+    }
+    .note-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 600; letter-spacing: -0.025em;
+      color: var(--text); line-height: 1.15; margin-bottom: 18px;
+    }
+    .note-meta {
+      display: flex; gap: 14px; align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem; color: var(--text-3);
+      margin-bottom: 24px;
+    }
+    .note-meta-sep { color: var(--text-3); opacity: 0.5; }
+    .note-series {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 48px; padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .note-series a, .note-series span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; padding: 6px 12px;
+      border: 1px solid var(--border); border-radius: 999px;
+      color: var(--text-2); text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .note-series a:hover { border-color: var(--border-hover); color: var(--text); }
+    .note-series .current { background: var(--surface); border-color: var(--border-hover); color: var(--teal-1); }
+
+    .note-body p { font-size: 1.02rem; color: var(--text-2); margin-bottom: 22px; line-height: 1.75; }
+    .note-body p strong, .note-body li strong { color: var(--text); font-weight: 600; }
+    .note-body code {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.86rem;
+      color: var(--teal-1); background: var(--surface);
+      padding: 1px 6px; border-radius: 4px;
+    }
+    .note-body h2 {
+      font-family: 'Inter', sans-serif; font-size: 1.4rem; font-weight: 600;
+      color: var(--text); letter-spacing: -0.015em; margin: 48px 0 18px;
+    }
+    .note-body h3 {
+      font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 600;
+      color: var(--text); margin: 32px 0 14px;
+    }
+    .note-body ul, .note-body ol { margin: 0 0 22px 24px; color: var(--text-2); }
+    .note-body li { margin-bottom: 8px; line-height: 1.7; font-size: 1.02rem; }
+    .note-body em { color: var(--text); font-style: italic; }
+
+    .note-table-wrap {
+      overflow-x: auto; margin: 0 0 28px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--surface);
+    }
+    .note-body table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .note-body th, .note-body td {
+      padding: 10px 14px; text-align: left;
+      border-bottom: 1px solid var(--border); color: var(--text-2);
+    }
+    .note-body th {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-3); background: var(--surface-2);
+    }
+    .note-body tr:last-child td { border-bottom: none; }
+    .note-body td code { font-size: 0.8rem; }
+
+    .diagram-card {
+      background: #0F1B2A; border: 1px solid rgba(94,186,156,0.18);
+      border-radius: 12px; padding: 28px 20px; margin: 28px 0;
+      overflow-x: auto; text-align: center;
+    }
+    .diagram-card .mermaid { font-family: 'Inter', sans-serif; display: inline-block; min-width: 100%; }
+    .diagram-caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-3);
+      margin-top: 14px;
+    }
+
+    .note-cta {
+      margin-top: 56px; padding: 28px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; transition: border-color 0.2s, background 0.2s; text-decoration: none;
+    }
+    .note-cta:hover { border-color: var(--border-hover); background: var(--surface-2); }
+    .note-cta-body { display: flex; flex-direction: column; gap: 4px; }
+    .note-cta-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal-1);
+    }
+    .note-cta-text { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 500; color: var(--text); line-height: 1.4; }
+    .note-cta-link {
+      display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em;
+      color: var(--teal-1); white-space: nowrap;
+    }
+    .note-cta-link .arrow { transition: transform 0.2s; }
+    .note-cta:hover .note-cta-link .arrow { transform: translateX(4px); }
+    @media (max-width: 640px) { .note-cta { flex-direction: column; align-items: flex-start; } }
+
+    .footer-v2 { border-top: 1px solid var(--border); padding: 40px 60px; margin-top: 80px; }
+    .footer-v2-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 32px; }
+    .footer-v2-logo { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    .footer-v2-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem; font-weight: 500; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-3); margin-top: 4px;
+    }
+    .footer-v2-nav { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .footer-v2-nav a {
+      font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 400;
+      color: var(--text-2); text-decoration: none;
+      transition: color 120ms ease-out;
+    }
+    .footer-v2-nav a:hover { color: var(--teal-1); }
+    .footer-v2-right { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-3); }
+    @media (max-width: 800px) {
+      .footer-v2 { padding: 40px 24px; }
+      .footer-v2-inner { grid-template-columns: 1fr; gap: 18px; text-align: center; }
+      .footer-v2-nav { justify-content: center; }
+      .footer-v2-right { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Case<span>onix</span></a>
+    <ul class="nav-links-blog">
+      <li><a href="/#projects">Field notes</a></li>
+      <li><a href="/#arsenal">Arsenal</a></li>
+      <li><a href="/blog/index.html" class="active">Log</a></li>
+      <li><a href="/#contact">Open a thread</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+    </div>
+  </nav>
+
+  <main class="note-wrapper">
+    <a href="/blog/index.html#notes" class="note-back">&larr; back to lab notes</a>
+
+    <div class="note-eyebrow">&sect; Lab note &middot; 2 of 3</div>
+    <h1 class="note-title">How I improved RAG quality in LocalMind</h1>
+    <div class="note-meta">
+      <span>Apr 22, 2026</span>
+      <span class="note-meta-sep">&middot;</span>
+      <span>Working note &mdash; will evolve</span>
+    </div>
+    <div class="note-series">
+      <a href="/notes/localmind-rag-pipeline.html">&larr; 1. Pipeline</a>
+      <span class="current">2. Quality improvements</span>
+      <a href="/notes/localmind-nlp-layer.html">3. NLP layer &rarr;</a>
+    </div>
+
+    <div class="note-body">
+      <p>A naïve "split by N tokens, embed, top-K cosine, stuff into prompt" pipeline is the baseline most RAG tutorials give you. I moved away from that baseline at almost every layer of LocalMind because each step had a real failure mode in my testing. This note lists every change I made and why.</p>
+
+      <h2>Baseline vs. what I built</h2>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart TB
+    subgraph Baseline["Naïve baseline RAG"]
+        B1[fixed-window<br/>chunking] --&gt; B2[embed<br/>raw chunks]
+        B2 --&gt; B3[single-query<br/>top-K cosine]
+        B3 --&gt; B4[stuff into<br/>prompt]
+    end
+    subgraph LocalMind["LocalMind RAG"]
+        L1[paragraph-aware chunk<br/>+ overlap<br/>+ table flatten<br/>+ PII redact] --&gt; L2[contextual prepend<br/>+ BGE query prefix<br/>+ embed]
+        L2 --&gt; L3[query expansion ×N<br/>+ multi-vector merge<br/>+ similarity floor 0.3<br/>+ Gemma rerank 1-5]
+        L3 --&gt; L4[token-budgeted context<br/>+ per-doc fairness cap<br/>+ citation-bound synthesis<br/>+ history trim]
+    end
+    Baseline -.evolved into.-> LocalMind
+        </pre>
+        <div class="diagram-caption">Diagram 1 &mdash; baseline vs. what I built</div>
+      </div>
+
+      <p>Every stage has been swapped for a more careful version. Each change below is shown as the problem it fixes.</p>
+
+      <h2>Indexing-side improvements</h2>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart LR
+    R[raw text] --&gt; C1[paragraph-aware<br/>chunking]
+    C1 --&gt; C2[table<br/>flattening]
+    C2 --&gt; C3[PII redaction<br/>before embed]
+    C3 --&gt; C4[contextual<br/>prepend]
+    C4 --&gt; C5[BGE query/doc<br/>asymmetry]
+    C5 --&gt; V[(Vectorize)]
+        </pre>
+        <div class="diagram-caption">Diagram 2 &mdash; the indexing layers I added on top of the baseline</div>
+      </div>
+
+      <p><strong>Paragraph-aware chunking instead of fixed windows.</strong> Naïve chunkers slice every N characters, which often cuts across sentence and paragraph boundaries and embeds half-thoughts. My <code>chunkText</code> packs whole paragraphs into the buffer first, only falls back to sentence splitting when a single paragraph overflows, and carries a 50-token overlap on every flush so cross-boundary references survive. Embeddings stay tied to coherent semantic units, and overlap covers the cases where a discussion does cross paragraphs.</p>
+
+      <p><strong>Table flattening before chunking.</strong> PDFs and DOCX exports lose tabular structure on extraction &mdash; column headers end up in row 1 and the data rows below them lose all meaning ("$4.2M" with no header is useless to a retriever). My <code>flattenTables</code> walks the parsed text and re-attaches headers to each row so a query like "Q3 revenue" has something to match against in the embedding space. Implementation details are in the <a href="/notes/localmind-nlp-layer.html">NLP note</a>.</p>
+
+      <p><strong>Contextual chunking (the biggest single win).</strong> I applied Anthropic's contextual-retrieval idea here. For each chunk, Gemma writes a 1-2 sentence header that says where the chunk fits in the broader document &mdash; for example, "This chunk is from the risk-factors section of Acme's 2024 10-K and discusses supply-chain exposure to&hellip;". I prepend that header to the chunk <em>before embedding</em>, so the vector encodes both the local content and its global context. The display copy in D1 stays untouched, so users still see the clean original text in citations.</p>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart LR
+    OC[original chunk] --&gt; D1[(D1 — display copy)]
+    OC --&gt; CTX[Gemma writes<br/>1-2 sentence header]
+    CTX --&gt; ENR[contextualized chunk<br/>= header + original]
+    ENR --&gt; EMB[BGE embed]
+    EMB --&gt; VZ[(Vectorize — retrieval copy)]
+        </pre>
+        <div class="diagram-caption">Diagram 3 &mdash; the dual-text split (display vs. retrieval copies)</div>
+      </div>
+
+      <p>This single change saves a lot of short chunks and back-referencing chunks ("the company also reported&hellip;" &mdash; <em>which</em> company?) that vanilla embeddings can't disambiguate.</p>
+
+      <p><strong>BGE asymmetric query encoding.</strong> BGE-Small was trained with a specific instruction prefix on the query side. Most pipelines ignore it. I prepend <code>"Represent this sentence for searching relevant passages: "</code> to every query before embedding, which matches the model's training distribution and raises cosine similarity for relevant chunks above the noise level.</p>
+
+      <p><strong>PII redaction before embedding.</strong> Privacy-first is the headline requirement of LocalMind, but it's also a retrieval lever: I redact chunks before they're embedded, so PII never gets encoded into the vector space. A side benefit is that chunks cluster by topic instead of by random identifiers like phone numbers.</p>
+
+      <h2>Retrieval-side improvements</h2>
+
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart TB
+    Q[user query] --&gt; QE[query expansion<br/>2-3 variants]
+    QE --&gt; MV[multi-vector search<br/>parallel topK=15]
+    MV --&gt; MD[merge + dedupe<br/>max score per chunk]
+    MD --&gt; TH[similarity floor<br/>≥ 0.3]
+    TH --&gt; RR[LLM rerank<br/>Gemma 1-5]
+    RR --&gt; CT[token-budgeted context<br/>+ per-doc fairness cap]
+    CT --&gt; SY[citation-bound<br/>synthesis]
+        </pre>
+        <div class="diagram-caption">Diagram 4 &mdash; the retrieval layers I added on top of single-query top-K</div>
+      </div>
+
+      <p><strong>Query expansion + multi-vector search.</strong> A single query phrasing often misses chunks that use different vocabulary ("revenue" vs. "top line", "termination" vs. "wrongful dismissal"). I have Gemma rewrite the query into 2-3 alternative phrasings, embed each one with the BGE prefix, and run all variants in parallel against Vectorize. I merge results by chunk ID, keeping the <em>max</em> score across variants, so a chunk surfaced by multiple phrasings gets credit but isn't double-counted. Recall goes up without a precision hit.</p>
+
+      <p><strong>Tuned similarity floor.</strong> A naïve top-K returns K chunks no matter what &mdash; including garbage when the corpus has nothing relevant. I profiled BGE-Small's score distribution on my actual corpus: relevant chunks land at 0.35-0.55, noise sits below 0.3. My <code>MIN_SIMILARITY = 0.3</code> floor cuts off the noise band, and if zero chunks pass I short-circuit to "I couldn't find relevant information" instead of letting the model hallucinate from low-quality context.</p>
+
+      <p><strong>Two-stage retrieval &mdash; vector then LLM rerank.</strong> Cosine similarity is fast but coarse. I retrieve a wide candidate set (top 15 per variant) then hand it to Gemma with a strict 1-5 relevance rubric and a JSON-schema output. Anything scoring below 3 is dropped; I keep the top 7. Reranking boosts chunks that <em>answer</em> the question over chunks that just <em>share vocabulary</em> with it, which is the failure mode pure-vector retrieval is most prone to. I added a fallback: if fewer than 2 chunks pass the rerank threshold I revert to vector ordering rather than ship a near-empty context.</p>
+
+      <p><strong>Per-document fairness cap on team-wide search.</strong> Without a cap, one document with high lexical overlap can take over the top 7 and crowd out other documents with more diverse but still-relevant context. <code>MAX_CHUNKS_PER_DOC_TEAM_SEARCH = 2</code> enforces breadth across the result set when the search spans multiple documents.</p>
+
+      <p><strong>Token-budgeted context assembly with citations.</strong> <code>buildContextFromChunks</code> enforces a 6000-token cap and writes each chunk with a <code>[N] filename</code> header and <code>---</code> separator. The synthesis system prompt binds Gemma to the supplied context, forbids external knowledge, and requires <code>[Document: filename]</code> citations &mdash; so answers are grounded and checkable, not filled in from the model's training data.</p>
+
+      <p><strong>Conversation history trim.</strong> Long chat sessions can blow the context window. I walk the history newest-first and trim it at <code>MAX_HISTORY_TOKENS = 1500</code>, so older turns drop off but the recent thread stays intact.</p>
+
+      <h2>Reliability improvements</h2>
+
+      <p><strong>Eventual-consistency handling.</strong> Vectorize is eventually consistent &mdash; the upsert returning successfully doesn't mean the chunks are queryable yet. A document marked "ready" before its vectors are indexed produces empty searches and looks like a quality bug from the user's seat. I sample first/last chunk IDs after upsert via a Durable Object alarm, retry on failure (5 attempts × 90s), and only flip status to <code>ready</code> once both ends are visible &mdash; or to <code>error</code> if they never show up.</p>
+
+      <p><strong>Fallback at every LLM call.</strong> Each LLM step (query expansion, reranking, synthesis) has an explicit fallback path. Expansion failure &rarr; original query only. Rerank failure or fewer than 2 passing chunks &rarr; vector ranking. Synthesis failure surfaces as a clear error rather than partial output. The pipeline never quietly produces lower-quality results without saying so in the logs.</p>
+
+      <h2>Score-keeping</h2>
+
+      <div class="note-table-wrap">
+        <table>
+          <thead>
+            <tr><th>Failure mode I observed</th><th>What I changed</th><th>Where</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Half-sentence chunks</td><td>Paragraph-aware chunker + overlap</td><td><code>services/document.ts</code></td></tr>
+            <tr><td>Detached table values</td><td><code>flattenTables</code> re-attaches headers</td><td><code>services/tableFlattener.ts</code></td></tr>
+            <tr><td>Back-referencing / short chunks unfindable</td><td>Contextual prepend before embed</td><td><code>services/llmGateway.ts</code></td></tr>
+            <tr><td>Weak query embeddings</td><td>BGE instruction prefix</td><td><code>services/embedding.ts</code></td></tr>
+            <tr><td>Vocabulary-mismatch misses</td><td>Query expansion + multi-vector merge</td><td><code>routes/search.ts</code></td></tr>
+            <tr><td>Low-quality top-K</td><td>0.3 similarity floor</td><td><code>routes/search.ts</code></td></tr>
+            <tr><td>Vocab-match &ne; answer-match</td><td>Gemma rerank with 1-5 rubric</td><td><code>services/llmGateway.ts</code></td></tr>
+            <tr><td>One doc dominates results</td><td><code>MAX_CHUNKS_PER_DOC_TEAM_SEARCH = 2</code></td><td><code>services/llmGateway.ts</code></td></tr>
+            <tr><td>Hallucination</td><td>Citation-bound system prompt</td><td><code>services/llmGateway.ts</code></td></tr>
+            <tr><td>Long chats blow context</td><td>History token cap</td><td><code>services/llmGateway.ts</code></td></tr>
+            <tr><td>Vectors not yet indexed</td><td>DO alarm verification loop</td><td><code>durableObjects/teamState.ts</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>What's next</h2>
+
+      <ul>
+        <li>Hybrid retrieval (BM25 alongside vectors) is the obvious next step &mdash; at the 0.3 BGE floor I'm sometimes missing exact-keyword queries.</li>
+        <li>The contextual-chunking call is sequential-batched at 5; on very large docs it's the dominant ingest latency. Worth either caching headers per (doc, paragraph hash) or batching at the model API level.</li>
+        <li>I'm using Gemma 4 as the reranker; a dedicated cross-encoder (e.g. <code>bge-reranker-base</code>) would be cheaper and likely better-calibrated than reusing the chat model.</li>
+        <li>A retrieval eval harness &mdash; even a small hand-labeled set of 50 query/relevant-chunk pairs &mdash; would let me regress these knobs against a number instead of intuition.</li>
+      </ul>
+
+      <p style="margin-top: 40px; color: var(--text-3); font-size: 0.92rem;">Next: <a href="/notes/localmind-nlp-layer.html" style="color: var(--teal-1);">how the NLP layer fits alongside RAG &rarr;</a></p>
+    </div>
+
+    <a href="/#contact" class="note-cta">
+      <div class="note-cta-body">
+        <span class="note-cta-eyebrow">&sect; Open a thread</span>
+        <span class="note-cta-text">What's worked for you on RAG quality? Comparing notes on rerankers and contextual chunking.</span>
+      </div>
+      <span class="note-cta-link">Start a thread <span class="arrow" aria-hidden="true">&rarr;</span></span>
+    </a>
+  </main>
+
+  <footer class="footer-v2">
+    <div class="footer-v2-inner">
+      <div class="footer-v2-left">
+        <div class="footer-v2-logo">caseonix</div>
+        <div class="footer-v2-meta">A solo AI lab &middot; Est. 2024 &middot; Waterloo, ON</div>
+      </div>
+      <nav class="footer-v2-nav" aria-label="Footer navigation">
+        <a href="/#projects">Field notes</a>
+        <a href="/#arsenal">Arsenal</a>
+        <a href="/blog/index.html">Log</a>
+        <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub &#8599;</a>
+      </nav>
+      <div class="footer-v2-right">&copy; 2026 Caseonix</div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        background: '#0F1B2A',
+        primaryColor: '#1A2B3C',
+        primaryTextColor: '#E8ECF1',
+        primaryBorderColor: '#5EBA9C',
+        lineColor: '#7FCBB0',
+        secondaryColor: '#223549',
+        tertiaryColor: '#0F1B2A',
+        fontFamily: 'Inter, sans-serif',
+        nodeBorder: '#5EBA9C',
+        clusterBkg: '#1A2B3C',
+        clusterBorder: '#5EBA9C',
+        edgeLabelBackground: '#1A2B3C',
+        textColor: '#E8ECF1',
+      }
+    });
+  </script>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '☀️' : '🌙';
+      try { localStorage.setItem('caseonix-theme', t); } catch(e) {}
+    }
+    toggle.addEventListener('click', () => {
+      setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+    try {
+      const saved = localStorage.getItem('caseonix-theme');
+      if (saved) setTheme(saved);
+    } catch(e) {}
+  </script>
+
+</body>
+</html>
