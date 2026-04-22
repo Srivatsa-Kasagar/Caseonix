@@ -1457,12 +1457,18 @@
     }
     .status-repo-row {
       display: grid;
-      grid-template-columns: 1fr auto auto auto auto auto;
+      grid-template-columns: minmax(0, 1fr) 44px 82px 12px 50px 48px;
       gap: 10px; align-items: baseline;
     }
-    .status-repo-name    { color: var(--text); }
+    .status-repo-name {
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
     .status-repo-lang {
-      display: inline-block;
+      justify-self: start;
       padding: 1px 5px;
       border-radius: 3px;
       background: rgba(94,186,156,0.12);
@@ -1472,10 +1478,15 @@
       font-weight: 500;
       letter-spacing: 0.04em;
       line-height: 1.4;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .status-repo-version { color: var(--text-3); }
-    .status-repo-latency { color: var(--text-3); font-size: 0.7rem; min-width: 42px; text-align: right; }
-    .status-repo-dot     { color: var(--green); font-size: 0.6rem; }
+    .status-repo-version { color: var(--text-3); text-align: right; }
+    .status-repo-latency { color: var(--text-3); font-size: 0.7rem; text-align: right; }
+    .status-repo-push    { text-align: right; }
+    .status-repo-dot     { color: var(--green); font-size: 0.6rem; text-align: center; }
     .status-repo-dot.warn { color: #FBBF24; }
     .status-repo-dot.off  { color: var(--text-3); opacity: 0.5; }
     .status-repo-dot[data-status="green"]  { color: var(--green); }
@@ -1585,28 +1596,36 @@
           </div>
           <div class="status-repos" data-field="repos">
             <div class="status-repo-row">
-              <span class="status-repo-name">localmind</span>
-              <span class="status-repo-version">185 commits</span>
-              <span class="status-repo-dot" aria-label="healthy">●</span>
-              <span class="status-repo-push">Apr 22</span>
-            </div>
-            <div class="status-repo-row">
-              <span class="status-repo-name">consol-cloud</span>
-              <span class="status-repo-version">148 commits</span>
-              <span class="status-repo-dot" aria-label="healthy">●</span>
-              <span class="status-repo-push">Apr 21</span>
-            </div>
-            <div class="status-repo-row">
-              <span class="status-repo-name">FinLit</span>
-              <span class="status-repo-version">43 commits</span>
-              <span class="status-repo-dot" aria-label="healthy">●</span>
-              <span class="status-repo-push">Apr 10</span>
+              <span class="status-repo-name">Caseonix</span>
+              <span class="status-repo-lang">HTML</span>
+              <span class="status-repo-version">42 commits</span>
+              <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
+              <span class="status-repo-latency"></span>
+              <span class="status-repo-push">today</span>
             </div>
             <div class="status-repo-row">
               <span class="status-repo-name">wealth-guide</span>
+              <span class="status-repo-lang">PY</span>
               <span class="status-repo-version">34 commits</span>
-              <span class="status-repo-dot" aria-label="healthy">●</span>
-              <span class="status-repo-push">Apr 16</span>
+              <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
+              <span class="status-repo-latency"></span>
+              <span class="status-repo-push">5d</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">FinLit</span>
+              <span class="status-repo-lang">PY</span>
+              <span class="status-repo-version">43 commits</span>
+              <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
+              <span class="status-repo-latency"></span>
+              <span class="status-repo-push">11d</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">LoonieLog</span>
+              <span class="status-repo-lang">HTML</span>
+              <span class="status-repo-version">14 commits</span>
+              <span class="status-repo-dot" data-status="green" aria-label="healthy">●</span>
+              <span class="status-repo-latency"></span>
+              <span class="status-repo-push">3w</span>
             </div>
           </div>
         </div>
