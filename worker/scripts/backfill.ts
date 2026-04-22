@@ -28,6 +28,10 @@ const REPOS = [
   "consol-cloud",
 ];
 
+// Private repos allowed through with metadata only (no commit messages, no SHAs).
+// Must match PRIVATE_REPOS_ALLOWLIST in worker/src/types.ts.
+const PRIVATE_ALLOWLIST = new Set(["localmind", "consol-cloud"]);
+
 type EventVerb = "commit" | "deploy" | "release" | "post" | "eval";
 
 type Snapshot = {
@@ -100,11 +104,13 @@ async function buildSnapshot(): Promise<Snapshot> {
   for (const repo of REPOS) {
     const meta = await repoMeta(repo);
     if (!meta) {
-      console.warn(`skip ${repo}: cannot fetch repo metadata (404 / rate-limited / private)`);
+      console.warn(`skip ${repo}: cannot fetch repo metadata (404 / rate-limited / token missing)`);
       continue;
     }
-    if (meta.private) {
-      console.log(`skip ${repo}: private`);
+
+    const allowPrivate = PRIVATE_ALLOWLIST.has(repo);
+    if (meta.private && !allowPrivate) {
+      console.log(`skip ${repo}: private (not in allowlist)`);
       continue;
     }
 
@@ -125,6 +131,12 @@ async function buildSnapshot(): Promise<Snapshot> {
       commit_count: count,
       language: meta.language ?? undefined,
     };
+
+    // Private repos: metadata only. No events, no latest_deploy.
+    if (meta.private) {
+      console.log(`private ${repo}: metadata only (${count ?? "?"} commits, ${meta.language ?? "—"})`);
+      continue;
+    }
 
     const isSite = repo === SITE_REPO;
     const summary = firstLine(commit.message).slice(0, 80);

@@ -1,6 +1,7 @@
 import {
   EVENTS_CAP,
   PRIVATE_REPO_BLOCKLIST,
+  PRIVATE_REPOS_ALLOWLIST,
   REPO_ACTIVE_WINDOW_DAYS,
   RepoStatus,
   SITE_DOMAIN,
@@ -38,6 +39,10 @@ function isBlocked(repoName: string): boolean {
   return PRIVATE_REPO_BLOCKLIST.includes(repoName);
 }
 
+function isPrivateAllowed(repoName: string): boolean {
+  return PRIVATE_REPOS_ALLOWLIST.includes(repoName);
+}
+
 export function patchSnapshot(
   prev: Snapshot,
   eventType: string,
@@ -59,27 +64,38 @@ function handlePush(snap: Snapshot, p: Record<string, unknown>): Snapshot {
   const repo = p.repository as { name: string; private?: boolean } | undefined;
   const headCommit = p.head_commit as { id?: string; message?: string; timestamp?: string } | null;
   if (!repo || !headCommit || !headCommit.id) return snap;
-  if (repo.private) return snap;
   if (isBlocked(repo.name)) return snap;
+
+  const isPrivate = !!repo.private;
+  if (isPrivate && !isPrivateAllowed(repo.name)) return snap;
 
   const ref = p.ref as string | undefined;
   if (ref && !ref.startsWith("refs/heads/")) return snap;
 
   const ts = headCommit.timestamp ?? new Date().toISOString();
   const sha = shortSha(headCommit.id);
-  const summary = firstLine(headCommit.message ?? "").slice(0, 80);
   const isSite = repo.name === SITE_REPO;
 
+  // Metadata update applies to every allowed repo, including private-allowlist ones.
   const nextRepos = { ...snap.repos };
   const existing = nextRepos[repo.name];
   nextRepos[repo.name] = {
+    ...(existing ?? { status: "green", version: sha }),
     version: existing?.version || sha,
     last_push: shortDate(ts),
     last_push_ts: ts,
     status: existing?.status ?? "green",
     commit_count: existing?.commit_count,
+    language: existing?.language,
+    latency_ms: existing?.latency_ms,
   };
 
+  // Private repos: metadata only. No events, no latest_deploy impact.
+  if (isPrivate) {
+    return { ...snap, repos: nextRepos };
+  }
+
+  const summary = firstLine(headCommit.message ?? "").slice(0, 80);
   const nextDeploy =
     isSite || !snap.latest_deploy.ts || Date.parse(ts) >= Date.parse(snap.latest_deploy.ts)
       ? {
@@ -109,18 +125,29 @@ function handleRelease(snap: Snapshot, p: Record<string, unknown>): Snapshot {
   const repo = p.repository as { name: string; private?: boolean } | undefined;
   const release = p.release as { tag_name?: string; published_at?: string; name?: string } | undefined;
   if (!repo || !release?.tag_name) return snap;
-  if (repo.private || isBlocked(repo.name)) return snap;
+  if (isBlocked(repo.name)) return snap;
+
+  const isPrivate = !!repo.private;
+  if (isPrivate && !isPrivateAllowed(repo.name)) return snap;
 
   const ts = release.published_at ?? new Date().toISOString();
   const nextRepos = { ...snap.repos };
   const existing = nextRepos[repo.name];
   nextRepos[repo.name] = {
+    ...(existing ?? { status: "green" }),
     version: release.tag_name,
     last_push: existing?.last_push ?? shortDate(ts),
     last_push_ts: existing?.last_push_ts ?? ts,
     status: existing?.status ?? "green",
     commit_count: existing?.commit_count,
+    language: existing?.language,
+    latency_ms: existing?.latency_ms,
   };
+
+  if (isPrivate) {
+    // Private: bump version in REPOS tile but skip the public event line.
+    return { ...snap, repos: nextRepos };
+  }
 
   const nextEvents = prependEvent(snap.events, {
     verb: "release",
@@ -139,7 +166,8 @@ function handleWorkflowRun(snap: Snapshot, p: Record<string, unknown>): Snapshot
   const repo = p.repository as { name: string; private?: boolean } | undefined;
   const run = p.workflow_run as { conclusion?: string; updated_at?: string } | undefined;
   if (!repo || !run) return snap;
-  if (repo.private || isBlocked(repo.name)) return snap;
+  if (isBlocked(repo.name)) return snap;
+  if (repo.private && !isPrivateAllowed(repo.name)) return snap;
 
   const existing = snap.repos[repo.name];
   if (!existing) return snap;
@@ -159,7 +187,8 @@ function handleCreate(snap: Snapshot, p: Record<string, unknown>): Snapshot {
   const repo = p.repository as { name: string; private?: boolean } | undefined;
   const ref = p.ref as string | undefined;
   if (!repo || !ref) return snap;
-  if (repo.private || isBlocked(repo.name)) return snap;
+  if (isBlocked(repo.name)) return snap;
+  if (repo.private && !isPrivateAllowed(repo.name)) return snap;
 
   const existing = snap.repos[repo.name];
   if (!existing) return snap;

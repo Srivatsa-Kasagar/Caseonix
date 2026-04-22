@@ -48,6 +48,14 @@ export const SITE_DOMAIN = "caseonix.ca";
 export const PRIVATE_REPO_BLOCKLIST: readonly string[] = [];
 
 /**
+ * Private repos that ARE allowed through to the public REPOS tile, with
+ * commit messages and SHAs redacted. Everything not in this list stays
+ * fully hidden. Metadata only (name, language, commit_count, last_push,
+ * status) — never commit messages or SHAs.
+ */
+export const PRIVATE_REPOS_ALLOWLIST: readonly string[] = ["localmind", "consol-cloud"];
+
+/**
  * Public endpoint for each repo that has one. Cron Trigger HEAD-checks these
  * every few minutes and writes the result into repos[name].status so the
  * widget's dot colors reflect actual uptime, not a hardcoded green.
@@ -58,6 +66,7 @@ export const REPO_ENDPOINTS: Readonly<Record<string, string>> = {
   Caseonix: "https://caseonix.ca",
   "consol-cloud": "https://consul.caseonix.ca",
   LoonieLog: "https://loonielog.ca",
+  localmind: "https://localmind.caseonix.ca",
 };
 
 export const PING_TIMEOUT_MS = 5000;
