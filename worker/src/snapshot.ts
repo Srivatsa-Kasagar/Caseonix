@@ -99,7 +99,7 @@ function handlePush(snap: Snapshot, p: Record<string, unknown>): Snapshot {
   if (isPrivate) {
     const nextEvents = prependEvent(snap.events, {
       verb: "commit",
-      summary: `${repo.name} · <private>`,
+      summary: `${repo.name} · <private commit>`,
       ts,
       repo: repo.name,
     });

@@ -136,7 +136,7 @@ async function buildSnapshot(): Promise<Snapshot> {
     if (meta.private) {
       snap.events.push({
         verb: "commit",
-        summary: `${repo} · <private>`,
+        summary: `${repo} · <private commit>`,
         ts: commit.date,
         repo,
       });
