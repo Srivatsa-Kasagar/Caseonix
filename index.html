@@ -1393,6 +1393,80 @@
       [data-theme="light"] .status-card { background: var(--surface); }
     }
 
+
+    /* ═══════════════════════════════════
+       WIDGET DASHBOARD TILES — v3
+    ═══════════════════════════════════ */
+    .status-tile-label .status-label-right {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 400;
+      color: var(--text-3);
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    /* EVALS grid */
+    .status-evals {
+      display: flex; flex-direction: column; gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "tnum";
+    }
+    .status-eval-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 10px; align-items: baseline;
+      font-size: 0.76rem;
+    }
+    .status-eval-name {
+      color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .status-eval-mark { font-weight: 600; text-align: center; min-width: 12px; }
+    .status-eval-mark.ok   { color: var(--green); }
+    .status-eval-mark.warn { color: #FBBF24; }
+    .status-eval-mark.fail { color: var(--rose); }
+    .status-eval-score   { color: var(--text-2); }
+    .status-eval-latency { color: var(--text-3); }
+
+    /* EVENTS log */
+    .status-events {
+      display: flex; flex-direction: column; gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "tnum";
+      font-size: 0.7rem;
+    }
+    .status-event-row {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      gap: 10px; align-items: baseline;
+    }
+    .status-event-time   { color: var(--text-3); white-space: nowrap; }
+    .status-event-action { color: var(--teal-3); }
+    .status-event-detail {
+      color: var(--text-2);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* REPOS matrix */
+    .status-repos {
+      display: flex; flex-direction: column; gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "tnum";
+      font-size: 0.76rem;
+    }
+    .status-repo-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 10px; align-items: baseline;
+    }
+    .status-repo-name    { color: var(--text); }
+    .status-repo-version { color: var(--text-3); }
+    .status-repo-dot     { color: var(--green); font-size: 0.6rem; }
+    .status-repo-dot.warn { color: #FBBF24; }
+    .status-repo-dot.off  { color: var(--text-3); opacity: 0.5; }
+    .status-repo-push    { color: var(--text-3); }
+
   </style>
 </head>
 <body>
@@ -1424,13 +1498,14 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════
-       UPDATE WEEKLY — hero status widget values
-       Edit the three tiles below every Monday. Rules:
-         • Keep absolute dates (e.g. "Apr 18"), not relative ("3h ago")
-         • Update the SHA in LATEST DEPLOY after any deploy
-         • NOW — two app rows. Edit app + model + date.
-         • If you pause eval runs, swap the "pass" class/text for
-           "stale" + change .status-tile-meta.ok to .status-tile-meta
+       UPDATE WEEKLY — hero status widget (4 tiles)
+       Edit each Monday. Rules:
+         • Absolute dates only (e.g. "Apr 22"), not relative ("3h ago")
+         • LATEST DEPLOY — bump SHA + date after any push
+         • EVENTS — four log lines. Keep "commit/deploy/eval/post" verbs.
+           Newest at top.
+         • REPOS — four rows. Version + green dot + last-push age.
+         • NOW — two app rows (localmind + consul) with model + date.
        ═══════════════════════════════════════════════════════════ -->
   <!-- HERO -->
   <section class="hero hero-v2" id="home">
@@ -1457,30 +1532,73 @@
           </div>
           <div class="status-tile-body">
             <span class="status-tile-primary">consul.caseonix.ca</span>
-            <span class="status-tile-meta">c82f1a0</span>
+            <span class="status-tile-meta">0eeea18</span>
             <span class="status-tile-meta">Apr 21</span>
           </div>
         </div>
 
-        <!-- TILE 3: LIVE EVAL — UPDATE WEEKLY -->
+        <!-- TILE 2: EVENTS — UPDATE WEEKLY -->
         <div class="status-tile">
-          <div class="status-tile-label"><span>LIVE EVAL</span></div>
-          <div class="status-tile-body">
-            <span class="status-tile-primary">RAG retrieval</span>
-            <span class="status-tile-meta ok">· pass</span>
-            <svg class="status-sparkline" viewBox="0 0 49 18" width="49" height="18" aria-hidden="true" preserveAspectRatio="none">
-              <rect x="0"  y="10" width="4" height="8"/>
-              <rect x="7"  y="6"  width="4" height="12"/>
-              <rect x="14" y="8"  width="4" height="10"/>
-              <rect x="21" y="4"  width="4" height="14"/>
-              <rect x="28" y="7"  width="4" height="11"/>
-              <rect x="35" y="2"  width="4" height="16"/>
-              <rect x="42" y="3"  width="4" height="15"/>
-            </svg>
+          <div class="status-tile-label"><span>EVENTS</span></div>
+          <div class="status-events">
+            <div class="status-event-row">
+              <span class="status-event-time">Apr 22 &middot; 09:14</span>
+              <span class="status-event-action">commit</span>
+              <span class="status-event-detail">localmind &middot; fdf3607 soften sovereignty claims</span>
+            </div>
+            <div class="status-event-row">
+              <span class="status-event-time">Apr 21 &middot; 17:43</span>
+              <span class="status-event-action">deploy</span>
+              <span class="status-event-detail">consul.caseonix.ca 0eeea18 inline delete confirm</span>
+            </div>
+            <div class="status-event-row">
+              <span class="status-event-time">Apr 17</span>
+              <span class="status-event-action">post</span>
+              <span class="status-event-detail">multi-agent Claude Code skills</span>
+            </div>
+            <div class="status-event-row">
+              <span class="status-event-time">Apr 16</span>
+              <span class="status-event-action">commit</span>
+              <span class="status-event-detail">wealth-guide &middot; c47decf PDF/HTML export to README</span>
+            </div>
           </div>
         </div>
 
-        <!-- TILE 3: NOW — UPDATE WEEKLY -->
+        <!-- TILE 3: REPOS — UPDATE WEEKLY -->
+        <div class="status-tile">
+          <div class="status-tile-label">
+            <span>REPOS</span>
+            <span class="status-label-right">Apr 2026</span>
+          </div>
+          <div class="status-repos">
+            <div class="status-repo-row">
+              <span class="status-repo-name">localmind</span>
+              <span class="status-repo-version">185 commits</span>
+              <span class="status-repo-dot" aria-label="healthy">●</span>
+              <span class="status-repo-push">Apr 22</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">consol-cloud</span>
+              <span class="status-repo-version">148 commits</span>
+              <span class="status-repo-dot" aria-label="healthy">●</span>
+              <span class="status-repo-push">Apr 21</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">FinLit</span>
+              <span class="status-repo-version">43 commits</span>
+              <span class="status-repo-dot" aria-label="healthy">●</span>
+              <span class="status-repo-push">Apr 10</span>
+            </div>
+            <div class="status-repo-row">
+              <span class="status-repo-name">wealth-guide</span>
+              <span class="status-repo-version">34 commits</span>
+              <span class="status-repo-dot" aria-label="healthy">●</span>
+              <span class="status-repo-push">Apr 16</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TILE 4: NOW — UPDATE WEEKLY -->
         <div class="status-tile">
           <div class="status-tile-label"><span>NOW</span></div>
           <a href="./now.html" class="status-now-link status-now-link-multi" aria-label="See full now page">
