@@ -15,6 +15,7 @@ export type RepoRow = {
   commit_count?: number;
   last_push_ts: string;
   latency_ms?: number;
+  language?: string;
 };
 
 export type LatestDeploy = {
@@ -39,7 +40,7 @@ export type Env = {
   ADMIN_SEED_TOKEN: string;
 };
 
-export const EVENTS_CAP = 4;
+export const EVENTS_CAP = 6;
 export const REPO_ACTIVE_WINDOW_DAYS = 90;
 export const SITE_REPO = "Caseonix";
 export const SITE_DOMAIN = "caseonix.ca";

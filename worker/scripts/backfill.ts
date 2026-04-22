@@ -15,7 +15,7 @@ const WORKER_ORIGIN = process.env.WORKER_ORIGIN ?? "https://caseonix.ca";
 const OWNER = "caseonix";
 const SITE_REPO = "Caseonix";
 const SITE_DOMAIN = "caseonix.ca";
-const EVENTS_CAP = 4;
+const EVENTS_CAP = 6;
 
 const REPOS = [
   "Caseonix",
@@ -34,7 +34,7 @@ type Snapshot = {
   updated_at: string;
   latest_deploy: { repo: string; sha: string; date: string; ts: string; domain?: string; summary?: string };
   events: { verb: EventVerb; summary: string; ts: string; repo: string }[];
-  repos: Record<string, { version: string; last_push: string; last_push_ts: string; status: "green" | "yellow" | "red"; commit_count?: number }>;
+  repos: Record<string, { version: string; last_push: string; last_push_ts: string; status: "green" | "yellow" | "red"; commit_count?: number; language?: string }>;
 };
 
 function gh(path: string): Promise<Response> {
@@ -73,10 +73,10 @@ async function latestCommit(repo: string): Promise<{ sha: string; date: string; 
   return { sha: j[0].sha, date: j[0].commit.author.date, message: j[0].commit.message };
 }
 
-async function repoMeta(repo: string): Promise<{ private: boolean; default_branch: string } | null> {
+async function repoMeta(repo: string): Promise<{ private: boolean; default_branch: string; language: string | null } | null> {
   const r = await gh(`/repos/${OWNER}/${repo}`);
   if (!r.ok) return null;
-  const j = (await r.json()) as { private: boolean; default_branch: string };
+  const j = (await r.json()) as { private: boolean; default_branch: string; language: string | null };
   return j;
 }
 
@@ -123,6 +123,7 @@ async function buildSnapshot(): Promise<Snapshot> {
       last_push_ts: commit.date,
       status: "green",
       commit_count: count,
+      language: meta.language ?? undefined,
     };
 
     const isSite = repo === SITE_REPO;
