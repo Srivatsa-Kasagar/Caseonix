@@ -95,7 +95,8 @@ function handlePush(snap: Snapshot, p: Record<string, unknown>): Snapshot {
     latency_ms: existing?.latency_ms,
   };
 
-  // Private repos: metadata + redacted event. No message, no SHA, no deploy.
+  // Private repos: metadata + redacted event + redacted latest_deploy candidacy.
+  // Never a SHA, never a commit message, never a domain.
   if (isPrivate) {
     const nextEvents = prependEvent(snap.events, {
       verb: "commit",
@@ -103,7 +104,17 @@ function handlePush(snap: Snapshot, p: Record<string, unknown>): Snapshot {
       ts,
       repo: repo.name,
     });
-    return { ...snap, repos: nextRepos, events: nextEvents };
+    const isNewest = !snap.latest_deploy.ts || Date.parse(ts) >= Date.parse(snap.latest_deploy.ts);
+    const nextDeploy = isNewest
+      ? {
+          repo: repo.name,
+          sha: "<private>",
+          date: shortDate(ts),
+          ts,
+          summary: "<private commit>",
+        }
+      : snap.latest_deploy;
+    return { ...snap, repos: nextRepos, events: nextEvents, latest_deploy: nextDeploy };
   }
 
   const summary = firstLine(headCommit.message ?? "").slice(0, 80);

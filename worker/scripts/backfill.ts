@@ -132,7 +132,7 @@ async function buildSnapshot(): Promise<Snapshot> {
       language: meta.language ?? undefined,
     };
 
-    // Private repos: metadata + redacted event. No commit message, no SHA, no latest_deploy.
+    // Private repos: metadata + redacted event + redacted latest_deploy candidacy.
     if (meta.private) {
       snap.events.push({
         verb: "commit",
@@ -140,6 +140,16 @@ async function buildSnapshot(): Promise<Snapshot> {
         ts: commit.date,
         repo,
       });
+      const isNewest = Date.parse(commit.date) >= Date.parse(snap.latest_deploy.ts);
+      if (isNewest) {
+        snap.latest_deploy = {
+          repo,
+          sha: "<private>",
+          date: shortDate(commit.date),
+          ts: commit.date,
+          summary: "<private commit>",
+        };
+      }
       console.log(`private ${repo}: metadata + redacted event (${count ?? "?"} commits, ${meta.language ?? "—"})`);
       continue;
     }
