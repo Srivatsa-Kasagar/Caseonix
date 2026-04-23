@@ -7,13 +7,13 @@
   <meta name="description" content="A working research note on AuditLM — a provider-agnostic governance layer for LLMs in regulated industries. Context, landscape, and what I'm building." />
   <meta name="author" content="Srivatsa Kasagar" />
   <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="AI governance research, LLM audit trail engineering, OSFI E-23, PIPEDA, Credo AI alternative, Langfuse alternative, AuditLM, tamper-evident AI logs, regulated-context AI, AI governance proxy" />
+  <meta name="keywords" content="AI governance, LLM audit trail, OSFI E-23, PIPEDA, AuditLM" />
   <link rel="canonical" href="https://caseonix.ca/notes/auditlm-ai-governance-gap.html" />
   <link rel="alternate" hreflang="en-ca" href="https://caseonix.ca/notes/auditlm-ai-governance-gap.html" />
   <link rel="alternate" hreflang="x-default" href="https://caseonix.ca/notes/auditlm-ai-governance-gap.html" />
 
   <meta property="og:title" content="Research note — AuditLM and the AI governance gap" />
-  <meta property="og:description" content="Regulated organizations are deploying LLMs faster than they are governing them. Here is the research lane for AuditLM." />
+  <meta property="og:description" content="A working research note on AuditLM — a provider-agnostic governance layer for LLMs in regulated industries. Context, landscape, and what I'm building." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://caseonix.ca/notes/auditlm-ai-governance-gap.html" />
   <meta property="og:image" content="https://caseonix.ca/og-image-v2.png" />
@@ -28,36 +28,40 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Research note — AuditLM and the AI governance gap" />
-  <meta name="twitter:description" content="Regulated orgs are deploying LLMs faster than they are governing them. A working research note on AuditLM." />
+  <meta name="twitter:description" content="A working research note on AuditLM — a provider-agnostic governance layer for LLMs in regulated industries. Context, landscape, and what I'm building." />
   <meta name="twitter:image" content="https://caseonix.ca/og-image-v2.png" />
 
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "Research note — AuditLM and the AI governance gap",
-    "description": "A working research note on AuditLM — a provider-agnostic governance layer for LLMs in regulated industries. Context, landscape, and what I'm building.",
-    "author": {
-      "@type": "Person",
-      "name": "Srivatsa Kasagar",
-      "url": "https://caseonix.ca",
-      "jobTitle": "AI Builder & Solutions Architect"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Caseonix",
-      "url": "https://caseonix.ca"
-    },
-    "datePublished": "2026-03-18",
-    "dateModified": "2026-03-18",
-    "url": "https://caseonix.ca/notes/auditlm-ai-governance-gap.html",
-    "image": "https://caseonix.ca/og-image-v2.png",
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": "https://caseonix.ca/notes/auditlm-ai-governance-gap.html"
-    },
-    "keywords": ["AI governance", "LLM audit trail", "OSFI E-23", "PIPEDA", "AuditLM", "tamper-evident logs", "AI proof gap", "regulated AI"]
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Research note — AuditLM and the AI governance gap",
+  "description": "A working research note on AuditLM — a provider-agnostic governance layer for LLMs in regulated industries. Context, landscape, and what I'm building.",
+  "author": {
+    "@type": "Person",
+    "name": "Srivatsa Kasagar",
+    "url": "https://caseonix.ca"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Caseonix",
+    "url": "https://caseonix.ca",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://caseonix.ca/icon-512.png"
+    }
+  },
+  "datePublished": "2026-03-18",
+  "dateModified": "2026-03-18",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://caseonix.ca/notes/auditlm-ai-governance-gap.html"
+  },
+  "isPartOf": {
+    "@type": "CreativeWorkSeries",
+    "name": "Research lab notes"
   }
+}
   </script>
 
   <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -314,20 +318,17 @@
   <main class="note-wrapper">
     <a href="/blog/index.html#notes" class="note-back">&larr; back to lab notes</a>
 
-    <div class="note-eyebrow">&sect; Research note</div>
-    <h1 class="note-title">AuditLM and the AI governance gap</h1>
+    <div class="note-eyebrow">&sect; Lab note</div>
+    <h1 class="note-title">Research note — AuditLM and the AI governance gap</h1>
     <div class="note-meta">
       <span>Mar 18, 2026</span>
-      <span class="note-meta-sep">&middot;</span>
-      <span>Working note &mdash; will evolve</span>
     </div>
 
     <div class="note-body">
-      <p>Regulated organizations are deploying LLMs far faster than they are governing them. Only <strong>25%</strong> have fully implemented AI governance programs (Pacific AI, 2025). Only <strong>10%</strong> say they are fully prepared to audit an AI system (Ernst &amp; Young, September 2025). <strong>78%</strong> of executives lack confidence they could pass an AI governance audit inside 90 days (Grant Thornton, 2026). The ground beneath this is shifting too: OSFI Guideline E-23 was updated in September 2025 to explicitly cover AI/ML models, and takes effect <strong>May 1, 2027</strong> for every federally regulated Canadian financial institution. The EU AI Act&rsquo;s high-risk obligations hit <strong>August 2, 2026</strong>, with fines up to 7% of global revenue. This gap &mdash; the inability to prove what AI did, who authorized it, and whether policy was enforced on any specific request &mdash; is the concrete problem I&rsquo;ve been researching. I&rsquo;m calling it the &ldquo;AI proof gap.&rdquo;</p>
+<p>Regulated organizations are deploying LLMs far faster than they are governing them. Only <strong>25%</strong> have fully implemented AI governance programs (Pacific AI, 2025). Only <strong>10%</strong> say they are fully prepared to audit an AI system (Ernst &amp; Young, September 2025). <strong>78%</strong> of executives lack confidence they could pass an AI governance audit inside 90 days (Grant Thornton, 2026). The ground beneath this is shifting too: OSFI Guideline E-23 was updated in September 2025 to explicitly cover AI/ML models, and takes effect <strong>May 1, 2027</strong> for every federally regulated Canadian financial institution. The EU AI Act’s high-risk obligations hit <strong>August 2, 2026</strong>, with fines up to 7% of global revenue. This gap — the inability to prove what AI did, who authorized it, and whether policy was enforced on any specific request — is the concrete problem I’ve been researching. I’m calling it the “AI proof gap.”</p>
+<p>The existing tools solve pieces. <strong>Langfuse</strong> and <strong>Arize</strong> are built for ML engineers chasing model performance — token counts, drift, latency. They do not produce legally defensible audit trails, track consent, detect PII, or speak in the language of a regulatory examination. GRC platforms like <strong>OneTrust</strong> and <strong>ServiceNow</strong> document that a policy exists but cannot prove it was enforced on any particular request — they are not in the data path. <strong>Credo AI</strong> and <strong>IBM watsonx.governance</strong> do governance documentation and workflow credibly (Mastercard, Cisco, PepsiCo as customers for Credo AI) but again sit alongside the stack, not inside it. No single platform combines <strong>in-data-path enforcement</strong> with governance workflow and regulator-facing compliance reports. That is the structural opening.</p>
+<p>What I’m building in the lab: <strong>AuditLM</strong> — a provider-agnostic governance proxy that sits between any application and any LLM provider (Anthropic, OpenAI, Azure, Gemini). Every prompt is SHA-256 hashed before forwarding, records are hash-chained, and hourly Merkle roots anchor to immutable storage — cryptographic proof of what happened at inference time. The proxy is a Cloudflare Workers + Hono edge service with an OpenAI-compatible surface, so integration is a <code>one-line change</code> from existing SDKs. On top of that: PII detection (Canadian SIN and provincial health cards, US SSN/EIN, universal entities), a policy engine with consent and purpose-limitation enforcement, pre-deployment gates (Algorithmic Impact Assessment plus red-team records), and signed PDF compliance reports mapped to OSFI E-23, PIPEDA, SOC 2, HIPAA, CCPA, and OCC/Fed SR 11-7. Canada-first, because OSFI E-23 is the single hardest compliance deadline on the calendar; US and EU follow through Canadian customers with cross-border exposure. Phase 1 MVP is in development. The research question I’m chasing in parallel: can compliance infrastructure feel like plumbing — invisible to developers, decisive to compliance officers — or does regulatory defensibility always tax the application layer? If you’re a compliance officer, CISO, or engineering lead wrestling with this, I’d like to hear how you’re framing the gap.</p>
 
-      <p>The existing tools solve pieces. <strong>Langfuse</strong> and <strong>Arize</strong> are built for ML engineers chasing model performance &mdash; token counts, drift, latency. They do not produce legally defensible audit trails, track consent, detect PII, or speak in the language of a regulatory examination. GRC platforms like <strong>OneTrust</strong> and <strong>ServiceNow</strong> document that a policy exists but cannot prove it was enforced on any particular request &mdash; they are not in the data path. <strong>Credo AI</strong> and <strong>IBM watsonx.governance</strong> do governance documentation and workflow credibly (Mastercard, Cisco, PepsiCo as customers for Credo AI) but again sit alongside the stack, not inside it. No single platform combines <strong>in-data-path enforcement</strong> with governance workflow and regulator-facing compliance reports. That is the structural opening.</p>
-
-      <p>What I&rsquo;m building in the lab: <strong>AuditLM</strong> &mdash; a provider-agnostic governance proxy that sits between any application and any LLM provider (Anthropic, OpenAI, Azure, Gemini). Every prompt is SHA-256 hashed before forwarding, records are hash-chained, and hourly Merkle roots anchor to immutable storage &mdash; cryptographic proof of what happened at inference time. The proxy is a Cloudflare Workers + Hono edge service with an OpenAI-compatible surface, so integration is a <code>one-line change</code> from existing SDKs. On top of that: PII detection (Canadian SIN and provincial health cards, US SSN/EIN, universal entities), a policy engine with consent and purpose-limitation enforcement, pre-deployment gates (Algorithmic Impact Assessment plus red-team records), and signed PDF compliance reports mapped to OSFI E-23, PIPEDA, SOC 2, HIPAA, CCPA, and OCC/Fed SR 11-7. Canada-first, because OSFI E-23 is the single hardest compliance deadline on the calendar; US and EU follow through Canadian customers with cross-border exposure. Phase 1 MVP is in development. The research question I&rsquo;m chasing in parallel: can compliance infrastructure feel like plumbing &mdash; invisible to developers, decisive to compliance officers &mdash; or does regulatory defensibility always tax the application layer? If you&rsquo;re a compliance officer, CISO, or engineering lead wrestling with this, I&rsquo;d like to hear how you&rsquo;re framing the gap.</p>
     </div>
 
     <a href="/#contact" class="note-cta">
@@ -373,6 +374,6 @@
       if (saved) setTheme(saved);
     } catch(e) {}
   </script>
-
+  
 </body>
 </html>
