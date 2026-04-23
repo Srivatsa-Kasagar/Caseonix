@@ -6,7 +6,9 @@ on:
     paths:
       - 'notes/**/*.md'
       - 'scripts/build-notes.mjs'
+      - 'scripts/build-og-images.mjs'
       - 'scripts/templates/note.html'
+      - 'scripts/fonts/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/build-notes.yml'
@@ -38,14 +40,17 @@ jobs:
       - name: Build notes from markdown
         run: node scripts/build-notes.mjs
 
+      - name: Build OG images
+        run: node scripts/build-og-images.mjs
+
       - name: Commit if changed
         run: |
-          if git diff --quiet -- notes/; then
-            echo "No changes under notes/ — skipping commit."
+          if git diff --quiet -- notes/ og/; then
+            echo "No changes under notes/ or og/ — skipping commit."
             exit 0
           fi
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add notes/
-          git commit -m "chore(notes): regenerate HTML from markdown"
+          git add notes/ og/
+          git commit -m "chore(notes): regenerate HTML + OG images"
           git push
