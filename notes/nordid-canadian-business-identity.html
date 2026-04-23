@@ -204,6 +204,33 @@
       border-radius: 4px;
     }
 
+    .note-share {
+      display: flex; align-items: center; gap: 18px;
+      flex-wrap: wrap;
+      margin: 48px 0 0;
+      padding: 16px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .note-share-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-3);
+      margin-right: auto;
+    }
+    .note-share-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--teal-1);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .note-share-link:hover { color: var(--teal-3); }
+    .note-share-link .arrow { font-size: 0.76rem; }
+
     .note-cta {
       margin-top: 56px;
       padding: 28px;
@@ -325,6 +352,16 @@
       <p>The research observation driving this build: <strong>KYC platforms should not be the ones building data plumbing</strong>. Persona does not want to maintain 13 provincial registry integrations. Canadian credit unions and PSPs do not want to decide which registry record is authoritative when the federal CBCA record says one address and the Ontario extra-provincial record says another. This is data-and-intelligence-layer work &mdash; the layer <em>underneath</em> KYC, not KYC itself. The ground is also shifting in ways that make an infrastructure play timely: <strong>FINTRAC</strong> is tightening reporting rules, the <strong>ISC registry</strong> is now publicly queryable as of 2024, the <strong>Retail Payment Activities Act</strong> brought new regulated entities into scope, and every Canadian fintech board is asking the same question about data residency.</p>
 
       <p>What I&rsquo;m building in the lab: <strong>NordID</strong> &mdash; <code>api.nordid.ca</code> &mdash; a Canadian business identity API platform that unifies five families: <strong>Registry</strong> (does this business legally exist?), <strong>Tax</strong> (is it actively trading with CRA?), <strong>Ownership</strong> (who controls it, with FINTRAC-aligned UBO discrepancy scoring), <strong>Screen</strong> (sanctions and PEP lists), and <strong>Comply</strong> (a FINTRAC-rule-cited CDD decision, not a generic score). It runs entirely on Cloudflare&rsquo;s Canadian edge &mdash; Workers, KV, R2 with <code>jurisdiction: ca</code>, D1 for append-only audit &mdash; so every response can truthfully return <code>data_residency: &quot;CANADA_CONFIRMED&quot;</code>. Deliberately positioned as infrastructure, not a compliance authority: NordID provides <em>compliance intelligence</em>; the FINTRAC-regulated reporting entity still makes the final determination. Phase 1 (Registry + Tax) ships first, with universal ID resolution across BN9, NEQ, BIN, and provincial corp numbers. A later phase (Verified Corporate Wallet) explores turning verified business identity into a reusable credential. The open research question: does a data-layer API with cited regulatory rules underneath every response shift how Canadian KYC feels &mdash; or do buyers still prefer a single vendor that owns the full stack? If you&rsquo;re running KYB in Canada and this sounds familiar, I&rsquo;d like to compare notes.</p>
+    </div>
+
+    <div class="note-share" aria-label="Share this note">
+      <span class="note-share-eyebrow">&sect; Share</span>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fcaseonix.ca%2Fnotes%2Fnordid-canadian-business-identity.html" target="_blank" rel="noopener" class="note-share-link">
+        LinkedIn <span class="arrow" aria-hidden="true">&#8599;</span>
+      </a>
+      <a href="https://twitter.com/intent/tweet?text=Research%20note%20%E2%80%94%20NordID%20and%20Canadian%20business%20identity%20infrastructure&amp;url=https%3A%2F%2Fcaseonix.ca%2Fnotes%2Fnordid-canadian-business-identity.html" target="_blank" rel="noopener" class="note-share-link">
+        X <span class="arrow" aria-hidden="true">&#8599;</span>
+      </a>
     </div>
 
     <a href="/#contact" class="note-cta">
