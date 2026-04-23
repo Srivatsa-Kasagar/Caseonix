@@ -1,0 +1,65 @@
+#!/usr/bin/env node
+// Converts notes/*.md → notes/<slug>.html using scripts/templates/note.html.
+// Frontmatter required: title, date, slug, description.
+// Frontmatter optional: type (default 'note'), series, tags.
+
+import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { join, dirname, basename, extname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import matter from 'gray-matter';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, '..');
+const NOTES_DIR = join(ROOT, 'notes');
+const TEMPLATE_PATH = join(__dirname, 'templates', 'note.html');
+
+function assert(cond, msg) {
+  if (!cond) throw new Error(msg);
+}
+
+function validateFrontmatter(fm, filename) {
+  const required = ['title', 'date', 'slug', 'description'];
+  for (const key of required) {
+    assert(
+      fm[key] != null && fm[key] !== '',
+      `${filename}: missing required frontmatter field '${key}'`,
+    );
+  }
+  assert(
+    /^\d{4}-\d{2}-\d{2}$/.test(fm.date),
+    `${filename}: date must be YYYY-MM-DD, got '${fm.date}'`,
+  );
+  assert(
+    /^[a-z0-9-]+$/.test(fm.slug),
+    `${filename}: slug must match /^[a-z0-9-]+$/, got '${fm.slug}'`,
+  );
+  const expectedSlug = basename(filename, '.md');
+  assert(
+    fm.slug === expectedSlug,
+    `${filename}: slug '${fm.slug}' must match filename '${expectedSlug}'`,
+  );
+  if (fm.type != null && fm.type !== 'note') {
+    throw new Error(`${filename}: only type='note' supported in v1, got '${fm.type}'`);
+  }
+}
+
+async function main() {
+  const entries = await readdir(NOTES_DIR);
+  const mdFiles = entries.filter((n) => extname(n) === '.md').map((n) => join(NOTES_DIR, n));
+  if (mdFiles.length === 0) {
+    console.warn('no .md files found in notes/, nothing to build');
+    return;
+  }
+  for (const p of mdFiles) {
+    const raw = await readFile(p, 'utf8');
+    const { data: fm } = matter(raw);
+    validateFrontmatter(fm, basename(p));
+    console.log(`  · ${basename(p)} — frontmatter OK`);
+  }
+  console.log(`validated ${mdFiles.length} note(s)`);
+}
+
+main().catch((e) => {
+  console.error(e.message);
+  process.exit(1);
+});
