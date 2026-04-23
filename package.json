@@ -10,7 +10,9 @@
     "build": "npm run build:notes && npm run build:log"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "gray-matter": "^4.0.3",
-    "markdown-it": "^14.1.0"
+    "markdown-it": "^14.1.0",
+    "satori": "^0.10.14"
   }
 }
