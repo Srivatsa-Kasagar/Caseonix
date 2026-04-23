@@ -1,6 +1,6 @@
 ---
 title: "Research note — Cheque Image Fraud Detection on AWS"
-date: 2026-03-18
+date: 2026-04-23
 slug: cheque-fraud-detection-lab-notes
 description: "Lab log — exploring an architecture for automated cheque image fraud detection"
 tags:
