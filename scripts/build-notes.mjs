@@ -66,6 +66,68 @@ function validateFrontmatter(fm, filename) {
   }
 }
 
+const MERMAID_CDN = 'https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.esm.min.mjs';
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function formatDatePretty(iso) {
+  const d = new Date(iso + 'T00:00:00Z');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  return `${MONTHS[d.getUTCMonth()]} ${day}, ${d.getUTCFullYear()}`;
+}
+
+function escapeAttr(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function buildJsonLd(fm) {
+  const obj = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: fm.title,
+    description: fm.description,
+    author: {
+      '@type': 'Person',
+      name: 'Srivatsa Kasagar',
+      url: 'https://caseonix.ca',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Caseonix',
+      url: 'https://caseonix.ca',
+      logo: { '@type': 'ImageObject', url: 'https://caseonix.ca/icon-512.png' },
+    },
+    datePublished: fm.date,
+    dateModified: fm.date,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://caseonix.ca/notes/${fm.slug}.html`,
+    },
+  };
+  if (fm.series) {
+    obj.isPartOf = { '@type': 'CreativeWorkSeries', name: fm.series };
+  }
+  return JSON.stringify(obj, null, 2);
+}
+
+function mermaidScriptTag() {
+  return `<script type="module">
+    import mermaid from '${MERMAID_CDN}';
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>`;
+}
+
+function substitute(template, values) {
+  return template.replace(/\{\{([a-z_]+)\}\}/g, (_, key) => {
+    if (!(key in values)) throw new Error(`Unknown template placeholder: {{${key}}}`);
+    return values[key];
+  });
+}
+
 async function main() {
   const entries = await readdir(NOTES_DIR);
   const mdFiles = entries.filter((n) => extname(n) === '.md').map((n) => join(NOTES_DIR, n));
@@ -73,15 +135,30 @@ async function main() {
     console.warn('no .md files found in notes/, nothing to build');
     return;
   }
+  const template = await readFile(TEMPLATE_PATH, 'utf8');
   for (const p of mdFiles) {
     const raw = await readFile(p, 'utf8');
     const { data: fm, content } = matter(raw);
     validateFrontmatter(fm, basename(p));
     const body = md.render(content);
     const hasMermaid = body.includes('<pre class="mermaid">');
-    console.log(`  · ${basename(p)} — body rendered${hasMermaid ? ' [with mermaid]' : ''}`);
+    const keywords = Array.isArray(fm.tags) ? fm.tags.join(', ') : '';
+    const html = substitute(template, {
+      title: escapeAttr(fm.title),
+      description: escapeAttr(fm.description),
+      date: fm.date,
+      date_pretty: formatDatePretty(fm.date),
+      slug: fm.slug,
+      keywords: escapeAttr(keywords),
+      jsonld: buildJsonLd(fm),
+      body,
+      mermaid_script: hasMermaid ? mermaidScriptTag() : '',
+    });
+    const outPath = join(NOTES_DIR, `${fm.slug}.html`);
+    await writeFile(outPath, html);
+    console.log(`  · ${basename(p)} → ${fm.slug}.html${hasMermaid ? ' [with mermaid]' : ''}`);
   }
-  console.log(`processed ${mdFiles.length} note(s)`);
+  console.log(`built ${mdFiles.length} note(s)`);
 }
 
 main().catch((e) => {
