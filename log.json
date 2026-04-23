@@ -55,6 +55,12 @@
       "type": "blog"
     },
     {
+      "href": "/notes/pega-autopilot-lab-notes.html",
+      "title": "Dug into Pega GenAI Autopilot Autopilot to figure out what it actually takes to adopt it",
+      "date": "2026-03-23",
+      "type": "note"
+    },
+    {
       "href": "/notes/auditlm-ai-governance-gap.html",
       "title": "Research note — AuditLM and the AI governance gap",
       "date": "2026-03-18",
