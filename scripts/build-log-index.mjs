@@ -106,10 +106,7 @@ async function main() {
   });
 
   const logJsonPath = join(ROOT, 'log.json');
-  await writeFile(
-    logJsonPath,
-    JSON.stringify({ generated: new Date().toISOString(), items: all }, null, 2) + '\n',
-  );
+  await writeFile(logJsonPath, JSON.stringify({ items: all }, null, 2) + '\n');
 
   const indexPath = join(ROOT, 'index.html');
   const indexHtml = await readFile(indexPath, 'utf8');
