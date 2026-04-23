@@ -7,7 +7,7 @@
   <meta name="description" content="A solo AI lab out of Waterloo, Ontario. Half research, half build — AI builds and engineering research for Canadian regulated contexts. 25 years in financial services." />
   <meta name="google-site-verification" content="k3MMCSpkzQN-u1yikP7L8iGgCkvJLeT4Jsec8j68bS0" />
   <meta name="robots" content="index, follow" />
-  <meta name="author" content="srivatsa kasagar" />
+  <meta name="author" content="Srivatsa Kasagar" />
   <meta name="keywords" content="solo AI lab Canada, Waterloo AI lab, Canadian AI engineering, agentic AI builds, multi-agent Claude Code, Claude API developer, RAG Cloudflare Workers, edge AI inference, LocalMind, NordID, AuditLM, financial services AI engineering, Canadian data residency engineering, regulated-context AI research" />
   <meta name="theme-color" content="#0F1B2A" />
   <link rel="canonical" href="https://caseonix.ca" />
@@ -38,7 +38,7 @@
     "description": "A solo AI lab in Waterloo, Ontario, publishing engineering research and open-source AI builds aimed at Canadian regulated contexts — RAG systems, agentic architectures, and data-residency-aware infrastructure.",
     "founder": {
       "@type": "Person",
-      "name": "srivatsa kasagar",
+      "name": "Srivatsa Kasagar",
       "jobTitle": "AI Builder & Solutions Architect",
       "url": "https://caseonix.ca",
       "sameAs": [
@@ -51,7 +51,7 @@
         "addressRegion": "Ontario",
         "addressCountry": "CA"
       },
-      "knowsAbout": ["Artificial Intelligence", "Retrieval-Augmented Generation", "Agentic AI Architectures", "Multi-Agent Systems", "Claude Code", "Claude API", "Cloudflare Workers AI", "Edge Inference", "Structured LLM Output", "Financial Services Technology", "Python", "Canadian Data Residency Engineering"]
+      "knowsAbout": ["Artificial Intelligence", "Retrieval-Augmented Generation", "Agentic AI Architectures", "Multi-Agent Systems", "Claude Code", "Claude API", "Cloudflare Workers AI", "Edge Inference", "Structured LLM Output", "Financial Services Engineering", "Python", "Canadian Data Residency Engineering"]
     }
   }
   </script>
@@ -1531,7 +1531,7 @@
   <!-- HERO -->
   <section class="hero hero-v2" id="home">
     <div class="hero-left">
-      <div class="hero-v2-eyebrow">// SOLO FOUNDER · EST. 2024 · WATERLOO, ON</div>
+      <div class="hero-v2-eyebrow">// ONE OPERATOR · EST. 2024 · WATERLOO, ON</div>
       <h1 class="hero-v2-h1">
         Half research, half build &mdash; <span class="accent">AI for Canadian regulated work.</span>
       </h1>
@@ -1685,7 +1685,7 @@
             </div>
           </div>
         <div class="card-visual">
-<pre class="visual-code"><span class="c"># PIPEDA-safe extraction: redact PII before the LLM sees the chunk</span>
+<pre class="visual-code"><span class="c"># PIPEDA-aligned: redact PII before the LLM sees the chunk</span>
 chunks = <span class="f">redact</span>(doc, patterns=<span class="k">PIPEDA_PII</span>)
 ranked = ranker.<span class="f">score</span>(query, chunks)
 context = [c <span class="k">for</span> c, s <span class="k">in</span> ranked <span class="k">if</span> s &gt; <span class="k">0.42</span>][:<span class="k">5</span>]
@@ -1696,11 +1696,11 @@ answer = claude.<span class="f">ask</span>(query, context, audit_id=doc.id)
 <span class="k">return</span> answer.<span class="f">with_sources</span>()</pre>
         </div>
           <div class="project-content">
-            <div class="project-name">LocalMind Sovereign</div>
+            <div class="project-name">LocalMind</div>
             <p class="project-problem">Canadian firms can&rsquo;t send sensitive docs to US-hosted AI tools &mdash; data residency, privilege, audit trail all break.</p>
-            <div class="project-tagline">Sovereign document intelligence for Canada: classification, entity extraction, PII detection, compliance checklists &mdash; all on Cloudflare&rsquo;s Canadian edge.</div>
+            <div class="project-tagline">Canadian-edge document intelligence: classification, entity extraction, PII detection, and configurable review workflows &mdash; inference routed through Cloudflare&rsquo;s Canadian region with append-only audit logs.</div>
             <div class="l-impact">
-              <div class="l-impact-item"><span class="l-impact-num">100%</span><span class="l-impact-label">Canadian residency</span></div>
+              <div class="l-impact-item"><span class="l-impact-num">CA</span><span class="l-impact-label">Routed inference</span></div>
               <div class="l-impact-sep" aria-hidden="true">·</div>
               <div class="l-impact-item"><span class="l-impact-num">&lt;2s</span><span class="l-impact-label">p50 extract</span></div>
               <div class="l-impact-sep" aria-hidden="true">·</div>
@@ -2238,9 +2238,9 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
   <script>
     const PROJECTS = {
       localmind: {
-        icon:'🇨🇦', iconClass:'icon-cyan', name:'LocalMind Sovereign', badge:'<span class="project-badge badge-mvp">MVP</span>',
+        icon:'🇨🇦', iconClass:'icon-cyan', name:'LocalMind', badge:'<span class="project-badge badge-mvp">MVP</span>',
         links:[{label:'localmind.caseonix.ca',url:'https://localmind.caseonix.ca',icon:'web'},{label:'Lab notes — RAG + NLP',url:'/notes/localmind-rag-pipeline.html',icon:'web'}],
-        desc:'A sovereign document intelligence platform built for Canadian organizations that prioritize data residency. Upload documents — LocalMind auto-classifies, extracts entities, detects PII, runs compliance checklists, flags risks, and enables AI-powered review and multi-document comparison. Inference routed through Cloudflare\'s Canadian edge; see architecture notes for full data-flow detail.',
+        desc:'A Canadian-edge document intelligence platform for organizations that prioritize data residency. Upload documents — LocalMind auto-classifies, extracts entities, detects PII, runs configurable review workflows, flags risks, and enables AI-powered comparison across documents. Inference routed through Cloudflare\'s Canadian region; see architecture notes for data-flow detail.',
         features:['Auto-Classification — documents classified as contract, invoice, policy, financial report, HR, or technical','AI Review Agent — structured extraction, compliance checklist (pass/fail), and severity-rated risk brief per document','PII Detection & Redaction — SIN, credit card, health ID auto-detected; amber redaction bars in viewer with redacted download','Multi-Document Comparison — cross-reference contracts, flag contradictions, gap analysis, shared entity mapping','Document-Scoped Chat — ask questions about specific docs or across document sets; every answer cites source','Named Entity Recognition — people, organizations, dates, monetary values extracted and indexed','Team Workspaces — multi-tenant with namespace-isolated vector search, RBAC (owner/admin/member/viewer)','Canadian-resident inference — Claude API routed via Cloudflare AI Gateway with CA region pinning; <5ms edge cold start'],
         tags:['React 18','Hono','Cloudflare Workers','Cloudflare D1','Cloudflare R2','Cloudflare Vectorize','Durable Objects','Workers AI','Claude API via AI Gateway','Drizzle ORM','Clerk Auth','Zod','Vite 5','Tailwind CSS 4'],
         impact:[{num:'CA',label:'Resident inference'},{num:'<5ms',label:'Edge cold start'},{num:'CF AI GW',label:'Region-pinned'},{num:'6',label:'Doc intelligence features'}],
