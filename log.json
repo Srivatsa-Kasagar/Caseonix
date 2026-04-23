@@ -20,31 +20,31 @@
     },
     {
       "href": "/blog/building-multi-agent-claude-skills-wealth-guide.html",
-      "title": "Building Multi-Agent Claude Code Skills — The wealth-guide Architecture",
+      "title": "Multi-Agent Claude Code Skills — wealth-guide Pattern",
       "date": "2026-04-17",
       "type": "blog"
     },
     {
       "href": "/blog/extracting-t4-data-python-canadian-developer-guide.html",
-      "title": "Extracting T4 Data from PDFs in Python — A Canadian Developer's Guide",
+      "title": "Extracting T4 Data from PDFs in Python (Canada)",
       "date": "2026-04-10",
       "type": "blog"
     },
     {
       "href": "/blog/ai-canadian-financial-services-compliance-playbook.html",
-      "title": "AI for Canadian Financial Services: The Compliance-First Playbook",
+      "title": "AI for Canadian Financial Services (OSFI E-23 Notes)",
       "date": "2026-04-07",
       "type": "blog"
     },
     {
       "href": "/blog/building-pipeda-compliant-ai-tools.html",
-      "title": "Building PIPEDA-Compliant AI Tools in 2026: A Developer's Guide",
+      "title": "Building AI Tools for PIPEDA — A Developer's Guide",
       "date": "2026-04-07",
       "type": "blog"
     },
     {
       "href": "/blog/chatgpt-vs-self-hosted-ai-law-firms.html",
-      "title": "ChatGPT vs Self-Hosted AI for Canadian Law Firms: A 2026 Comparison",
+      "title": "ChatGPT vs Self-Hosted AI for Canadian Law Firms",
       "date": "2026-04-07",
       "type": "blog"
     },
