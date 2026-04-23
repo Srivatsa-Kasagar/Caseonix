@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research note — Cheque Image Fraud Detection on AWS | Caseonix</title>
+  <meta name="description" content="Lab log — exploring an architecture for automated cheque image fraud detection" />
+  <meta name="author" content="Srivatsa Kasagar" />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="cheque-fraud, document-fraud, tampering-detection, vision-language-models, architecture-research" />
+  <link rel="canonical" href="https://caseonix.ca/notes/cheque-fraud-detection-lab-notes.html" />
+  <link rel="alternate" hreflang="en-ca" href="https://caseonix.ca/notes/cheque-fraud-detection-lab-notes.html" />
+  <link rel="alternate" hreflang="x-default" href="https://caseonix.ca/notes/cheque-fraud-detection-lab-notes.html" />
+
+  <meta property="og:title" content="Research note — Cheque Image Fraud Detection on AWS" />
+  <meta property="og:description" content="Lab log — exploring an architecture for automated cheque image fraud detection" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://caseonix.ca/notes/cheque-fraud-detection-lab-notes.html" />
+  <meta property="og:image" content="https://caseonix.ca/og-image-v2.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Caseonix" />
+  <meta property="og:locale" content="en_CA" />
+  <meta property="article:author" content="Srivatsa Kasagar" />
+  <meta property="article:published_time" content="2026-03-18" />
+  <meta property="article:modified_time" content="2026-03-18" />
+  <meta property="article:section" content="Research notes" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Research note — Cheque Image Fraud Detection on AWS" />
+  <meta name="twitter:description" content="Lab log — exploring an architecture for automated cheque image fraud detection" />
+  <meta name="twitter:image" content="https://caseonix.ca/og-image-v2.png" />
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Research note — Cheque Image Fraud Detection on AWS",
+  "description": "Lab log — exploring an architecture for automated cheque image fraud detection",
+  "author": {
+    "@type": "Person",
+    "name": "Srivatsa Kasagar",
+    "url": "https://caseonix.ca"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Caseonix",
+    "url": "https://caseonix.ca",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://caseonix.ca/icon-512.png"
+    }
+  },
+  "datePublished": "2026-03-18",
+  "dateModified": "2026-03-18",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://caseonix.ca/notes/cheque-fraud-detection-lab-notes.html"
+  }
+}
+  </script>
+
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0F1B2A;
+      --surface: #1A2B3C;
+      --surface-2: #223549;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(94,186,156,0.32);
+      --blue: #5EBA9C;
+      --teal-1: #7FCBB0;
+      --text: #E8ECF1;
+      --text-2: #94A3B8;
+      --text-3: #64748B;
+      --nav-bg: rgba(15,27,42,0.82);
+      --radius: 16px;
+    }
+
+    [data-theme="light"] {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-2: #F1F5F9;
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(94,186,156,0.35);
+      --text: #0F172A;
+      --text-2: #334155;
+      --text-3: #64748B;
+      --nav-bg: rgba(248,250,252,0.88);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.2rem; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+    .nav-logo span { color: var(--blue); }
+    .nav-links-blog { display: flex; gap: 30px; list-style: none; }
+    .nav-links-blog a {
+      text-decoration: none; color: var(--text-2);
+      font-size: 0.9rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links-blog a:hover, .nav-links-blog a.active { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--surface); cursor: pointer; display: flex; align-items: center;
+      justify-content: center; font-size: 0.95rem; color: var(--text-2);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); transform: rotate(20deg); color: var(--text); }
+    @media (max-width: 800px) {
+      nav { padding: 16px 24px; }
+      .nav-links-blog { display: none; }
+    }
+
+    /* NOTE WRAPPER */
+    .note-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 140px 24px 80px;
+    }
+
+    .note-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: var(--text-3); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
+      margin-bottom: 40px;
+      transition: color 0.2s;
+    }
+    .note-back:hover { color: var(--teal-1); }
+
+    .note-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--teal-1);
+      margin-bottom: 16px;
+    }
+
+    .note-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 600; letter-spacing: -0.025em;
+      color: var(--text); line-height: 1.15;
+      margin-bottom: 18px;
+    }
+
+    .note-meta {
+      display: flex; gap: 14px; align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem; color: var(--text-3);
+      margin-bottom: 48px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .note-meta-sep { color: var(--text-3); opacity: 0.5; }
+
+    .note-body p {
+      font-size: 1.02rem;
+      color: var(--text-2);
+      margin-bottom: 22px;
+      line-height: 1.75;
+    }
+    .note-body p strong,
+    .note-body li strong,
+    .note-body td strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .note-body em { color: var(--text-2); font-style: italic; }
+    .note-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      color: var(--teal-1);
+      background: var(--surface);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .note-body h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.5rem; font-weight: 600;
+      color: var(--text); letter-spacing: -0.02em;
+      margin: 48px 0 16px; line-height: 1.3;
+    }
+    .note-body h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.18rem; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+      margin: 36px 0 12px; line-height: 1.35;
+    }
+    .note-body h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--teal-1);
+      margin: 28px 0 10px;
+    }
+    .note-body ul,
+    .note-body ol {
+      margin: 0 0 22px; padding-left: 24px;
+      color: var(--text-2); font-size: 1.02rem;
+      line-height: 1.75;
+    }
+    .note-body li { margin-bottom: 6px; }
+    .note-body li > ul,
+    .note-body li > ol { margin: 6px 0 0; }
+    .note-body a {
+      color: var(--teal-1); text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .note-body a:hover { color: var(--teal-3); border-bottom-color: var(--teal-3); }
+    .note-body hr {
+      border: 0; border-top: 1px solid var(--border);
+      margin: 44px 0;
+    }
+    .note-body blockquote {
+      margin: 0 0 22px; padding: 12px 20px;
+      border-left: 3px solid var(--teal-1);
+      background: var(--surface);
+      color: var(--text-2);
+      font-size: 0.98rem; line-height: 1.7;
+      border-radius: 0 6px 6px 0;
+    }
+    .note-body blockquote p { margin-bottom: 0; }
+    .note-body pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; line-height: 1.6;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 0 0 22px;
+      overflow-x: auto;
+      color: var(--text-2);
+    }
+    .note-body pre code {
+      background: none; padding: 0; color: inherit;
+      font-size: inherit;
+    }
+    .note-body table {
+      width: 100%; border-collapse: collapse;
+      margin: 0 0 22px;
+      font-size: 0.95rem;
+    }
+    .note-body th,
+    .note-body td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      color: var(--text-2);
+      line-height: 1.55;
+    }
+    .note-body th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-3);
+      border-bottom: 1px solid var(--border-hover);
+    }
+    .note-body tr:last-child td { border-bottom: none; }
+
+    .note-cta {
+      margin-top: 56px;
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .note-cta:hover { border-color: var(--border-hover); background: var(--surface-2); }
+    .note-cta-body {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .note-cta-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--teal-1);
+    }
+    .note-cta-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem; font-weight: 500;
+      color: var(--text); line-height: 1.4;
+    }
+    .note-cta-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--teal-1);
+      white-space: nowrap;
+    }
+    .note-cta-link .arrow {
+      transition: transform 0.2s;
+    }
+    .note-cta:hover .note-cta-link .arrow { transform: translateX(4px); }
+    @media (max-width: 640px) {
+      .note-cta { flex-direction: column; align-items: flex-start; }
+    }
+    a.note-cta { text-decoration: none; }
+
+    /* FOOTER */
+    .footer-v2 {
+      border-top: 1px solid var(--border);
+      padding: 40px 60px;
+      margin-top: 80px;
+    }
+    .footer-v2-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 32px;
+    }
+    .footer-v2-logo {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; font-weight: 600; color: var(--text);
+    }
+    .footer-v2-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-3); margin-top: 4px;
+    }
+    .footer-v2-nav { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .footer-v2-nav a {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; font-weight: 400;
+      color: var(--text-2); text-decoration: none;
+      transition: color 120ms ease-out;
+    }
+    .footer-v2-nav a:hover { color: var(--teal-1); }
+    .footer-v2-right {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--text-3);
+    }
+    @media (max-width: 800px) {
+      .footer-v2 { padding: 40px 24px; }
+      .footer-v2-inner { grid-template-columns: 1fr; gap: 18px; text-align: center; }
+      .footer-v2-nav { justify-content: center; }
+      .footer-v2-right { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Case<span>onix</span></a>
+    <ul class="nav-links-blog">
+      <li><a href="/#projects">Field notes</a></li>
+      <li><a href="/#arsenal">Arsenal</a></li>
+      <li><a href="/blog/index.html" class="active">Log</a></li>
+      <li><a href="/#contact">Open a thread</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9728;&#65039;</button>
+    </div>
+  </nav>
+
+  <main class="note-wrapper">
+    <a href="/blog/index.html#notes" class="note-back">&larr; back to lab notes</a>
+
+    <div class="note-eyebrow">&sect; Lab note</div>
+    <h1 class="note-title">Research note — Cheque Image Fraud Detection on AWS</h1>
+    <div class="note-meta">
+      <span>Mar 18, 2026</span>
+    </div>
+
+    <div class="note-body">
+<h2>What I Was Investigating</h2>
+<p>Can you build a production-grade cheque image fraud detection platform using AWS services (Textract, Bedrock, SageMaker) combined with open source and/or commercial components? What does the right mix look like?</p>
+<p>Starting question was narrow — Textract + Bedrock for image-based cheque fraud. Ended up mapping the full problem space and landing on a specific hybrid architecture.</p>
+<hr>
+<h2>Key Findings</h2>
+<h3>Finding 1: There is no managed “cheque fraud detection” service on AWS</h3>
+<p>Some early marketing-style proposals I looked at implied AWS has turnkey services for document tampering detection. It doesn’t. What exists:</p>
+<ul>
+<li><strong>Textract</strong> — managed OCR and field extraction (real, useful)</li>
+<li><strong>Bedrock Data Automation</strong> — structured extraction from documents (real, useful)</li>
+<li><strong>Bedrock Automated Reasoning</strong> — rule validation (real, useful)</li>
+<li><strong>SageMaker</strong> — platform to build and host <em>your own</em> models (real, but you do the building)</li>
+<li><strong>Amazon Fraud Detector</strong> — exists, but for transactional fraud, not image tampering</li>
+<li><strong>Rekognition</strong> — has some content moderation but not document tampering specifically</li>
+</ul>
+<p>Translation: “AWS intelligent document processing with tampering detection” is a reference architecture, not a managed service. You’re assembling components.</p>
+<h3>Finding 2: Error Level Analysis (ELA) is oversold for cheques</h3>
+<p>ELA is a real forensics technique but has significant limitations for this use case:</p>
+<ul>
+<li>Works on JPEG artifacts; degrades with re-encoding</li>
+<li>Cheque images going through image exchange (Check 21) are re-encoded — ELA signal mostly lost</li>
+<li>Catches <em>digital</em> manipulation of image files, not <em>physical</em> alteration of paper cheques</li>
+<li>Physical fraud (washing, alteration) happens before the scan, so ELA sees nothing</li>
+</ul>
+<p>Still worth including as a weak signal in the mobile RDC path where original JPEG encoding survives. Not a headline technique.</p>
+<h3>Finding 3: Open source is viable for most layers,</h3>
+<p>weak on two Strong open source options:</p>
+<ul>
+<li><strong>Extraction/OCR:</strong> Docling (IBM, Apache 2.0), PaddleOCR (Apache 2.0), docTR (Apache 2.0)</li>
+<li><strong>Rules engine:</strong> Open Policy Agent / OPA (CNCF graduated, mature)</li>
+<li><strong>Forensic signals:</strong> OpenCV, scikit-image, pyIFD</li>
+<li><strong>Vision-language models:</strong> Qwen2.5-VL, Llama 3.2 Vision, InternVL2.5, Pixtral (Apache 2.0 variants available) Weak or problematic open source:</li>
+<li><strong>Tampering detection models</strong> — research code only (TruFor, MVSS-Net, CAT-Net v2, ManTraNet). All need domain adaptation with your own labeled data. No drop-in.</li>
+<li><strong>Signature verification</strong> — SigNet / SigVer architectures exist but research-to-production gap is large. Training data requirements are not realistic for a single institution.</li>
+</ul>
+<h3>Finding 4: Tampering detection is the one piece you must build yourself</h3>
+<p>No path around this. Whether AWS-managed or open source, there is no pre-trained tampering detector for cheques.</p>
+<ul>
+<li>Options: MVSS-Net, CAT-Net v2, or similar architectures as starting points</li>
+<li>Hosting: SageMaker is the pragmatic choice (training jobs + real-time inference endpoints)</li>
+<li>Critical dependency: labeled training data (synthetic + real fraud cases from the institution)</li>
+<li>Synthetic data pipeline is typically 30-40% of the project engineering effort</li>
+</ul>
+<h3>Finding 5: Signature verification is the one piece where commercial wins</h3>
+<p>Commercial vendors (Mitek, Parascript) have 20+ year training corpora built across many institutions. Single-institution in-house development produces meaningfully lower accuracy.</p>
+<p>Caveat: in scoping conversations I ended up removing automated signature verification altogether and making it a manual analyst step. Reason: avoids commercial vendor procurement, reduces integration risk, and signature forgery catch rate is acceptable at analyst review volumes for many deployments. Lightweight automated presence check (signature absent / malformed via Textract) stays in the pipeline.</p>
+<h3>Finding 6: Bedrock Claude Sonnet 4.5 as a reasoning layer is genuinely useful</h3>
+<p>Frontier VLM on top of structured signals catches subtle anomalies individual models miss. Key design points:</p>
+<ul>
+<li>Selective invocation (~40% of volume) rather than every cheque — controls cost</li>
+<li>Input: cheque image + all prior signal outputs + context</li>
+<li>Output: structured JSON with risk classification, evidence, bilingual explanation</li>
+<li>Instructed NOT to attempt signature verification — separation of concerns</li>
+</ul>
+<p>Open source VLM alternatives (Qwen2.5-VL 72B, Llama 3.2 Vision) are capable but 6-12 months behind on subtle anomaly reasoning. For the ambiguous-case reasoning layer, quality matters.</p>
+<h3>Finding 7: Graph analysis is a different product</h3>
+<p>Initial architecture included Amazon Neptune for mule/kiting/ring detection. Removed in later iterations — these are cross-account behavioral fraud patterns, not image fraud. Belong in a downstream AML / transaction monitoring system.</p>
+<p>Scope discipline: the platform detects fraud visible in the image. Cross-account patterns, velocity rules, and positive pay matching are out. This makes the platform defensible and focused.</p>
+<h3>Finding 8: AWS vs Cloudflare — AWS wins for regulated banking</h3>
+<p>Evaluated a Cloudflare deployment. Showstoppers for this specific use case:</p>
+<ul>
+<li>No good custom GPU model hosting (tampering model)</li>
+<li>No direct R2 equivalent to S3 Object Lock (regulatory immutable storage)</li>
+<li>Frontier VLM quality gap (no Claude Sonnet 4.5 equivalent)</li>
+<li>Regulatory audit posture less established for financial services</li>
+<li>Workflows and Queues newer/less mature than Step Functions and EventBridge</li>
+</ul>
+<p>Cloudflare is strong for edge, consumer-facing workloads, and cost-sensitive applications. Not the right fit for regulated banking fraud detection with 7-year retention and active examiner scrutiny.</p>
+<hr>
+<h2>Final Architecture (Summary)</h2>
+<p><strong>Scope:</strong> Cheque image fraud detection only. Out: cross-account behavioral fraud, positive pay, automated signature matching.</p>
+<p><strong>Stack:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API ingress</td>
+<td>API Gateway + WAF</td>
+</tr>
+<tr>
+<td>Orchestration</td>
+<td>Step Functions</td>
+</tr>
+<tr>
+<td>Event bus</td>
+<td>EventBridge</td>
+</tr>
+<tr>
+<td>Extraction</td>
+<td>Textract + custom bilingual parser</td>
+</tr>
+<tr>
+<td>Rules</td>
+<td>OPA (open source)</td>
+</tr>
+<tr>
+<td>Duplicate detection</td>
+<td>DynamoDB + perceptual hash</td>
+</tr>
+<tr>
+<td>Tampering detection</td>
+<td>Custom model on SageMaker</td>
+</tr>
+<tr>
+<td>Signature handling</td>
+<td>Textract presence check; evidence packaged for manual analyst review</td>
+</tr>
+<tr>
+<td>Forensic signals</td>
+<td>OpenCV / scikit-image / pyIFD on ECS</td>
+</tr>
+<tr>
+<td>VLM reasoning</td>
+<td>Bedrock Claude Sonnet 4.5 (selective)</td>
+</tr>
+<tr>
+<td>Scoring</td>
+<td>Lambda</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>S3 Object Lock + Aurora + DynamoDB</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>OpenSearch</td>
+</tr>
+<tr>
+<td>IaC</td>
+<td>Terraform</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Scoring ensemble weights (after signature verification removed):</strong></p>
+<ul>
+<li>Tampering model: 40%</li>
+<li>VLM assessment: 30%</li>
+<li>Forensic signals: 20%</li>
+<li>Rules engine soft rules: 10%</li>
+<li>Hard rules override anything else</li>
+</ul>
+<p><strong>Pattern:</strong> Single API entry, event-driven output. External case management system consumes review decisions. Feedback loop via inbound API for retraining.</p>
+<hr>
+<h2>Open Research Questions</h2>
+<ol>
+<li>What’s the actual catch rate on signature forgery when verification is fully manual? Need real-world volume data.</li>
+<li>Does the tampering model generalize across banks’ cheque stock, or does it need per-bank fine-tuning? Hypothesis: needs per-bank.</li>
+<li>Synthetic training data quality — how well do programmatically-generated tampering examples transfer to real fraud? Need to measure against held-out real fraud set.</li>
+<li>VLM selective invocation gating — 40% is a starting estimate. What’s the actual optimal given cost/catch-rate tradeoffs?</li>
+<li>At what volume does self-hosting the VLM (Qwen2.5-VL 72B on SageMaker) beat Bedrock on unit economics? Rough estimate: 3M+ cheques/day. Worth modeling precisely.</li>
+</ol>
+<hr>
+<h2>Lessons Learned</h2>
+<ol>
+<li>
+<p><strong>“AWS has a service for that” deserves skepticism.</strong> Marketing descriptions often conflate reference architectures with managed services. Always check the actual service catalog and capabilities.</p>
+</li>
+<li>
+<p><strong>Scope discipline beats feature breadth.</strong> Every time I tightened scope (removing graph analysis, positive pay, automated signature matching), the architecture got cleaner and more defensible without meaningfully hurting the core fraud catch rate.</p>
+</li>
+<li>
+<p><strong>Training data access is usually the critical path.</strong> More than model architecture, more than infrastructure — historical labeled fraud cases determine whether the project succeeds.</p>
+</li>
+<li>
+<p><strong>Hybrid beats pure.</strong> Pure AWS, pure open source, or pure commercial are all worse than a thoughtful mix that uses each approach where it’s genuinely best.</p>
+</li>
+<li>
+<p><strong>Explainability matters more than accuracy alone.</strong> Regulated environments need decisions that can be defended in examinations. Every signal must be traceable and explainable, even at the cost of some ensemble accuracy.</p>
+</li>
+<li>
+<p><strong>Human-in-the-loop is not a fallback — it’s a design choice.</strong> Moving signature verification to manual analyst review simplified the architecture and removed vendor risk. The right automation boundary depends on the task, not on “automate everything.”</p>
+</li>
+</ol>
+<hr>
+<p><em>End of lab notes.</em></p>
+
+    </div>
+
+    <a href="/#contact" class="note-cta">
+      <div class="note-cta-body">
+        <span class="note-cta-eyebrow">&sect; Open a thread</span>
+        <span class="note-cta-text">Working on a related problem? Let&rsquo;s compare notes.</span>
+      </div>
+      <span class="note-cta-link">Start a thread <span class="arrow" aria-hidden="true">&rarr;</span></span>
+    </a>
+  </main>
+
+  <footer class="footer-v2">
+    <div class="footer-v2-inner">
+      <div class="footer-v2-left">
+        <div class="footer-v2-logo">caseonix</div>
+        <div class="footer-v2-meta">A solo AI lab &middot; Est. 2024 &middot; Waterloo, ON</div>
+      </div>
+      <nav class="footer-v2-nav" aria-label="Footer navigation">
+        <a href="/#projects">Field notes</a>
+        <a href="/#arsenal">Arsenal</a>
+        <a href="/blog/index.html">Log</a>
+        <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub &#8599;</a>
+      </nav>
+      <div class="footer-v2-right">&copy; 2026 Caseonix</div>
+    </div>
+      <div class="footer-disclaimer" style="max-width: 1200px; margin: 24px auto 0; padding: 18px 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 0.72rem; line-height: 1.65; color: var(--text-3);">
+      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary &mdash; not legal, compliance, tax, financial, investment, or professional advice.
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '☀️' : '🌙';
+      try { localStorage.setItem('caseonix-theme', t); } catch(e) {}
+    }
+    toggle.addEventListener('click', () => {
+      setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+    try {
+      const saved = localStorage.getItem('caseonix-theme');
+      if (saved) setTheme(saved);
+    } catch(e) {}
+  </script>
+  
+</body>
+</html>
