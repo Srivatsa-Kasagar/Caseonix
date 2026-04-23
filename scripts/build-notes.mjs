@@ -111,7 +111,9 @@ function buildJsonLd(fm) {
   if (fm.series) {
     obj.isPartOf = { '@type': 'CreativeWorkSeries', name: fm.series };
   }
-  return JSON.stringify(obj, null, 2);
+  // Neutralize any literal </script that leaked from title/description into
+  // JSON string values — otherwise it'd break out of the inline JSON-LD block.
+  return JSON.stringify(obj, null, 2).replace(/<\/script/gi, '<\\/script');
 }
 
 function mermaidScriptTag() {
@@ -130,7 +132,10 @@ function substitute(template, values) {
 
 async function main() {
   const entries = await readdir(NOTES_DIR);
-  const mdFiles = entries.filter((n) => extname(n) === '.md').map((n) => join(NOTES_DIR, n));
+  const mdFiles = entries
+    .filter((n) => extname(n) === '.md')
+    .sort()
+    .map((n) => join(NOTES_DIR, n));
   if (mdFiles.length === 0) {
     console.warn('no .md files found in notes/, nothing to build');
     return;
