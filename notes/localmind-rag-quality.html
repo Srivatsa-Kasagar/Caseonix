@@ -357,7 +357,7 @@
     <div class="note-meta">
       <span>Apr 22, 2026</span>
       <span class="note-meta-sep">&middot;</span>
-      <span>Working note &mdash; will evolve</span>
+      <span>Working note — will evolve</span>
     </div>
     <div class="note-series">
       <a href="/notes/localmind-rag-pipeline.html">&larr; 1. Pipeline</a>
@@ -390,7 +390,7 @@ flowchart TB
     end
     Baseline -.evolved into.-> LocalMind
         </pre>
-        <div class="diagram-caption">Diagram 1 &mdash; baseline vs. what I built</div>
+        <div class="diagram-caption">Diagram 1 — baseline vs. what I built</div>
       </div>
 
       <p>Every stage has been swapped for a more careful version. Each change below is shown as the problem it fixes.</p>
@@ -407,14 +407,14 @@ flowchart LR
     C4 --&gt; C5[BGE query/doc<br/>asymmetry]
     C5 --&gt; V[(Vectorize)]
         </pre>
-        <div class="diagram-caption">Diagram 2 &mdash; the indexing layers I added on top of the baseline</div>
+        <div class="diagram-caption">Diagram 2 — the indexing layers I added on top of the baseline</div>
       </div>
 
       <p><strong>Paragraph-aware chunking instead of fixed windows.</strong> Naïve chunkers slice every N characters, which often cuts across sentence and paragraph boundaries and embeds half-thoughts. My <code>chunkText</code> packs whole paragraphs into the buffer first, only falls back to sentence splitting when a single paragraph overflows, and carries a 50-token overlap on every flush so cross-boundary references survive. Embeddings stay tied to coherent semantic units, and overlap covers the cases where a discussion does cross paragraphs.</p>
 
-      <p><strong>Table flattening before chunking.</strong> PDFs and DOCX exports lose tabular structure on extraction &mdash; column headers end up in row 1 and the data rows below them lose all meaning ("$4.2M" with no header is useless to a retriever). My <code>flattenTables</code> walks the parsed text and re-attaches headers to each row so a query like "Q3 revenue" has something to match against in the embedding space. Implementation details are in the <a href="/notes/localmind-nlp-layer.html">NLP note</a>.</p>
+      <p><strong>Table flattening before chunking.</strong> PDFs and DOCX exports lose tabular structure on extraction — column headers end up in row 1 and the data rows below them lose all meaning ("$4.2M" with no header is useless to a retriever). My <code>flattenTables</code> walks the parsed text and re-attaches headers to each row so a query like "Q3 revenue" has something to match against in the embedding space. Implementation details are in the <a href="/notes/localmind-nlp-layer.html">NLP note</a>.</p>
 
-      <p><strong>Contextual chunking (the biggest single win).</strong> I applied Anthropic's contextual-retrieval idea here. For each chunk, Gemma writes a 1-2 sentence header that says where the chunk fits in the broader document &mdash; for example, "This chunk is from the risk-factors section of Acme's 2024 10-K and discusses supply-chain exposure to&hellip;". I prepend that header to the chunk <em>before embedding</em>, so the vector encodes both the local content and its global context. The display copy in D1 stays untouched, so users still see the clean original text in citations.</p>
+      <p><strong>Contextual chunking (the biggest single win).</strong> I applied Anthropic's contextual-retrieval idea here. For each chunk, Gemma writes a 1-2 sentence header that says where the chunk fits in the broader document — for example, "This chunk is from the risk-factors section of Acme's 2024 10-K and discusses supply-chain exposure to&hellip;". I prepend that header to the chunk <em>before embedding</em>, so the vector encodes both the local content and its global context. The display copy in D1 stays untouched, so users still see the clean original text in citations.</p>
 
       <div class="diagram-card" role="figure" aria-label="Dual-text split for contextual chunking: original chunk goes to D1 as the display copy, and a parallel path has Gemma write a 1-2 sentence header that is prepended to make a contextualized chunk, which is then BGE-embedded and stored in Vectorize as the retrieval copy.">
         <pre class="mermaid">
@@ -425,10 +425,10 @@ flowchart LR
     ENR --&gt; EMB[BGE embed]
     EMB --&gt; VZ[(Vectorize — retrieval copy)]
         </pre>
-        <div class="diagram-caption">Diagram 3 &mdash; the dual-text split (display vs. retrieval copies)</div>
+        <div class="diagram-caption">Diagram 3 — the dual-text split (display vs. retrieval copies)</div>
       </div>
 
-      <p>This single change saves a lot of short chunks and back-referencing chunks ("the company also reported&hellip;" &mdash; <em>which</em> company?) that vanilla embeddings can't disambiguate.</p>
+      <p>This single change saves a lot of short chunks and back-referencing chunks ("the company also reported&hellip;" — <em>which</em> company?) that vanilla embeddings can't disambiguate.</p>
 
       <p><strong>BGE asymmetric query encoding.</strong> BGE-Small was trained with a specific instruction prefix on the query side. Most pipelines ignore it. I prepend <code>"Represent this sentence for searching relevant passages: "</code> to every query before embedding, which matches the model's training distribution and raises cosine similarity for relevant chunks above the noise level.</p>
 
@@ -447,24 +447,24 @@ flowchart TB
     RR --&gt; CT[token-budgeted context<br/>+ per-doc fairness cap]
     CT --&gt; SY[citation-bound<br/>synthesis]
         </pre>
-        <div class="diagram-caption">Diagram 4 &mdash; the retrieval layers I added on top of single-query top-K</div>
+        <div class="diagram-caption">Diagram 4 — the retrieval layers I added on top of single-query top-K</div>
       </div>
 
       <p><strong>Query expansion + multi-vector search.</strong> A single query phrasing often misses chunks that use different vocabulary ("revenue" vs. "top line", "termination" vs. "wrongful dismissal"). I have Gemma rewrite the query into 2-3 alternative phrasings, embed each one with the BGE prefix, and run all variants in parallel against Vectorize. I merge results by chunk ID, keeping the <em>max</em> score across variants, so a chunk surfaced by multiple phrasings gets credit but isn't double-counted. Recall goes up without a precision hit.</p>
 
-      <p><strong>Tuned similarity floor.</strong> A naïve top-K returns K chunks no matter what &mdash; including garbage when the corpus has nothing relevant. I profiled BGE-Small's score distribution on my actual corpus: relevant chunks land at 0.35-0.55, noise sits below 0.3. My <code>MIN_SIMILARITY = 0.3</code> floor cuts off the noise band, and if zero chunks pass I short-circuit to "I couldn't find relevant information" instead of letting the model hallucinate from low-quality context.</p>
+      <p><strong>Tuned similarity floor.</strong> A naïve top-K returns K chunks no matter what — including garbage when the corpus has nothing relevant. I profiled BGE-Small's score distribution on my actual corpus: relevant chunks land at 0.35-0.55, noise sits below 0.3. My <code>MIN_SIMILARITY = 0.3</code> floor cuts off the noise band, and if zero chunks pass I short-circuit to "I couldn't find relevant information" instead of letting the model hallucinate from low-quality context.</p>
 
-      <p><strong>Two-stage retrieval &mdash; vector then LLM rerank.</strong> Cosine similarity is fast but coarse. I retrieve a wide candidate set (top 15 per variant) then hand it to Gemma with a strict 1-5 relevance rubric and a JSON-schema output. Anything scoring below 3 is dropped; I keep the top 7. Reranking boosts chunks that <em>answer</em> the question over chunks that just <em>share vocabulary</em> with it, which is the failure mode pure-vector retrieval is most prone to. I added a fallback: if fewer than 2 chunks pass the rerank threshold I revert to vector ordering rather than ship a near-empty context.</p>
+      <p><strong>Two-stage retrieval — vector then LLM rerank.</strong> Cosine similarity is fast but coarse. I retrieve a wide candidate set (top 15 per variant) then hand it to Gemma with a strict 1-5 relevance rubric and a JSON-schema output. Anything scoring below 3 is dropped; I keep the top 7. Reranking boosts chunks that <em>answer</em> the question over chunks that just <em>share vocabulary</em> with it, which is the failure mode pure-vector retrieval is most prone to. I added a fallback: if fewer than 2 chunks pass the rerank threshold I revert to vector ordering rather than ship a near-empty context.</p>
 
       <p><strong>Per-document fairness cap on team-wide search.</strong> Without a cap, one document with high lexical overlap can take over the top 7 and crowd out other documents with more diverse but still-relevant context. <code>MAX_CHUNKS_PER_DOC_TEAM_SEARCH = 2</code> enforces breadth across the result set when the search spans multiple documents.</p>
 
-      <p><strong>Token-budgeted context assembly with citations.</strong> <code>buildContextFromChunks</code> enforces a 6000-token cap and writes each chunk with a <code>[N] filename</code> header and <code>---</code> separator. The synthesis system prompt binds Gemma to the supplied context, forbids external knowledge, and requires <code>[Document: filename]</code> citations &mdash; so answers are grounded and checkable, not filled in from the model's training data.</p>
+      <p><strong>Token-budgeted context assembly with citations.</strong> <code>buildContextFromChunks</code> enforces a 6000-token cap and writes each chunk with a <code>[N] filename</code> header and <code>---</code> separator. The synthesis system prompt binds Gemma to the supplied context, forbids external knowledge, and requires <code>[Document: filename]</code> citations — so answers are grounded and checkable, not filled in from the model's training data.</p>
 
       <p><strong>Conversation history trim.</strong> Long chat sessions can blow the context window. I walk the history newest-first and trim it at <code>MAX_HISTORY_TOKENS = 1500</code>, so older turns drop off but the recent thread stays intact.</p>
 
       <h2>Reliability improvements</h2>
 
-      <p><strong>Eventual-consistency handling.</strong> Vectorize is eventually consistent &mdash; the upsert returning successfully doesn't mean the chunks are queryable yet. A document marked "ready" before its vectors are indexed produces empty searches and looks like a quality bug from the user's seat. I sample first/last chunk IDs after upsert via a Durable Object alarm, retry on failure (5 attempts × 90s), and only flip status to <code>ready</code> once both ends are visible &mdash; or to <code>error</code> if they never show up.</p>
+      <p><strong>Eventual-consistency handling.</strong> Vectorize is eventually consistent — the upsert returning successfully doesn't mean the chunks are queryable yet. A document marked "ready" before its vectors are indexed produces empty searches and looks like a quality bug from the user's seat. I sample first/last chunk IDs after upsert via a Durable Object alarm, retry on failure (5 attempts × 90s), and only flip status to <code>ready</code> once both ends are visible — or to <code>error</code> if they never show up.</p>
 
       <p><strong>Fallback at every LLM call.</strong> Each LLM step (query expansion, reranking, synthesis) has an explicit fallback path. Expansion failure &rarr; original query only. Rerank failure or fewer than 2 passing chunks &rarr; vector ranking. Synthesis failure surfaces as a clear error rather than partial output. The pipeline never quietly produces lower-quality results without saying so in the logs.</p>
 
@@ -494,10 +494,10 @@ flowchart TB
       <h2>What's next</h2>
 
       <ul>
-        <li>Hybrid retrieval (BM25 alongside vectors) is the obvious next step &mdash; at the 0.3 BGE floor I'm sometimes missing exact-keyword queries.</li>
+        <li>Hybrid retrieval (BM25 alongside vectors) is the obvious next step — at the 0.3 BGE floor I'm sometimes missing exact-keyword queries.</li>
         <li>The contextual-chunking call is sequential-batched at 5; on very large docs it's the dominant ingest latency. Worth either caching headers per (doc, paragraph hash) or batching at the model API level.</li>
         <li>I'm using Gemma 4 as the reranker; a dedicated cross-encoder (e.g. <code>bge-reranker-base</code>) would be cheaper and likely better-calibrated than reusing the chat model.</li>
-        <li>A retrieval eval harness &mdash; even a small hand-labeled set of 50 query/relevant-chunk pairs &mdash; would let me regress these knobs against a number instead of intuition.</li>
+        <li>A retrieval eval harness — even a small hand-labeled set of 50 query/relevant-chunk pairs — would let me regress these knobs against a number instead of intuition.</li>
       </ul>
 
       <p style="margin-top: 40px; color: var(--text-3); font-size: 0.92rem;">Next: <a href="/notes/localmind-nlp-layer.html" style="color: var(--teal-1);">how the NLP layer fits alongside RAG &rarr;</a></p>
@@ -543,7 +543,7 @@ flowchart TB
       <div class="footer-v2-right">&copy; 2026 Caseonix</div>
     </div>
       <div class="footer-disclaimer" style="max-width: 1200px; margin: 24px auto 0; padding: 18px 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 0.72rem; line-height: 1.65; color: var(--text-3);">
-      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary &mdash; not legal, compliance, tax, financial, investment, or professional advice.
+      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary — not legal, compliance, tax, financial, investment, or professional advice.
     </div>
   </footer>
 

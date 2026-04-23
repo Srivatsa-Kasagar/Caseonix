@@ -427,11 +427,11 @@
     <a href="/blog/index.html#notes" class="note-back">&larr; back to lab notes</a>
 
     <div class="note-eyebrow">&sect; Lab note &middot; 1 of 3</div>
-    <h1 class="note-title">LocalMind RAG &mdash; the pipeline</h1>
+    <h1 class="note-title">LocalMind RAG — the pipeline</h1>
     <div class="note-meta">
       <span>Apr 22, 2026</span>
       <span class="note-meta-sep">&middot;</span>
-      <span>Working note &mdash; will evolve</span>
+      <span>Working note — will evolve</span>
     </div>
     <div class="note-series">
       <span class="current">1. Pipeline</span>
@@ -445,7 +445,7 @@
     </div>
 
     <div class="note-body">
-      <p>How I wired retrieval-augmented generation end-to-end in LocalMind: chunking, embedding, vector index, retrieval, generation. Everything runs on the Cloudflare edge &mdash; <strong>Workers AI</strong> for inference, <strong>Vectorize</strong> for ANN, <strong>D1</strong> for the canonical chunk text, and <strong>R2</strong> for the original blob. I use <code>teamId</code> as the Vectorize <strong>namespace</strong> on every read and write to keep tenants isolated.</p>
+      <p>How I wired retrieval-augmented generation end-to-end in LocalMind: chunking, embedding, vector index, retrieval, generation. Everything runs on the Cloudflare edge — <strong>Workers AI</strong> for inference, <strong>Vectorize</strong> for ANN, <strong>D1</strong> for the canonical chunk text, and <strong>R2</strong> for the original blob. I use <code>teamId</code> as the Vectorize <strong>namespace</strong> on every read and write to keep tenants isolated.</p>
 
       <h2>Ingest pipeline (write path)</h2>
 
@@ -464,20 +464,20 @@ flowchart LR
     H --&gt; I[(Vectorize.upsert<br/>namespace=teamId)]
     I --&gt; J[DO alarm — verify<br/>retry 5× / 90s]
         </pre>
-        <div class="diagram-caption">Diagram 1 &mdash; ingest pipeline inside the per-team Durable Object</div>
+        <div class="diagram-caption">Diagram 1 — ingest pipeline inside the per-team Durable Object</div>
       </div>
 
       <p>Orchestration lives in <code>workers/src/durableObjects/teamState.ts</code> (<code>processDocument</code>). The main twist I added is a <strong>dual-text split</strong>: D1 stores the redacted-but-otherwise-original chunk that users see in citations, and Vectorize stores a <em>contextually enriched</em> version where Gemma 4 has prepended a 1-2 sentence header that says where the chunk fits in the document (via <code>generateChunkContext</code>). The header improves recall for chunks that would otherwise be too short or too back-referencing to retrieve on their own, and it never shows up in the user-facing citation.</p>
 
       <h2>Chunking</h2>
 
-      <p>The chunker in <code>workers/src/services/document.ts</code> (<code>chunkText</code>) is small and deterministic. It splits the text on paragraph breaks (<code>\n{2,}</code>) and packs whole paragraphs into a buffer until the buffer would go over <code>MAX_CHUNK_TOKENS</code> (512 tokens, approximated as 4 chars/token). When a paragraph won't fit, I flush the buffer and carry a 50-token tail forward as overlap so context isn't cut off in the middle of a thought. If a single paragraph is bigger than the cap on its own, I fall back to a sentence regex and pack sentences instead. No tokenizer call, no LLM &mdash; paragraph structure is the main signal, and the token math is conservative on purpose.</p>
+      <p>The chunker in <code>workers/src/services/document.ts</code> (<code>chunkText</code>) is small and deterministic. It splits the text on paragraph breaks (<code>\n{2,}</code>) and packs whole paragraphs into a buffer until the buffer would go over <code>MAX_CHUNK_TOKENS</code> (512 tokens, approximated as 4 chars/token). When a paragraph won't fit, I flush the buffer and carry a 50-token tail forward as overlap so context isn't cut off in the middle of a thought. If a single paragraph is bigger than the cap on its own, I fall back to a sentence regex and pack sentences instead. No tokenizer call, no LLM — paragraph structure is the main signal, and the token math is conservative on purpose.</p>
 
-      <p>Before chunks ever touch D1 or Vectorize, I run them through two PII passes (regex + LLM). The redaction is applied to both the display copy in D1 and the version that gets embedded &mdash; privacy was a hard requirement for me, so nothing identifiable leaves the chunk pipeline. The PII layer is detailed in the <a href="/notes/localmind-nlp-layer.html">NLP note</a>.</p>
+      <p>Before chunks ever touch D1 or Vectorize, I run them through two PII passes (regex + LLM). The redaction is applied to both the display copy in D1 and the version that gets embedded — privacy was a hard requirement for me, so nothing identifiable leaves the chunk pipeline. The PII layer is detailed in the <a href="/notes/localmind-nlp-layer.html">NLP note</a>.</p>
 
       <h2>Embedding</h2>
 
-      <p>The embedding service in <code>workers/src/services/embedding.ts</code> is small on purpose &mdash; a single short module with two functions. It calls <code>@cf/baai/bge-small-en-v1.5</code> via Workers AI for both the document side (<code>generateEmbeddings</code>) and the query side (<code>generateQueryEmbedding</code>). On the query path I prepend BGE's asymmetric prefix <code>"Represent this sentence for searching relevant passages: "</code>. That's how BGE was trained on the query side, and using it raises cosine similarity for relevant chunks above the noise floor.</p>
+      <p>The embedding service in <code>workers/src/services/embedding.ts</code> is small on purpose — a single short module with two functions. It calls <code>@cf/baai/bge-small-en-v1.5</code> via Workers AI for both the document side (<code>generateEmbeddings</code>) and the query side (<code>generateQueryEmbedding</code>). On the query path I prepend BGE's asymmetric prefix <code>"Represent this sentence for searching relevant passages: "</code>. That's how BGE was trained on the query side, and using it raises cosine similarity for relevant chunks above the noise floor.</p>
 
       <p>In the DO, I batch embeddings at 32, then call <code>Vectorize.upsert</code> in batches of 100. Vectorize is eventually consistent, so once the upsert returns I schedule a Durable Object alarm 90 seconds out. The alarm re-queries the first and last chunk IDs to check they're indexed, retries up to 5 times, and only marks the document <code>ready</code> for search once both ends are visible. If verification fails after the final retry, I flip the document to <code>error</code> so the user knows search won't work for it.</p>
 
@@ -496,7 +496,7 @@ flowchart TB
     C --&gt; S[synthesizeAnswer<br/>Gemma + history + cite]
     S --&gt; A[answer + sources]
         </pre>
-        <div class="diagram-caption">Diagram 2 &mdash; retrieval flow inside POST /api/search</div>
+        <div class="diagram-caption">Diagram 2 — retrieval flow inside POST /api/search</div>
       </div>
 
       <p>The whole flow is in the <code>POST /api/search</code> handler in <code>workers/src/routes/search.ts</code>. Step by step:</p>
@@ -504,14 +504,14 @@ flowchart TB
       <ol>
         <li><strong>Query expansion</strong> (<code>expandQuery</code>). Gemma rewrites the user's query into 2-3 variants under a JSON schema. The original is always kept, and I cap variants at <code>QUERY_EXPANSION_MAX = 3</code>. If the LLM call fails I fall back to the original query only.</li>
         <li><strong>Multi-vector search.</strong> I embed each variant with the BGE query prefix and dispatch all of them in parallel to <code>Vectorize.query</code>, scoped to the team's namespace with <code>topK = 15</code>.</li>
-        <li><strong>Merge and dedupe.</strong> I union results by chunk ID and keep the highest cosine score across variants &mdash; so a chunk that matches multiple phrasings gets credit but isn't double-counted.</li>
+        <li><strong>Merge and dedupe.</strong> I union results by chunk ID and keep the highest cosine score across variants — so a chunk that matches multiple phrasings gets credit but isn't double-counted.</li>
         <li><strong>Hydrate and threshold.</strong> I load chunk text from D1 in a single <code>inArray</code> query, join it to document names, and drop anything below <code>MIN_SIMILARITY = 0.3</code>. (BGE-Small puts truly relevant chunks in the 0.35-0.55 band on my corpus, so 0.3 is the tuned floor.)</li>
         <li><strong>LLM rerank</strong> (<code>rerankChunks</code>). I send the top 15 candidates to Gemma with a strict 1-5 relevance rubric, again JSON-schema constrained. I cut anything below <code>RERANK_MIN_SCORE = 3</code> and keep <code>RERANK_TOP_K = 7</code>. If fewer than 2 chunks pass, I fall back to the vector ranking.</li>
         <li><strong>Context assembly</strong> (<code>buildContextFromChunks</code>). I concatenate chunks with <code>[N] filename</code> headers and <code>---</code> separators, stopping when I hit <code>MAX_CONTEXT_TOKENS = 6000</code>. For team-wide searches I cap each document at <code>MAX_CHUNKS_PER_DOC_TEAM_SEARCH = 2</code> so one chatty document can't crowd out the others.</li>
         <li><strong>Synthesis</strong> (<code>synthesizeAnswer</code>). The system prompt binds Gemma to the supplied context, requires <code>[Document: filename]</code> citations, and forbids external knowledge. I walk conversation history newest-first and trim it at <code>MAX_HISTORY_TOKENS = 1500</code> so long chats don't blow the context window.</li>
       </ol>
 
-      <h2>Tunables &mdash; single source of truth</h2>
+      <h2>Tunables — single source of truth</h2>
 
       <p>I keep all retrieval and chunking knobs in <code>shared/constants.ts</code>:</p>
 
@@ -587,7 +587,7 @@ flowchart TB
       <div class="footer-v2-right">&copy; 2026 Caseonix</div>
     </div>
       <div class="footer-disclaimer" style="max-width: 1200px; margin: 24px auto 0; padding: 18px 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 0.72rem; line-height: 1.65; color: var(--text-3);">
-      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary &mdash; not legal, compliance, tax, financial, investment, or professional advice.
+      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary — not legal, compliance, tax, financial, investment, or professional advice.
     </div>
   </footer>
 

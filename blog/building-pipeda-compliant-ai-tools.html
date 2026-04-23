@@ -471,7 +471,7 @@
       <a href="/blog/index.html" class="article-back-log">&larr; back to the log</a>
       <div class="article-tag">Compliance &amp; AI</div>
       <h1 class="article-title">Building AI tools for PIPEDA — a developer's guide</h1>
-      <p class="article-subtitle">Canada still runs on PIPEDA, Bill C-27 died on the Order Paper, and the CLOUD Act didn't go anywhere. Here's what that actually means if you're building AI tools for the Canadian market in 2026 &mdash; and how to ship them without a compliance incident.</p>
+      <p class="article-subtitle">Canada still runs on PIPEDA, Bill C-27 died on the Order Paper, and the CLOUD Act didn't go anywhere. Here's what that actually means if you're building AI tools for the Canadian market in 2026 — and how to ship them without a compliance incident.</p>
       <div class="article-info">
         <span>By <a href="/">Srivatsa Kasagar</a></span>
         <span>&middot;</span>
@@ -501,30 +501,30 @@
 
       <h2>The Regulatory Landscape: What Actually Applies in 2026</h2>
 
-      <p>If you've been waiting for Ottawa to sort out AI regulation, you'll be waiting a while longer. Bill C-27 &mdash; which would have introduced the Consumer Privacy Protection Act (CPPA) and the Artificial Intelligence and Data Act (AIDA) &mdash; <strong>died when Parliament was prorogued in January 2025</strong>. A snap federal election in April 2025 pushed reform further down the road. As of April 2026, Canada has no federal AI-specific legislation.</p>
+      <p>If you've been waiting for Ottawa to sort out AI regulation, you'll be waiting a while longer. Bill C-27 — which would have introduced the Consumer Privacy Protection Act (CPPA) and the Artificial Intelligence and Data Act (AIDA) — <strong>died when Parliament was prorogued in January 2025</strong>. A snap federal election in April 2025 pushed reform further down the road. As of April 2026, Canada has no federal AI-specific legislation.</p>
 
-      <p>I spent 25 years in financial services, and only recently started building AI tools for this market. The compliance landscape isn't new to me &mdash; but the gap between what AI vendors promise and what Canadian regulations actually require was wide enough to build a company in.</p>
+      <p>I spent 25 years in financial services, and only recently started building AI tools for this market. The compliance landscape isn't new to me — but the gap between what AI vendors promise and what Canadian regulations actually require was wide enough to build a company in.</p>
 
       <p>That doesn't mean you're operating in a vacuum. Three frameworks define your compliance obligations right now:</p>
 
       <ul>
-        <li><strong>PIPEDA</strong> (federal) &mdash; Canada's Personal Information Protection and Electronic Documents Act, written in 2000 but still the law. It requires meaningful consent, accountability for data in the hands of third parties, and "comparable protection" for cross-border transfers.</li>
-        <li><strong>Quebec's Law 25</strong> (provincial) &mdash; Fully enforced since September 2024 and significantly stricter than PIPEDA. Requires explicit consent for automated decision-making, mandatory Privacy Impact Assessments for high-risk AI, and penalties up to C$25M or 4% of global revenue.</li>
-        <li><strong>OSFI B-13</strong> (sector-specific) &mdash; If you serve federally regulated financial institutions, OSFI's Technology and Cyber Security Risk Management guideline requires third-party risk management that extends to AI service providers.</li>
+        <li><strong>PIPEDA</strong> (federal) — Canada's Personal Information Protection and Electronic Documents Act, written in 2000 but still the law. It requires meaningful consent, accountability for data in the hands of third parties, and "comparable protection" for cross-border transfers.</li>
+        <li><strong>Quebec's Law 25</strong> (provincial) — Fully enforced since September 2024 and significantly stricter than PIPEDA. Requires explicit consent for automated decision-making, mandatory Privacy Impact Assessments for high-risk AI, and penalties up to C$25M or 4% of global revenue.</li>
+        <li><strong>OSFI B-13</strong> (sector-specific) — If you serve federally regulated financial institutions, OSFI's Technology and Cyber Security Risk Management guideline requires third-party risk management that extends to AI service providers.</li>
       </ul>
 
       <div class="callout warning">
         <div class="callout-title">&#9888;&#65039; The practical takeaway</div>
-        <p>Most builders now align with <strong>Quebec Law 25</strong> as their baseline &mdash; it's the strictest Canadian framework, and if you comply with it, you effectively comply with PIPEDA too. If you serve financial institutions, layer OSFI B-13 on top.</p>
+        <p>Most builders now align with <strong>Quebec Law 25</strong> as their baseline — it's the strictest Canadian framework, and if you comply with it, you effectively comply with PIPEDA too. If you serve financial institutions, layer OSFI B-13 on top.</p>
       </div>
 
       <h2>The CLOUD Act Problem Nobody Wants to Talk About</h2>
 
       <p>Here's the uncomfortable truth about "Canadian data residency" in 2026: <strong>storing data in a Canadian data centre run by a US company does not protect it from US government access.</strong></p>
 
-      <p>The US CLOUD Act (Clarifying Lawful Overseas Use of Data Act) gives American authorities the power to compel US-headquartered companies to hand over data regardless of where that data is physically stored. This means AWS Canada Central in Montreal, Azure Canada East in Quebec City, and Google Cloud's Montreal region are all subject to US legal orders &mdash; even though the bits never leave Canadian soil.</p>
+      <p>The US CLOUD Act (Clarifying Lawful Overseas Use of Data Act) gives American authorities the power to compel US-headquartered companies to hand over data regardless of where that data is physically stored. This means AWS Canada Central in Montreal, Azure Canada East in Quebec City, and Google Cloud's Montreal region are all subject to US legal orders — even though the bits never leave Canadian soil.</p>
 
-      <p>For most consumer applications, this is a theoretical risk. But for legal firms handling privileged documents, financial institutions under OSFI oversight, healthcare organizations subject to PHIPA, or government contractors &mdash; it's a real compliance problem that auditors are increasingly asking about.</p>
+      <p>For most consumer applications, this is a theoretical risk. But for legal firms handling privileged documents, financial institutions under OSFI oversight, healthcare organizations subject to PHIPA, or government contractors — it's a real compliance problem that auditors are increasingly asking about.</p>
 
       <h3>What this means for your architecture</h3>
 
@@ -550,7 +550,7 @@
             <tr>
               <td><strong>2. US hyperscaler, Canadian region</strong></td>
               <td>Data in Canada, but operator is US-incorporated</td>
-              <td>Yes &mdash; compellable by US legal order</td>
+              <td>Yes — compellable by US legal order</td>
               <td>AWS ca-central-1, Azure Canada East, GCP Montreal</td>
             </tr>
             <tr>
@@ -563,15 +563,15 @@
         </table>
       </div>
 
-      <p>For most regulated use cases, <strong>Tier 2 is the pragmatic minimum</strong> &mdash; it satisfies PIPEDA's "comparable protection" standard and is what most organizations document in their PIAs. Tier 1 is where you go when the threat model specifically includes foreign government access to data, which is increasingly the case in defence, government, and privileged legal work.</p>
+      <p>For most regulated use cases, <strong>Tier 2 is the pragmatic minimum</strong> — it satisfies PIPEDA's "comparable protection" standard and is what most organizations document in their PIAs. Tier 1 is where you go when the threat model specifically includes foreign government access to data, which is increasingly the case in defence, government, and privileged legal work.</p>
 
-      <h2>Five Design Principles for Compliance-First AI</h2>
+      <h2>Five design principles for building AI under PIPEDA</h2>
 
       <p>After building <a href="https://localmind.caseonix.ca">LocalMind</a>, a sovereign document intelligence platform for the Canadian market, I've arrived at five architectural principles that make compliance a design spec rather than an afterthought.</p>
 
       <h3>1. Pin computation to geography</h3>
 
-      <p>Don't just store data in Canada &mdash; <strong>process it there too</strong>. Every API call to a US-hosted LLM is a cross-border transfer under PIPEDA. Cloudflare Workers run at the edge and can be pinned to Canadian data centres using <a href="https://blog.cloudflare.com/custom-regions/">Custom Regions</a> (launched March 2026). Workers AI provides embedding models that execute on-region. For LLM inference, route through an AI Gateway with jurisdiction controls.</p>
+      <p>Don't just store data in Canada — <strong>process it there too</strong>. Every API call to a US-hosted LLM is a cross-border transfer under PIPEDA. Cloudflare Workers run at the edge and can be pinned to Canadian data centres using <a href="https://blog.cloudflare.com/custom-regions/">Custom Regions</a> (launched March 2026). Workers AI provides embedding models that execute on-region. For LLM inference, route through an AI Gateway with jurisdiction controls.</p>
 
       <div class="callout">
         <div class="callout-title">&#128161; How I built LocalMind</div>
@@ -588,7 +588,7 @@
         <li><strong>Redaction options</strong>: replace with tokens (<code>[PERSON_1]</code>), mask partially (<code>***-***-123</code>), or strip entirely</li>
       </ul>
 
-      <p>This isn't just good compliance hygiene &mdash; it also reduces hallucination risk, because the model isn't distracted by personal details that are irrelevant to the analysis.</p>
+      <p>This isn't just good compliance hygiene — it also reduces hallucination risk, because the model isn't distracted by personal details that are irrelevant to the analysis.</p>
 
       <h3>3. Log everything, explain everything</h3>
 
@@ -619,7 +619,7 @@
 
       <h3>5. Isolate tenants at the data layer</h3>
 
-      <p>Multi-tenant AI systems need strict namespace isolation. When Organization A uploads a contract, Organization B's vector search must never surface it &mdash; even if the embeddings are mathematically similar. Use per-tenant namespaces in your vector database, per-tenant encryption keys if possible, and never co-mingle document chunks across organizational boundaries.</p>
+      <p>Multi-tenant AI systems need strict namespace isolation. When Organization A uploads a contract, Organization B's vector search must never surface it — even if the embeddings are mathematically similar. Use per-tenant namespaces in your vector database, per-tenant encryption keys if possible, and never co-mingle document chunks across organizational boundaries.</p>
 
       <h2>Canadian Infrastructure Options in 2026</h2>
 
@@ -685,7 +685,7 @@
         <li><strong>PII detection in place:</strong> Personal information is identified and handled (redacted, masked, or consented) before AI processing.</li>
         <li><strong>Consent is meaningful:</strong> Users understand, in plain language, that AI will process their information and how.</li>
         <li><strong>Automated decisions are explainable:</strong> Every AI output cites its source, and users can request human review.</li>
-        <li><strong>Audit trail exists:</strong> Every AI interaction is logged &mdash; input, output, model used, timestamp, user &mdash; and logs are stored in the same jurisdiction as the data.</li>
+        <li><strong>Audit trail exists:</strong> Every AI interaction is logged — input, output, model used, timestamp, user — and logs are stored in the same jurisdiction as the data.</li>
         <li><strong>Privacy Impact Assessment completed:</strong> Required by Law 25 for high-risk AI; good practice everywhere.</li>
         <li><strong>Cross-border transfers documented:</strong> If any data leaves Canada (including for LLM inference), you've documented the legal basis and safeguards.</li>
         <li><strong>Tenant isolation tested:</strong> Multi-tenant systems have been tested to confirm no cross-tenant data leakage in search, retrieval, or AI outputs.</li>
@@ -695,17 +695,17 @@
 
       <div class="callout success">
         <div class="callout-title">&#9989; The bottom line</div>
-        <p>I built LocalMind with compliance as a design constraint &mdash; the same way you'd treat latency or uptime. The regulatory landscape will catch up eventually. The question is whether your architecture is ready when it does.</p>
+        <p>I built LocalMind with compliance as a design constraint — the same way you'd treat latency or uptime. The regulatory landscape will catch up eventually. The question is whether your architecture is ready when it does.</p>
       </div>
 
       <h2>Further Reading</h2>
 
       <ul>
-        <li><a href="https://www.priv.gc.ca/en/about-the-opc/what-we-do/consultations/completed-consultations/consultation-ai/reg-fw_202011/">OPC: A Regulatory Framework for AI &mdash; Recommendations for PIPEDA Reform</a></li>
-        <li><a href="https://www.osler.com/en/insights/reports/2025-legal-outlook/canadas-2026-privacy-priorities-data-sovereignty-open-banking-and-ai/">Osler: Canada's 2026 Privacy Priorities &mdash; Data Sovereignty, Open Banking and AI</a></li>
+        <li><a href="https://www.priv.gc.ca/en/about-the-opc/what-we-do/consultations/completed-consultations/consultation-ai/reg-fw_202011/">OPC: A Regulatory Framework for AI — Recommendations for PIPEDA Reform</a></li>
+        <li><a href="https://www.osler.com/en/insights/reports/2025-legal-outlook/canadas-2026-privacy-priorities-data-sovereignty-open-banking-and-ai/">Osler: Canada's 2026 Privacy Priorities — Data Sovereignty, Open Banking and AI</a></li>
         <li><a href="https://blog.cloudflare.com/custom-regions/">Cloudflare: Introducing Custom Regions for Precision Data Control</a></li>
-        <li><a href="https://compliancehub.wiki/cloud-act-2026-why-everything-changed-and-what-canadian-organizations-must-know-now/">ComplianceHub: CLOUD Act 2026 &mdash; What Canadian Organizations Must Know</a></li>
-        <li><a href="https://localmind.caseonix.ca">LocalMind &mdash; Sovereign Document Intelligence for Canada</a></li>
+        <li><a href="https://compliancehub.wiki/cloud-act-2026-why-everything-changed-and-what-canadian-organizations-must-know-now/">ComplianceHub: CLOUD Act 2026 — What Canadian Organizations Must Know</a></li>
+        <li><a href="https://localmind.caseonix.ca">LocalMind — Sovereign Document Intelligence for Canada</a></li>
       </ul>
 
     </div>
@@ -715,7 +715,7 @@
         <div class="author-avatar">&#128736;&#65039;</div>
         <div>
           <div class="author-name">Srivatsa Kasagar</div>
-          <div class="author-bio">AI Builder &amp; Solutions Architect with 25+ years in financial services. Building production-grade AI tools for the Canadian market at Caseonix &mdash; including LocalMind, Consul, and compliance plugins for Claude Code.</div>
+          <div class="author-bio">AI Builder &amp; Solutions Architect with 25+ years in financial services. Building production-grade AI tools for the Canadian market at Caseonix — including LocalMind, Consul, and compliance plugins for Claude Code.</div>
           <div class="author-links">
             <a href="https://linkedin.com/in/skasagar" target="_blank" rel="noopener">LinkedIn</a>
             <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub</a>
@@ -746,7 +746,7 @@
       <div class="footer-v2-right">&copy; 2026 Caseonix</div>
     </div>
       <div class="footer-disclaimer" style="max-width: 1200px; margin: 24px auto 0; padding: 18px 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 0.72rem; line-height: 1.65; color: var(--text-3);">
-      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary &mdash; not legal, compliance, tax, financial, investment, or professional advice.
+      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary — not legal, compliance, tax, financial, investment, or professional advice.
     </div>
   </footer>
 

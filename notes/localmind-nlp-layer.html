@@ -363,7 +363,7 @@
     <div class="note-meta">
       <span>Apr 22, 2026</span>
       <span class="note-meta-sep">&middot;</span>
-      <span>Working note &mdash; will evolve</span>
+      <span>Working note — will evolve</span>
     </div>
     <div class="note-series">
       <a href="/notes/localmind-rag-pipeline.html">&larr; 1. Pipeline</a>
@@ -401,12 +401,12 @@ flowchart TB
     N3 --&gt; DB
     N4 --&gt; DB
         </pre>
-        <div class="diagram-caption">Diagram 1 &mdash; NLP fan-out after parsing</div>
+        <div class="diagram-caption">Diagram 1 — NLP fan-out after parsing</div>
       </div>
 
       <h2>Layered PII redaction (regex + LLM)</h2>
 
-      <p>Privacy is the headline requirement of LocalMind, so PII handling has two layers &mdash; deterministic patterns first, LLM second.</p>
+      <p>Privacy is the headline requirement of LocalMind, so PII handling has two layers — deterministic patterns first, LLM second.</p>
 
       <div class="diagram-card" role="figure" aria-label="Two-pass PII redaction flow: chunk text goes through a regex pass for 12 deterministic categories (SSN, SIN, credit card, etc.), then an LLM pass for 10 sensitive categories (medical, financial, ethnic, religious, etc.). Both passes contribute their detected types to a piiTypes set persisted on the documents row.">
         <pre class="mermaid">
@@ -418,16 +418,16 @@ flowchart LR
     P -.detected categories.-&gt; M
     M --&gt; DB[(documents.pii_types)]
         </pre>
-        <div class="diagram-caption">Diagram 2 &mdash; two-pass PII redaction</div>
+        <div class="diagram-caption">Diagram 2 — two-pass PII redaction</div>
       </div>
 
-      <h3>Regex pass &mdash; <code>services/piiRedactor.ts</code></h3>
+      <h3>Regex pass — <code>services/piiRedactor.ts</code></h3>
 
       <p>I wrote a pattern bank for the 12 deterministic PII categories: SSN, SIN, credit card, IP address, DOB, Canadian postal code, US ZIP, street address, PO box, health card, passport number, driver's license. Three redaction modes are available: <code>full</code> (<code>[SSN REDACTED]</code>), <code>partial</code> (<code>***-**-1234</code>), and <code>strip</code> (delete the match).</p>
 
-      <p>Partial mode is the default. It keeps the last few digits or characters visible so a human reviewer can still cross-reference (<code>****-****-****-9876</code>) without exposing the full value. Each pattern has its own masking function so the partial form makes sense for the data type &mdash; for a postal code I keep the FSA, for an address I keep the street type word, for a phone-like field I keep the last 4.</p>
+      <p>Partial mode is the default. It keeps the last few digits or characters visible so a human reviewer can still cross-reference (<code>****-****-****-9876</code>) without exposing the full value. Each pattern has its own masking function so the partial form makes sense for the data type — for a postal code I keep the FSA, for an address I keep the street type word, for a phone-like field I keep the last 4.</p>
 
-      <h3>LLM pass &mdash; <code>services/llmPiiDetector.ts</code></h3>
+      <h3>LLM pass — <code>services/llmPiiDetector.ts</code></h3>
 
       <p>Regex can't catch unstructured sensitive PII like "diagnosed with Type 2 diabetes" or "donated to the Liberal Party". For that I run Gemma over the regex-cleaned text with a JSON schema that enforces 10 sensitive categories: medical condition, medication, financial detail, ethnic/racial, religious, sexual orientation, criminal/legal, biometric, family relationship, political opinion.</p>
 
@@ -439,7 +439,7 @@ flowchart LR
 
       <p>Two NER passes run on every document and their outputs are merged before persisting.</p>
 
-      <h3>Regex NER &mdash; <code>services/entityExtractor.ts</code></h3>
+      <h3>Regex NER — <code>services/entityExtractor.ts</code></h3>
 
       <p>Six deterministic categories with a pattern bank:</p>
 
@@ -457,13 +457,13 @@ flowchart LR
         </table>
       </div>
 
-      <p>After matching, each (type, normalized-value) pair is counted, and the result is sorted by frequency. The most-mentioned entities float to the top of the entities list &mdash; useful for "what is this document about" at a glance.</p>
+      <p>After matching, each (type, normalized-value) pair is counted, and the result is sorted by frequency. The most-mentioned entities float to the top of the entities list — useful for "what is this document about" at a glance.</p>
 
-      <h3>LLM NER &mdash; inside <code>generateDocumentAnalysis</code></h3>
+      <h3>LLM NER — inside <code>generateDocumentAnalysis</code></h3>
 
-      <p>The document analysis pass also returns <code>people</code> and <code>organizations</code> arrays &mdash; the fuzzy entities that regex can't reliably extract. These get merged with the regex entities and stored on <code>documents.entities</code>. So the entities list ends up being a hybrid: deterministic stuff with frequency counts plus LLM-extracted names.</p>
+      <p>The document analysis pass also returns <code>people</code> and <code>organizations</code> arrays — the fuzzy entities that regex can't reliably extract. These get merged with the regex entities and stored on <code>documents.entities</code>. So the entities list ends up being a hybrid: deterministic stuff with frequency counts plus LLM-extracted names.</p>
 
-      <h2>Table structure recovery &mdash; <code>services/tableFlattener.ts</code></h2>
+      <h2>Table structure recovery — <code>services/tableFlattener.ts</code></h2>
 
       <p>This is the bit I'm proudest of, and it's a pure-NLP problem disguised as text processing.</p>
 
@@ -485,25 +485,25 @@ flowchart TB
     K --&gt; R[output text]
     O --&gt; R
         </pre>
-        <div class="diagram-caption">Diagram 3 &mdash; table detection and flattening decision flow</div>
+        <div class="diagram-caption">Diagram 3 — table detection and flattening decision flow</div>
       </div>
 
       <p>The interesting parts:</p>
 
       <ul>
-        <li><strong>CSV detection guards against <code>$32,100</code> false positives</strong> &mdash; if any field has a run of 2+ whitespace inside it, the commas are probably inside numbers, not delimiters. The detector rejects.</li>
+        <li><strong>CSV detection guards against <code>$32,100</code> false positives</strong> — if any field has a run of 2+ whitespace inside it, the commas are probably inside numbers, not delimiters. The detector rejects.</li>
         <li><strong>Whitespace-aligned table detection</strong> finds gap regions (positions where 2+ consecutive characters are spaces across all rows) to infer column boundaries. It needs at least 3 rows so single-line false positives don't slip through.</li>
-        <li><strong>Financial-statement guard.</strong> Wide whitespace tables where the "headers" are mostly numeric (column dates, $ totals) get <em>skipped</em> &mdash; flattening makes them harder to read, not easier. Narrow invoice/pricing tables (3-4 columns) still get flattened.</li>
-        <li><strong>Sanity check.</strong> If the flattened output is more than 2&times; the input length, something went wrong with boundary detection &mdash; fall back to the original.</li>
+        <li><strong>Financial-statement guard.</strong> Wide whitespace tables where the "headers" are mostly numeric (column dates, $ totals) get <em>skipped</em> — flattening makes them harder to read, not easier. Narrow invoice/pricing tables (3-4 columns) still get flattened.</li>
+        <li><strong>Sanity check.</strong> If the flattened output is more than 2&times; the input length, something went wrong with boundary detection — fall back to the original.</li>
       </ul>
 
       <p>Each flattened row becomes a self-contained semantic unit that embeds well, so a query like "Q3 revenue" can match against the actual data.</p>
 
-      <h2>Document classification &mdash; <code>services/documentClassifier.ts</code></h2>
+      <h2>Document classification — <code>services/documentClassifier.ts</code></h2>
 
       <p>A single Gemma call buckets each document into one of six types: <code>contract</code>, <code>financial</code>, <code>policy</code>, <code>hr</code>, <code>invoice</code>, <code>general</code>. Falls through to <code>general</code> if the model misbehaves.</p>
 
-      <p>The classification is the routing key for the downstream review agent &mdash; each document type gets a different review checklist. So classification isn't just a UI tag, it's a control-flow decision.</p>
+      <p>The classification is the routing key for the downstream review agent — each document type gets a different review checklist. So classification isn't just a UI tag, it's a control-flow decision.</p>
 
       <h2>Document analysis (summary + topics + sentiment)</h2>
 
@@ -536,9 +536,9 @@ flowchart TB
 
       <p>There's a plain-text fallback path: if the schema-constrained call fails, I try a simple "summarize this document in 2-3 sentences" prompt and persist that as the description. I'd rather degrade gracefully than leave a document with no summary at all.</p>
 
-      <h2>Document review agent &mdash; <code>services/reviewAgent.ts</code></h2>
+      <h2>Document review agent — <code>services/reviewAgent.ts</code></h2>
 
-      <p>Layered on top of classification, the review agent runs a per-document-type review (checklist items + extracted fields + risk brief), persisted as <code>review_json</code>. This is where domain knowledge gets injected &mdash; different rubrics per document type rather than a one-size-fits-all summary. A contract gets a contract checklist; an invoice gets an invoice checklist.</p>
+      <p>Layered on top of classification, the review agent runs a per-document-type review (checklist items + extracted fields + risk brief), persisted as <code>review_json</code>. This is where domain knowledge gets injected — different rubrics per document type rather than a one-size-fits-all summary. A contract gets a contract checklist; an invoice gets an invoice checklist.</p>
 
       <p>The classifier output picks the rubric, which keeps the prompts small and the output predictable.</p>
 
@@ -577,10 +577,10 @@ flowchart TB
       <h2>What's next</h2>
 
       <ul>
-        <li>Move regex NER into a streaming pass over chunks instead of full text &mdash; same output, lower memory.</li>
+        <li>Move regex NER into a streaming pass over chunks instead of full text — same output, lower memory.</li>
         <li>The LLM PII detector currently truncates input at 8K chars. For long docs it should sample multiple windows.</li>
         <li>Cache classifier results by content hash so reprocessed documents skip the classification call.</li>
-        <li>Add an "entity timeline" view &mdash; the date entities are already extracted, just need to be plotted against <code>keyPoints</code>.</li>
+        <li>Add an "entity timeline" view — the date entities are already extracted, just need to be plotted against <code>keyPoints</code>.</li>
       </ul>
 
       <p style="margin-top: 40px; color: var(--text-3); font-size: 0.92rem;">Back to the start: <a href="/notes/localmind-rag-pipeline.html" style="color: var(--teal-1);">the RAG pipeline note &rarr;</a></p>
@@ -626,7 +626,7 @@ flowchart TB
       <div class="footer-v2-right">&copy; 2026 Caseonix</div>
     </div>
       <div class="footer-disclaimer" style="max-width: 1200px; margin: 24px auto 0; padding: 18px 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 0.72rem; line-height: 1.65; color: var(--text-3);">
-      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary &mdash; not legal, compliance, tax, financial, investment, or professional advice.
+      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary — not legal, compliance, tax, financial, investment, or professional advice.
     </div>
   </footer>
 
