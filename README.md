@@ -76,9 +76,9 @@ flowchart LR
 ```
 ````
 
-Commit and push. A GitHub Action (`.github/workflows/build-notes.yml`) runs `scripts/build-notes.mjs`, generates the HTML, and commits it back to `main`. A second Action (`build-log-index.yml`) then updates `log.json` and the homepage § RECENT FROM THE LOG rows. End-to-end latency: ~60-90s from `git push` to live.
+Commit and push. A GitHub Action (`.github/workflows/build-notes.yml`) runs `scripts/build-notes.mjs` (generates the HTML) and `scripts/build-og-images.mjs` (generates a 1200×630 social share card at `/og/<slug>.png`), then commits both back to `main`. A second Action (`build-log-index.yml`) updates `log.json` and the homepage § RECENT FROM THE LOG rows. End-to-end latency: ~60-90s from `git push` to live.
 
-To run the build locally: `npm run build:notes` (or `npm run build` to also refresh the log index).
+To run the build locally: `npm run build:notes` for HTML only, `npm run build:og` for just OG images, or `npm run build` to do everything (HTML + OG images + log index).
 
 ### Blog posts (`/blog/`)
 
