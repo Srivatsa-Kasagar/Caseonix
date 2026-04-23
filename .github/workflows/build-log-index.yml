@@ -1,0 +1,46 @@
+name: build-log-index
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'blog/**'
+      - 'notes/**'
+      - 'scripts/build-log-index.mjs'
+      - '.github/workflows/build-log-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-log-index
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Checkout with a token that can push back to the branch.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Regenerate log.json + homepage rows
+        run: node scripts/build-log-index.mjs
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- log.json index.html; then
+            echo "No changes to log.json or index.html — skipping commit."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add log.json index.html
+          git commit -m "chore(log): auto-regenerate log.json + homepage rows"
+          git push

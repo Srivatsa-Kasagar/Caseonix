@@ -1,0 +1,65 @@
+{
+  "generated": "2026-04-23T15:44:00.831Z",
+  "items": [
+    {
+      "href": "/notes/localmind-nlp-layer.html",
+      "title": "Lab note 3/3 — The NLP layer alongside LocalMind RAG",
+      "date": "2026-04-22",
+      "type": "note"
+    },
+    {
+      "href": "/notes/localmind-rag-pipeline.html",
+      "title": "Lab note 1/3 — LocalMind RAG pipeline",
+      "date": "2026-04-22",
+      "type": "note"
+    },
+    {
+      "href": "/notes/localmind-rag-quality.html",
+      "title": "Lab note 2/3 — How I improved RAG quality in LocalMind",
+      "date": "2026-04-22",
+      "type": "note"
+    },
+    {
+      "href": "/blog/building-multi-agent-claude-skills-wealth-guide.html",
+      "title": "Building Multi-Agent Claude Code Skills — The wealth-guide Architecture",
+      "date": "2026-04-17",
+      "type": "blog"
+    },
+    {
+      "href": "/blog/extracting-t4-data-python-canadian-developer-guide.html",
+      "title": "Extracting T4 Data from PDFs in Python — A Canadian Developer's Guide",
+      "date": "2026-04-10",
+      "type": "blog"
+    },
+    {
+      "href": "/blog/ai-canadian-financial-services-compliance-playbook.html",
+      "title": "AI for Canadian Financial Services: The Compliance-First Playbook",
+      "date": "2026-04-07",
+      "type": "blog"
+    },
+    {
+      "href": "/blog/building-pipeda-compliant-ai-tools.html",
+      "title": "Building PIPEDA-Compliant AI Tools in 2026: A Developer's Guide",
+      "date": "2026-04-07",
+      "type": "blog"
+    },
+    {
+      "href": "/blog/chatgpt-vs-self-hosted-ai-law-firms.html",
+      "title": "ChatGPT vs Self-Hosted AI for Canadian Law Firms: A 2026 Comparison",
+      "date": "2026-04-07",
+      "type": "blog"
+    },
+    {
+      "href": "/notes/auditlm-ai-governance-gap.html",
+      "title": "Research note — AuditLM and the AI governance gap",
+      "date": "2026-03-18",
+      "type": "note"
+    },
+    {
+      "href": "/notes/nordid-canadian-business-identity.html",
+      "title": "Research note — NordID and Canadian business identity infrastructure",
+      "date": "2026-03-12",
+      "type": "note"
+    }
+  ]
+}
