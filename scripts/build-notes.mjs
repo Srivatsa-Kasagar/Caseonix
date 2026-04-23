@@ -7,11 +7,29 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join, dirname, basename, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
+import MarkdownIt from 'markdown-it';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const NOTES_DIR = join(ROOT, 'notes');
 const TEMPLATE_PATH = join(__dirname, 'templates', 'note.html');
+
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+});
+
+// Custom fence for mermaid code blocks — emit as <pre class="mermaid">
+// so mermaid.js can transform them client-side.
+const defaultFence = md.renderer.rules.fence;
+md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+  const token = tokens[idx];
+  if (token.info.trim() === 'mermaid') {
+    return `<pre class="mermaid">${md.utils.escapeHtml(token.content)}</pre>\n`;
+  }
+  return defaultFence(tokens, idx, options, env, self);
+};
 
 function assert(cond, msg) {
   if (!cond) throw new Error(msg);
@@ -57,11 +75,13 @@ async function main() {
   }
   for (const p of mdFiles) {
     const raw = await readFile(p, 'utf8');
-    const { data: fm } = matter(raw);
+    const { data: fm, content } = matter(raw);
     validateFrontmatter(fm, basename(p));
-    console.log(`  · ${basename(p)} — frontmatter OK`);
+    const body = md.render(content);
+    const hasMermaid = body.includes('<pre class="mermaid">');
+    console.log(`  · ${basename(p)} — body rendered${hasMermaid ? ' [with mermaid]' : ''}`);
   }
-  console.log(`validated ${mdFiles.length} note(s)`);
+  console.log(`processed ${mdFiles.length} note(s)`);
 }
 
 main().catch((e) => {
