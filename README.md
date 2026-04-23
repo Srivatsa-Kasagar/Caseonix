@@ -50,11 +50,39 @@ What actually powers this site and the broader work:
 
 ## Publishing a post
 
-1. Drop a new HTML file into `/blog/` or `/notes/`. Make sure its JSON-LD includes `headline` and `datePublished`.
-2. Commit and push.
-3. A GitHub Action (`.github/workflows/build-log-index.yml`) runs `scripts/build-log-index.mjs`, which regenerates `log.json` (full feed) and rewrites the top 4 rows in `index.html` between the `<!-- log:auto-start -->` markers. It commits the refresh back to `main` automatically.
+### Lab notes (`/notes/`)
 
-To run the build locally instead: `node scripts/build-log-index.mjs`.
+Write in markdown. Drop a new `.md` file into `/notes/` with YAML frontmatter:
+
+```yaml
+---
+title: "Lab note — how I broke RAG"
+date: 2026-04-23
+slug: how-i-broke-rag
+description: "A one-paragraph summary used in meta description and og:description."
+tags: [rag, cloudflare]     # optional
+series: null                 # optional, for multi-part series
+---
+```
+
+Required fields: `title`, `date` (YYYY-MM-DD), `slug` (must match filename), `description`. Optional: `type` (defaults to `note`), `series`, `tags`.
+
+The body is plain markdown. Mermaid diagrams work:
+
+````
+```mermaid
+flowchart LR
+  A --> B
+```
+````
+
+Commit and push. A GitHub Action (`.github/workflows/build-notes.yml`) runs `scripts/build-notes.mjs`, generates the HTML, and commits it back to `main`. A second Action (`build-log-index.yml`) then updates `log.json` and the homepage § RECENT FROM THE LOG rows. End-to-end latency: ~60-90s from `git push` to live.
+
+To run the build locally: `npm run build:notes` (or `npm run build` to also refresh the log index).
+
+### Blog posts (`/blog/`)
+
+Blog posts are still hand-authored HTML with JSON-LD. Drop the file, commit, push — `build-log-index.yml` picks it up for the homepage feed.
 
 ## Why public
 
