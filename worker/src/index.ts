@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { verifyGithubSignature } from "./hmac";
 import { applyPingResults, pingAllEndpoints } from "./pings";
 import { patchSnapshot } from "./snapshot";
-import { DEFAULT_SNAPSHOT, Env, Snapshot } from "./types";
+import { DEFAULT_SNAPSHOT, Env, REPO_ENDPOINTS, Snapshot } from "./types";
 
 const STATUS_KEY = "status:current";
 
@@ -11,7 +11,8 @@ const app = new Hono<{ Bindings: Env }>();
 app.get("/api/status", async (c) => {
   const raw = await c.env.STATUS_KV.get(STATUS_KEY);
   const snap: Snapshot = raw ? JSON.parse(raw) : DEFAULT_SNAPSHOT;
-  return new Response(JSON.stringify(snap), {
+  const body = { ...snap, endpoints: REPO_ENDPOINTS };
+  return new Response(JSON.stringify(body), {
     status: 200,
     headers: {
       "Content-Type": "application/json; charset=utf-8",

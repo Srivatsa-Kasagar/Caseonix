@@ -2514,9 +2514,15 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
         } catch (e) { return ''; }
       }
 
+      var _endpoints = {};
+
       function paintLatestDeploy(d) {
         if (!d) return;
-        setText(qs('latest_deploy', 'domain'), d.domain || d.repo || '');
+        var url = _endpoints[d.repo];
+        var domain = '';
+        if (url) { try { domain = new URL(url).host; } catch (e) {} }
+        var label = [domain, d.repo].filter(Boolean).join(' | ');
+        setText(qs('latest_deploy', 'domain'), label);
         setText(qs('latest_deploy', 'sha'), d.sha || '');
         setText(qs('latest_deploy', 'date'), d.date || '');
       }
@@ -2586,6 +2592,7 @@ itc = <span class="f">claim_itc</span>(capital_purchases)
           if (!r.ok) return;
           var snap = await r.json();
           if (!snap || !snap.updated_at) return;
+          _endpoints = snap.endpoints || {};
           paintLatestDeploy(snap.latest_deploy);
           paintEvents(snap.events);
           paintRepos(snap.repos, snap.updated_at);
