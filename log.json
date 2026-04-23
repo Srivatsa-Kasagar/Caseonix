@@ -55,6 +55,12 @@
       "type": "note"
     },
     {
+      "href": "/notes/cheque-fraud-detection-lab-notes.html",
+      "title": "Research note — Cheque Image Fraud Detection on AWS",
+      "date": "2026-03-18",
+      "type": "note"
+    },
+    {
       "href": "/notes/nordid-canadian-business-identity.html",
       "title": "Research note — NordID and Canadian business identity infrastructure",
       "date": "2026-03-12",
