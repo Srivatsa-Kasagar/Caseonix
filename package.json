@@ -6,8 +6,9 @@
   "description": "Static site + build scripts for caseonix.ca",
   "scripts": {
     "build:notes": "node scripts/build-notes.mjs",
+    "build:og": "node scripts/build-og-images.mjs",
     "build:log": "node scripts/build-log-index.mjs",
-    "build": "npm run build:notes && npm run build:log"
+    "build": "npm run build:notes && npm run build:og && npm run build:log"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
