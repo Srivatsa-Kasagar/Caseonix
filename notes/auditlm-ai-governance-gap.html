@@ -296,6 +296,33 @@
     }
     .note-body tr:last-child td { border-bottom: none; }
 
+    .note-share {
+      display: flex; align-items: center; gap: 18px;
+      flex-wrap: wrap;
+      margin: 48px 0 0;
+      padding: 16px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .note-share-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-3);
+      margin-right: auto;
+    }
+    .note-share-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--teal-1);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .note-share-link:hover { color: var(--teal-3); }
+    .note-share-link .arrow { font-size: 0.76rem; }
+
     .note-cta {
       margin-top: 56px;
       padding: 28px;
@@ -415,6 +442,16 @@
 <p>The existing tools solve pieces. <strong>Langfuse</strong> and <strong>Arize</strong> are built for ML engineers chasing model performance — token counts, drift, latency. They do not produce legally defensible audit trails, track consent, detect PII, or speak in the language of a regulatory examination. GRC platforms like <strong>OneTrust</strong> and <strong>ServiceNow</strong> document that a policy exists but cannot prove it was enforced on any particular request — they are not in the data path. <strong>Credo AI</strong> and <strong>IBM watsonx.governance</strong> do governance documentation and workflow credibly (Mastercard, Cisco, PepsiCo as customers for Credo AI) but again sit alongside the stack, not inside it. No single platform combines <strong>in-data-path enforcement</strong> with governance workflow and regulator-facing compliance reports. That is the structural opening.</p>
 <p>What I’m building in the lab: <strong>AuditLM</strong> — a provider-agnostic governance proxy that sits between any application and any LLM provider (Anthropic, OpenAI, Azure, Gemini). Every prompt is SHA-256 hashed before forwarding, records are hash-chained, and hourly Merkle roots anchor to immutable storage — cryptographic proof of what happened at inference time. The proxy is a Cloudflare Workers + Hono edge service with an OpenAI-compatible surface, so integration is a <code>one-line change</code> from existing SDKs. On top of that: PII detection (Canadian SIN and provincial health cards, US SSN/EIN, universal entities), a policy engine with consent and purpose-limitation enforcement, pre-deployment gates (Algorithmic Impact Assessment plus red-team records), and signed PDF compliance reports mapped to OSFI E-23, PIPEDA, SOC 2, HIPAA, CCPA, and OCC/Fed SR 11-7. Canada-first, because OSFI E-23 is the single hardest compliance deadline on the calendar; US and EU follow through Canadian customers with cross-border exposure. Phase 1 MVP is in development. The research question I’m chasing in parallel: can compliance infrastructure feel like plumbing — invisible to developers, decisive to compliance officers — or does regulatory defensibility always tax the application layer? If you’re a compliance officer, CISO, or engineering lead wrestling with this, I’d like to hear how you’re framing the gap.</p>
 
+    </div>
+
+    <div class="note-share" aria-label="Share this note">
+      <span class="note-share-eyebrow">&sect; Share</span>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fcaseonix.ca%2Fnotes%2Fauditlm-ai-governance-gap.html" target="_blank" rel="noopener" class="note-share-link">
+        LinkedIn <span class="arrow" aria-hidden="true">&#8599;</span>
+      </a>
+      <a href="https://twitter.com/intent/tweet?text=Research%20note%20%E2%80%94%20AuditLM%20and%20the%20AI%20governance%20gap&amp;url=https%3A%2F%2Fcaseonix.ca%2Fnotes%2Fauditlm-ai-governance-gap.html" target="_blank" rel="noopener" class="note-share-link">
+        X <span class="arrow" aria-hidden="true">&#8599;</span>
+      </a>
     </div>
 
     <a href="/#contact" class="note-cta">

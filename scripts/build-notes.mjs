@@ -158,6 +158,7 @@ async function main() {
       jsonld: buildJsonLd(fm),
       body,
       mermaid_script: hasMermaid ? mermaidScriptTag() : '',
+      share_text: encodeURIComponent(fm.title),
     });
     const outPath = join(NOTES_DIR, `${fm.slug}.html`);
     await writeFile(outPath, html);
