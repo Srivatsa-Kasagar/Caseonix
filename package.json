@@ -1,0 +1,16 @@
+{
+  "name": "caseonix-site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static site + build scripts for caseonix.ca",
+  "scripts": {
+    "build:notes": "node scripts/build-notes.mjs",
+    "build:log": "node scripts/build-log-index.mjs",
+    "build": "npm run build:notes && npm run build:log"
+  },
+  "devDependencies": {
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0"
+  }
+}
