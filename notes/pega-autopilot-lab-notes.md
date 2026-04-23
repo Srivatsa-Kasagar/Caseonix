@@ -1,5 +1,5 @@
 ---
-title: "Dug into Pega GenAI Autopilot Autopilot to figure out what it actually takes to adopt it"
+title: "Dug into Pega GenAI Autopilot to figure out what it actually takes to adopt it"
 date: 2026-03-23
 slug: pega-autopilot-lab-notes
 description: "Pega GenAI Autopilot is an AI assistant embedded in Pega App Studio. It generates Case Types, workflows, data models, personas, sample data, and forms from natural-language prompts. Pega positions it as a developer productivity accelerator."
