@@ -25,8 +25,13 @@ function validateFrontmatter(fm, filename) {
       `${filename}: missing required frontmatter field '${key}'`,
     );
   }
+  // YAML parses unquoted YYYY-MM-DD as a Date object. Coerce to ISO-date string
+  // so notes can be authored with or without quotes around the date.
+  if (fm.date instanceof Date) {
+    fm.date = fm.date.toISOString().slice(0, 10);
+  }
   assert(
-    /^\d{4}-\d{2}-\d{2}$/.test(fm.date),
+    typeof fm.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fm.date),
     `${filename}: date must be YYYY-MM-DD, got '${fm.date}'`,
   );
   assert(
