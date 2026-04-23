@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lab note 3/3 — NLP layer in LocalMind | Caseonix</title>
-  <meta name="description" content="How I built the NLP layer alongside RAG in LocalMind — PIPEDA-aligned layered PII redaction (regex + LLM), hybrid regex and LLM named-entity recognition, table structure recovery for PDF and DOCX, document classification, sentiment with risk flags, and per-document-type review agents — all under JSON-schema constraints." />
+  <meta name="description" content="Building an NLP layer alongside RAG in LocalMind — layered PII redaction, hybrid NER, PDF/DOCX table recovery, classification, per-type review agents." />
   <meta name="author" content="Srivatsa Kasagar" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="keywords" content="NLP pipeline, PIPEDA PII redaction, PHIPA compliance, layered PII detection, regex NER, LLM named entity recognition, table extraction PDF, table flattening DOCX, document classification LLM, sentiment risk flags, JSON schema LLM, structured LLM output, Canadian privacy compliance NLP, document review agent, Cloudflare Workers AI, Gemma 4 NLP, LocalMind" />
   <link rel="canonical" href="https://caseonix.ca/notes/localmind-nlp-layer.html" />
+  <link rel="alternate" hreflang="en-ca" href="https://caseonix.ca/notes/localmind-nlp-layer.html" />
+  <link rel="alternate" hreflang="x-default" href="https://caseonix.ca/notes/localmind-nlp-layer.html" />
   <link rel="prev" href="https://caseonix.ca/notes/localmind-rag-quality.html" title="Lab note 2/3 — How I improved RAG quality" />
 
   <meta property="og:title" content="Lab note 3/3 — NLP layer in LocalMind" />
@@ -22,6 +24,7 @@
   <meta property="og:locale" content="en_CA" />
   <meta property="article:author" content="Srivatsa Kasagar" />
   <meta property="article:published_time" content="2026-04-22" />
+  <meta property="article:modified_time" content="2026-04-22" />
   <meta property="article:section" content="Lab notes" />
 
   <meta name="twitter:card" content="summary_large_image" />
@@ -621,6 +624,9 @@ flowchart TB
         <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub &#8599;</a>
       </nav>
       <div class="footer-v2-right">&copy; 2026 Caseonix</div>
+    </div>
+      <div class="footer-disclaimer" style="max-width: 1200px; margin: 24px auto 0; padding: 18px 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 0.72rem; line-height: 1.65; color: var(--text-3);">
+      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary &mdash; not legal, compliance, tax, financial, investment, or professional advice.
     </div>
   </footer>
 

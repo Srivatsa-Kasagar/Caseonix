@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Building Multi-Agent Claude Code Skills — The wealth-guide Architecture | Caseonix</title>
-  <meta name="description" content="A walkthrough of how to structure ambitious Claude Code skills as multi-agent pipelines — parallel dispatch, knowledge grounding, deterministic templates, and model routing — using wealth-guide, an open-source 6-agent financial planner." />
+  <title>Multi-Agent Claude Code Skills — wealth-guide Pattern | Caseonix</title>
+  <meta name="description" content="How to structure ambitious Claude Code skills as multi-agent pipelines — parallel dispatch, knowledge grounding, templates, and model routing." />
   <meta name="author" content="Srivatsa Kasagar" />
   <meta name="robots" content="index, follow" />
   <meta name="keywords" content="Claude Code skill, multi-agent pipeline, Claude subagents, wealth-guide open source, Opus vs Sonnet routing, AI financial planner, parallel Task dispatch, Claude Code knowledge base, SKILL.md architecture, AskUserQuestion" />
   <link rel="canonical" href="https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html" />
+  <link rel="alternate" hreflang="en-ca" href="https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html" />
+  <link rel="alternate" hreflang="x-default" href="https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Building Multi-Agent Claude Code Skills — The wealth-guide Architecture" />
-  <meta property="og:description" content="How to build ambitious Claude Code skills the right way — six specialist subagents, parallel dispatch, curated knowledge base, Opus/Sonnet routing, and local SQLite state. Full reference implementation on GitHub." />
+  <meta property="og:title" content="Multi-Agent Claude Code Skills — wealth-guide Pattern" />
+  <meta property="og:description" content="Six specialist subagents, parallel dispatch, curated knowledge base, Opus/Sonnet routing, local SQLite state. Reference implementation on GitHub." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://caseonix.ca/blog/building-multi-agent-claude-skills-wealth-guide.html" />
   <meta property="og:image" content="https://caseonix.ca/og-image-v2.png" />
@@ -22,10 +24,11 @@
   <meta property="og:locale" content="en_CA" />
   <meta property="article:author" content="Srivatsa Kasagar" />
   <meta property="article:published_time" content="2026-04-17" />
+  <meta property="article:modified_time" content="2026-04-17" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Building Multi-Agent Claude Code Skills — The wealth-guide Architecture" />
+  <meta name="twitter:title" content="Multi-Agent Claude Code Skills — wealth-guide Pattern" />
   <meta name="twitter:description" content="Stop building ambitious skills as one giant prompt. Here's the six-agent pattern, with working code from wealth-guide — open source on GitHub." />
   <meta name="twitter:image" content="https://caseonix.ca/og-image-v2.png" />
 
@@ -34,8 +37,8 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "Building Multi-Agent Claude Code Skills — The wealth-guide Architecture",
-    "description": "A walkthrough of how to structure ambitious Claude Code skills as multi-agent pipelines — parallel dispatch, knowledge grounding, deterministic templates, and Opus/Sonnet routing — using wealth-guide, an open-source 6-agent financial planner.",
+    "headline": "Multi-Agent Claude Code Skills — wealth-guide Pattern",
+    "description": "How to structure ambitious Claude Code skills as multi-agent pipelines — parallel dispatch, knowledge grounding, templates, and model routing.",
     "author": {
       "@type": "Person",
       "name": "Srivatsa Kasagar",
@@ -989,7 +992,7 @@ wealth guide</code></pre>
         <li><a href="https://docs.anthropic.com/en/docs/claude-code/sub-agents">Claude Code subagents reference</a> — how <code>subagent_type</code> resolution and parallel dispatch work under the hood</li>
         <li><a href="https://docs.anthropic.com/en/api/agent-sdk-overview">Claude Agent SDK</a> — the programmatic equivalent if your users aren't in Claude Code</li>
         <li><a href="/blog/extracting-t4-data-python-canadian-developer-guide.html">Extracting T4 Data from PDFs in Python</a> — another multi-component AI pipeline, on the Python side</li>
-        <li><a href="/blog/ai-canadian-financial-services-compliance-playbook.html">AI for Canadian Financial Services: The Compliance-First Playbook</a> — the regulatory context behind the raw-value-never rule</li>
+        <li><a href="/blog/ai-canadian-financial-services-compliance-playbook.html">AI for Canadian Financial Services (OSFI E-23 Notes)</a> — the regulatory context behind the raw-value-never rule</li>
       </ul>
 
     </div>
@@ -1013,7 +1016,7 @@ wealth guide</code></pre>
         <a href="/blog/extracting-t4-data-python-canadian-developer-guide.html">Extracting T4 Data from PDFs in Python &mdash; A Canadian Developer's Guide</a>
         <a href="/blog/chatgpt-vs-self-hosted-ai-law-firms.html">ChatGPT vs Self-Hosted AI for Canadian Law Firms: A 2026 Comparison</a>
         <a href="/blog/building-pipeda-compliant-ai-tools.html">Building PIPEDA-Compliant AI Tools in 2026: A Developer's Guide</a>
-        <a href="/blog/ai-canadian-financial-services-compliance-playbook.html">AI for Canadian Financial Services: The Compliance-First Playbook</a>
+        <a href="/blog/ai-canadian-financial-services-compliance-playbook.html">AI for Canadian Financial Services (OSFI E-23 Notes)</a>
       </div>
     </div>
   </article>
@@ -1031,6 +1034,9 @@ wealth guide</code></pre>
         <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub &#8599;</a>
       </nav>
       <div class="footer-v2-right">&copy; 2026 Caseonix</div>
+    </div>
+      <div class="footer-disclaimer" style="max-width: 1200px; margin: 24px auto 0; padding: 18px 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 0.72rem; line-height: 1.65; color: var(--text-3);">
+      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary &mdash; not legal, compliance, tax, financial, investment, or professional advice.
     </div>
   </footer>
 

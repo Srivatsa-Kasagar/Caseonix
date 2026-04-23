@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lab note 1/3 — LocalMind RAG pipeline | Caseonix</title>
-  <meta name="description" content="End-to-end retrieval-augmented generation (RAG) pipeline I built for LocalMind on Cloudflare's edge — paragraph-aware chunking, BGE-Small embeddings, contextual chunking, Vectorize ANN search with multi-tenant namespaces, Gemma 4 reranking, and citation-bound generation." />
+  <meta name="description" content="End-to-end RAG pipeline on Cloudflare's edge — paragraph-aware chunking, BGE-Small embeddings, Vectorize ANN search, Gemma 4 reranking, citation-bound generation." />
   <meta name="author" content="Srivatsa Kasagar" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <meta name="keywords" content="RAG pipeline, retrieval-augmented generation, Cloudflare Workers AI, Cloudflare Vectorize, Cloudflare D1, Cloudflare R2, Durable Objects, BGE-Small embeddings, Gemma 4, contextual chunking, document chunking strategy, vector search edge, multi-tenant vector namespace, Hono framework, edge AI inference, LocalMind, document ingest pipeline, retrieval flow, query expansion, LLM rerank" />
   <link rel="canonical" href="https://caseonix.ca/notes/localmind-rag-pipeline.html" />
+  <link rel="alternate" hreflang="en-ca" href="https://caseonix.ca/notes/localmind-rag-pipeline.html" />
+  <link rel="alternate" hreflang="x-default" href="https://caseonix.ca/notes/localmind-rag-pipeline.html" />
   <link rel="next" href="https://caseonix.ca/notes/localmind-rag-quality.html" title="Lab note 2/3 — How I improved RAG quality" />
 
   <meta property="og:title" content="Lab note 1/3 — LocalMind RAG pipeline" />
@@ -22,6 +24,7 @@
   <meta property="og:locale" content="en_CA" />
   <meta property="article:author" content="Srivatsa Kasagar" />
   <meta property="article:published_time" content="2026-04-22" />
+  <meta property="article:modified_time" content="2026-04-22" />
   <meta property="article:section" content="Lab notes" />
 
   <meta name="twitter:card" content="summary_large_image" />
@@ -582,6 +585,9 @@ flowchart TB
         <a href="https://github.com/caseonix" target="_blank" rel="noopener">GitHub &#8599;</a>
       </nav>
       <div class="footer-v2-right">&copy; 2026 Caseonix</div>
+    </div>
+      <div class="footer-disclaimer" style="max-width: 1200px; margin: 24px auto 0; padding: 18px 24px 0; border-top: 1px solid var(--border); text-align: center; font-size: 0.72rem; line-height: 1.65; color: var(--text-3);">
+      Caseonix is a solo AI lab. Posts, projects, and research notes are engineering commentary &mdash; not legal, compliance, tax, financial, investment, or professional advice.
     </div>
   </footer>
 
