@@ -1,6 +1,12 @@
 {
   "items": [
     {
+      "href": "/notes/cheque-fraud-detection-lab-notes.html",
+      "title": "Research note — Cheque Image Fraud Detection on AWS",
+      "date": "2026-04-23",
+      "type": "note"
+    },
+    {
       "href": "/notes/localmind-nlp-layer.html",
       "title": "Lab note 3/3 — The NLP layer alongside LocalMind RAG",
       "date": "2026-04-22",
@@ -51,12 +57,6 @@
     {
       "href": "/notes/auditlm-ai-governance-gap.html",
       "title": "Research note — AuditLM and the AI governance gap",
-      "date": "2026-03-18",
-      "type": "note"
-    },
-    {
-      "href": "/notes/cheque-fraud-detection-lab-notes.html",
-      "title": "Research note — Cheque Image Fraud Detection on AWS",
       "date": "2026-03-18",
       "type": "note"
     },
