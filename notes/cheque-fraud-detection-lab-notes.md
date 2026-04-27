@@ -67,7 +67,7 @@ No path around this. Whether AWS-managed or open source, there is no pre-trained
 
 Commercial vendors (Mitek, Parascript) have 20+ year training corpora built across many institutions. Single-institution in-house development produces meaningfully lower accuracy.
 
-Caveat: in scoping conversations I ended up removing automated signature verification altogether and making it a manual analyst step. Reason: avoids commercial vendor procurement, reduces integration risk, and signature forgery catch rate is acceptable at analyst review volumes for many deployments. Lightweight automated presence check (signature absent / malformed via Textract) stays in the pipeline.
+
 
 ### Finding 6: Bedrock Claude Sonnet 4.5 as a reasoning layer is genuinely useful
 
@@ -83,7 +83,7 @@ Open source VLM alternatives (Qwen2.5-VL 72B, Llama 3.2 Vision) are capable but 
 
 Initial architecture included Amazon Neptune for mule/kiting/ring detection. Removed in later iterations — these are cross-account behavioral fraud patterns, not image fraud. Belong in a downstream AML / transaction monitoring system.
 
-Scope discipline: the platform detects fraud visible in the image. Cross-account patterns, velocity rules, and positive pay matching are out. This makes the platform defensible and focused.
+
 
 ### Finding 8: AWS vs Cloudflare — AWS wins for regulated banking
 
@@ -100,7 +100,7 @@ Cloudflare is strong for edge, consumer-facing workloads, and cost-sensitive app
 
 ## Final Architecture (Summary)
 
-**Scope:** Cheque image fraud detection only. Out: cross-account behavioral fraud, positive pay, automated signature matching.
+**Scope:** Cheque image fraud detection only. Out: cross-account behavioral fraud, automated signature matching.
 
 **Stack:**
 | Layer | Choice |
@@ -145,7 +145,7 @@ Cloudflare is strong for edge, consumer-facing workloads, and cost-sensitive app
 
 1. **"AWS has a service for that" deserves skepticism.** Marketing descriptions often conflate reference architectures with managed services. Always check the actual service catalog and capabilities.
 
-2. **Scope discipline beats feature breadth.** Every time I tightened scope (removing graph analysis, positive pay, automated signature matching), the architecture got cleaner and more defensible without meaningfully hurting the core fraud catch rate.
+2. **Scope discipline beats feature breadth.** Every time I tightened scope (removing graph analysis, automated signature matching), the architecture got cleaner and more defensible without meaningfully hurting the core fraud catch rate.
 
 3. **Training data access is usually the critical path.** More than model architecture, more than infrastructure — historical labeled fraud cases determine whether the project succeeds.
 
